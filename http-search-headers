@@ -1,0 +1,2 @@
+header = Accept-Encoding: gzip, none
+header = X-Requested-With: XMLHttpRequest
