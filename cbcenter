@@ -275,6 +275,13 @@ do_global_status () {
     fi
 }
 
+rooms_list () {
+    while IFS="" read -r room || [ -n "$room" ]
+    do
+        echo "$room"
+    done < "$CBROOMS_FILE"
+}
+
 mkdir -p "$MYPATH"
 mkdir -p "$DOWNLOADS_DIR"
 mkdir -p "$STREAMS_DIR"
@@ -288,6 +295,9 @@ case "$1" in
         ;;
     del)
         del_room "$2"
+        ;;
+    list)
+        rooms_list
         ;;
     fetch)
         do_global_fetch "$2"
