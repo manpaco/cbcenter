@@ -199,6 +199,7 @@ show_fetched_rooms () {
 
 play_room () {
     valid_room "$1" || return 1
+    is_online "$1" || return 1
     local room_link
     room_link="$(extract_playlist "$1")"
     ffplay -i "$room_link"
@@ -206,6 +207,7 @@ play_room () {
 
 save_room () {
     valid_room "$1" || return 1
+    is_online "$1" || return 1
     local room_link
     direct_link "$1" room_link
     local output
@@ -220,6 +222,7 @@ save_room () {
 
 room_capture () {
     valid_room "$1" || return 1
+    is_online "$1" || return 1
     local room_link
     direct_link "$1" room_link "$HIGH_PROG"
     local output
@@ -229,6 +232,7 @@ room_capture () {
 
 room_info () {
     valid_room "$1" || return 1
+    is_online "$1" || return 1
     local room_link
     room_link="$(extract_playlist "$1")"
     local room_data
