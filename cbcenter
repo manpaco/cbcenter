@@ -1,0 +1,301 @@
+#!/bin/bash
+
+MYPATH="${HOME}/.local/cbcenter"
+DOWNLOADS_DIR="${MYPATH}/downloads"
+CBROOMS_FILE="${MYPATH}/cbrooms"
+STREAMS_DIR="${DOWNLOADS_DIR}/streams"
+CAPTURES_DIR="${DOWNLOADS_DIR}/captures"
+CLEAR_STREAMS="rm -f ${STREAMS_DIR}/*"
+CLEAR_CAPTURES="rm -f ${CAPTURES_DIR}/*"
+
+TEMP_DIR="/tmp/cbcenter"
+FETCH_DIR="${TEMP_DIR}/fetched"
+CLEAR_FETCHED="rm -f ${FETCH_DIR}/*"
+FETCH_URL="https://thumb.live.mmcdn.com/riw"
+FETCH_FORMAT="jpg"
+SEARCH_URL="https://chaturbate.com/ax/search/?keywords="
+LASTSEARCH_FILE="${TEMP_DIR}/lastsearch"
+
+CODEC="h264"
+VIDEO_FORMAT="mp4"
+CAPTURE_FORMAT="$FETCH_FORMAT"
+HIGH_PROG=99
+
+CONNECT_TIMEOUT=5
+CB_ROOT_URL="https://www.chaturbate.com"
+CAM_ROOT_REGEX="https:\/\/edge[0-9]+-[a-z]+\.live\.mmcdn\.com"
+LIVE_PREFIX="live-"
+LIVE_REGEX="${LIVE_PREFIX}(hls|edge)"
+USER_PREFIX="amlst:"
+USER_REGEX="[A-Za-z0-9_]{3,30}"
+USER_SUFFIX="-sd-"
+CODE64="[0-9a-z]{64}"
+CODE64_SUFFIX="_trns_"
+PLAYLIST="playlist.m3u8"
+LIVE_USER_REGEX="${LIVE_REGEX}\/${USER_PREFIX}${USER_REGEX}"
+EXTRA_STUFF_REGEX="${USER_SUFFIX}${CODE64}${CODE64_SUFFIX}${CODEC}"
+LOCATION_REGEX="${LIVE_USER_REGEX}${EXTRA_STUFF_REGEX}"
+MINIMAL_CAM_REGEX="${CAM_ROOT_REGEX}\/${LIVE_USER_REGEX}"
+COMPLETE_CAM_REGEX="${MINIMAL_CAM_REGEX}${EXTRA_STUFF_REGEX}\/${PLAYLIST}"
+CHUNK_REGEX="chunklist_w[0-9]+_b[0-9]+_t[0-9a-zA-Z=]+\.m3u8"
+PROG_REGEX="BANDWIDTH=[0-9]+,NAME=\"FPS:[0-9]+\.[0-9]+\",CODECS=\"[a-z0-9.,]*\",RESOLUTION=[0-9]+x[0-9]+"
+ROOM_REGEX="$USER_REGEX"
+
+VIEWER="imv"
+JQ_ONLINE=".online"
+JQ_OFFLINE=".offline"
+JQ_HASGTAGS=".hashtags"
+CURL_SEARCH_HEADER="X-Requested-With: XMLHttpRequest"
+
+wrap_cb_user () {
+    echo "${CB_ROOT_URL}/$1"
+}
+
+curl_search () {
+    curl -s -H "$CURL_SEARCH_HEADER" --compressed "${SEARCH_URL}$1"
+}
+
+is_online () {
+    curl_search "$1" | jq -M $JQ_ONLINE | grep -q "\"$1\""
+}
+
+get_programs () {
+    declare -n gp_data="$1"
+    local _progs
+    declare -i _current=0
+    while [[ $gp_data =~ $PROG_REGEX ]]; do
+        _progs="$_progs\tPROG_ID=\"$_current\" - ${BASH_REMATCH[0]}\n"
+        gp_data="${gp_data/${BASH_REMATCH[0]}/}"
+        _current+=1
+    done
+    echo -e "$_progs"
+}
+
+get_data () {
+    curl -siL --compressed --connect-timeout "$CONNECT_TIMEOUT" "$1"
+}
+
+extract_playlist () {
+    local cblink
+    cblink="$(wrap_cb_user "$1")"
+    local web
+    web="$(wget -4 -q -O - "$cblink" 2>/dev/null)"
+    [[ -z $web ]] && return 2
+    web="$(echo -e "$web")"
+    [[ "$web" =~ $COMPLETE_CAM_REGEX ]]
+    [[ -z "${BASH_REMATCH[0]}" ]] && return 3
+    echo "${BASH_REMATCH[0]}"
+    return 0
+}
+
+direct_link () {
+    local _link
+    _link="$(extract_playlist "$1")"
+    declare -n dl_out="$2"
+    local _prog="$3"
+    local _data
+    _data="$(get_data "$_link")"
+    if [[ -z $_prog ]]; then
+        get_programs _data
+        read -rp "Select a program ID: " _prog
+    fi
+    local _chunk
+    declare -i _current=0
+    while [[ $_data =~ $CHUNK_REGEX ]] && [[ $_current -le $_prog ]]; do
+        _chunk="${BASH_REMATCH[0]}"
+        _data="${_data/${BASH_REMATCH[0]}/}"
+        _current+=1
+    done
+    [[ -z $_chunk ]] && return 1
+    local _root_locat
+    if [[ $_data =~ $LOCATION_REGEX ]]; then
+        _root_locat="${_link%%"${LIVE_PREFIX}"*}${BASH_REMATCH[0]}"
+    else
+        _root_locat="${_link%/*}"
+    fi
+    dl_out="${_root_locat}/${_chunk}"
+}
+
+valid_room () {
+    [[ "$1" =~ ^${ROOM_REGEX}$ ]]
+}
+
+formated_date () {
+    date +%Y%m%d%H%M%S
+}
+
+room_exists () {
+    grep -qx "$1" "$CBROOMS_FILE"
+}
+
+new_room () {
+    valid_room "$1" || return 1
+    room_exists "$1" && return 1
+    echo "$1" >> "$CBROOMS_FILE"
+}
+
+del_room () {
+    valid_room "$1" || return 1
+    room_exists "$1" || return 1
+    sed -i "/^$1$/d" "$CBROOMS_FILE"
+}
+
+fetch_room () {
+    valid_room "$1" || return 1
+    curl -s --connect-timeout "$CONNECT_TIMEOUT" "${FETCH_URL}/$1.$FETCH_FORMAT" -o "${FETCH_DIR}/$(formated_date)-$1.$FETCH_FORMAT"
+}
+
+show_fetch () {
+    curl -s --connect-timeout "$CONNECT_TIMEOUT" "${FETCH_URL}/$1.$FETCH_FORMAT" | $VIEWER -
+}
+
+fetch_all () {
+    while IFS="" read -r room || [ -n "$room" ]
+    do
+        is_online "$room" && fetch_room "$room" &
+    done < "$CBROOMS_FILE"
+    wait
+}
+
+do_global_fetch () {
+    if [[ -z $1 ]]; then
+        $CLEAR_FETCHED
+        fetch_all
+    else
+        valid_room "$1" || return 1
+        is_online "$1" && show_fetch "$1"
+    fi
+}
+
+show_fetched_rooms () {
+    $VIEWER "$FETCH_DIR"
+}
+
+play_room () {
+    valid_room "$1" || return 1
+    local room_link
+    room_link="$(extract_playlist "$1")"
+    ffplay -i "$room_link"
+}
+
+save_room () {
+    valid_room "$1" || return 1
+    local room_link
+    direct_link "$1" room_link
+    local output
+    output="${STREAMS_DIR}/$(formated_date)-$1.$VIDEO_FORMAT"
+    ffmpeg -i "$room_link" -codec copy "$output"
+
+    # Another way (slower ffmpeg startup)
+    #room_link="$(extract_playlist "$1")"
+    #room_prog=99
+    #ffmpeg -i "$room_link" -map v:p:$room_prog -map a:p:$room_prog -codec copy "$output"
+}
+
+room_capture () {
+    valid_room "$1" || return 1
+    local room_link
+    direct_link "$1" room_link "$HIGH_PROG"
+    local output
+    output="${CAPTURES_DIR}/$(formated_date)-$1.$CAPTURE_FORMAT"
+    ffmpeg -loglevel quiet -i "$room_link" -frames:v 1 -update true "$output"
+}
+
+room_info () {
+    valid_room "$1" || return 1
+    local room_link
+    room_link="$(extract_playlist "$1")"
+    local room_data
+    room_data="$(get_data "$room_link")"
+    get_programs room_data
+}
+
+keyword_search () {
+    valid_room "$1" || return 1
+    curl_search "$1" > "$LASTSEARCH_FILE"
+    echo "Online users:"
+    jq -M "$JQ_ONLINE" "$LASTSEARCH_FILE"
+    echo "Recently online users:"
+    jq -M "$JQ_OFFLINE" "$LASTSEARCH_FILE"
+    echo "Hashtags:"
+    jq -M "$JQ_HASGTAGS" "$LASTSEARCH_FILE"
+}
+
+show_status () {
+    if is_online "$1"; then
+        echo "$1 is online"
+    else
+        echo "$1 is offline"
+    fi
+}
+
+status_all () {
+    while IFS="" read -r room || [ -n "$room" ]
+    do
+        show_status "$room" &
+    done < "$CBROOMS_FILE"
+    wait
+}
+
+do_global_status () {
+    if [[ -z $1 ]]; then
+        status_all
+    else
+        valid_room "$1" || return 1
+        show_status "$1"
+    fi
+}
+
+mkdir -p "$MYPATH"
+mkdir -p "$DOWNLOADS_DIR"
+mkdir -p "$STREAMS_DIR"
+mkdir -p "$CAPTURES_DIR"
+mkdir -p "$FETCH_DIR"
+touch "$CBROOMS_FILE"
+
+case "$1" in
+    new)
+        new_room "$2"
+        ;;
+    del)
+        del_room "$2"
+        ;;
+    fetch)
+        do_global_fetch "$2"
+        ;;
+    show)
+        show_fetched_rooms
+        ;;
+    play)
+        play_room "$2"
+        ;;
+    save)
+        save_room "$2"
+        ;;
+    capture)
+        room_capture "$2"
+        ;;
+    info)
+        room_info "$2"
+        ;;
+    search)
+        keyword_search "$2"
+        ;;
+    status)
+        do_global_status "$2"
+        ;;
+    __extract_playlist)
+        extract_playlist "$2"
+        ;;
+    __clear_streams)
+        $CLEAR_STREAMS
+        ;;
+    __clear_captures)
+        $CLEAR_CAPTURES
+        ;;
+    __clear_fetched)
+        $CLEAR_FETCHED
+        ;;
+    *)
+        echo "cbcenter --help"
+esac
