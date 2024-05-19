@@ -141,7 +141,6 @@ del_room () {
 }
 
 fetch_room () {
-    valid_room "$1" || return 1
     curl -s --connect-timeout "$CONNECT_TIMEOUT" "${FETCH_URL}/$1.$FETCH_FORMAT" -o "${FETCH_DIR}/$(formated_date)-$1.$FETCH_FORMAT"
 }
 
@@ -152,7 +151,7 @@ show_fetch () {
 fetch_all () {
     while IFS="" read -r room || [ -n "$room" ]
     do
-        is_online "$room" && fetch_room "$room" &
+        valid_room "$room" && is_online "$room" && fetch_room "$room" &
     done < "$CBROOMS_FILE"
     wait
 }
@@ -162,8 +161,7 @@ do_global_fetch () {
         $CLEAR_FETCHED
         fetch_all
     else
-        valid_room "$1" || return 1
-        is_online "$1" && show_fetch "$1"
+        valid_room "$1" && is_online "$1" && show_fetch "$1"
     fi
 }
 
@@ -232,7 +230,7 @@ show_status () {
 status_all () {
     while IFS="" read -r room || [ -n "$room" ]
     do
-        show_status "$room" &
+        valid_room "$room" && show_status "$room" &
     done < "$CBROOMS_FILE"
     wait
 }
@@ -241,8 +239,7 @@ do_global_status () {
     if [[ -z $1 ]]; then
         status_all
     else
-        valid_room "$1" || return 1
-        show_status "$1"
+        valid_room "$1" && show_status "$1"
     fi
 }
 
