@@ -338,7 +338,7 @@ keyword_search () {
     valid_room "$1" || send_exit_error $INVALID_KEYWORD
     curl_search "$1" > "$LASTSEARCH_FILE"
     echo "Online users:"
-    jq -M "$JQ_ONLINE" "$LASTSEARCH_FILE"
+    jq "$JQ_ONLINE" "$LASTSEARCH_FILE"
     echo "Recently online users:"
     jq -M "$JQ_OFFLINE" "$LASTSEARCH_FILE"
     echo "Hashtags:"
