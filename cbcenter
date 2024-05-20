@@ -92,7 +92,10 @@ show_help () {
       A rate limiting solution measures the amount of time between each request from each IP address,\n\
       and also measures the number of requests within a specified timeframe. If there are too many\n\
       requests from a single IP within the given timeframe, the rate limiting solution will not\n\
-      fulfill the IP address's requests for a certain amount of time."
+      fulfill the IP address's requests for a certain amount of time.\n\
+    - How can I change the default image viewer for previews?\n\
+      Just change the 'VIEWER' variable to whatever you want (within the executable).\n\
+      NOTE: the image viewer must support opening entire directories."
 }
 
 send_exit_error () {
