@@ -219,9 +219,8 @@ extract_playlist () {
         [[ "$_page" =~ $HTTP_TOO_MANY_REQUESTS_TEXT ]] && send_exit_error $HTTP_TOO_MANY_REQUESTS_ERROR
     fi
     _page="$(echo -e "$_page")"
-    [[ "$_page" =~ $COMPLETE_CAM_REGEX ]]
+    [[ "$_page" =~ $COMPLETE_CAM_REGEX ]] || send_exit_error $PLAYLIST_NOT_FOUND
     ep_out="${BASH_REMATCH[0]}"
-    [[ -z "$ep_out" ]] && send_exit_error $PLAYLIST_NOT_FOUND
     return 0
 }
 
