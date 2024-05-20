@@ -53,13 +53,11 @@ HTTP_TOO_MANY_REQUESTS_TEXT="429 Too Many Requests"
 
 INVALID_USERNAME=1
 OFFLINE_ROOM=2
-EMPTY_WEBSITE=3
 PLAYLIST_NOT_FOUND=4
 CHUNK_NOT_FOUND=5
 ROOM_ALREADY_EXIST=6
 ROOM_DOESNT_EXIST=7
 EMPTY_DATA=8
-DIRECT_LINK_NOT_FOUND=9
 INVALID_PROG_ID=10
 INVALID_KEYWORD=11
 INVALID_COMMAND=12
@@ -126,10 +124,6 @@ send_exit_error () {
             echo "Offline room !" 1>&2
             exit $OFFLINE_ROOM
             ;;
-        "$EMPTY_WEBSITE")
-            echo "An error occurred while fetching the page ! (EMPTY_WEBSITE)" 1>&2
-            exit $EMPTY_WEBSITE
-            ;;
         "$PLAYLIST_NOT_FOUND")
             echo "An error occurred while processing the page ! (PLAYLIST_NOT_FOUND)" 1>&2
             exit $PLAYLIST_NOT_FOUND
@@ -149,10 +143,6 @@ send_exit_error () {
         "$EMPTY_DATA")
             echo "An error occurred while getting room data ! (EMPTY_DATA)" 1>&2
             exit $EMPTY_DATA
-            ;;
-        "$DIRECT_LINK_NOT_FOUND")
-            echo "An error occurred while processing room data ! (DIRECT_LINK_NOT_FOUND)" 1>&2
-            exit $DIRECT_LINK_NOT_FOUND
             ;;
         "$INVALID_PROG_ID")
             echo "Invalid program ID !" 1>&2
@@ -252,7 +242,6 @@ direct_link () {
         _root_locat="${_link%/*}"
     fi
     dl_out="${_root_locat}/${_chunk}"
-    [[ -z $dl_out ]] && send_exit_error $DIRECT_LINK_NOT_FOUND
 }
 
 valid_room () {
