@@ -22,6 +22,7 @@ CODEC="h264"
 VIDEO_FORMAT="mp4"
 CAPTURE_FORMAT="$FETCH_FORMAT"
 HIGH_PROG=99
+ID_REGEX="^[0-9]+$"
 
 CONNECT_TIMEOUT=5
 CB_ROOT_URL="https://www.chaturbate.com"
@@ -58,6 +59,7 @@ ROOM_ALREADY_EXIST=6
 ROOM_DOESNT_EXIST=7
 EMPTY_DATA=8
 DIRECT_LINK_NOT_FOUND=9
+INVALID_PROG_ID=10
 
 show_help () {
     echo -e "Usage of $PROJECT\nManage your favorite user rooms from $CB_ROOT_URL.\n\n\
@@ -123,6 +125,10 @@ send_exit_error () {
             echo "An error occurred while getting direct link ! (DIRECT_LINK_NOT_FOUND)" 1>&2
             exit $DIRECT_LINK_NOT_FOUND
             ;;
+        "$INVALID_PROG_ID")
+            echo "Invalid program ID !" 1>&2
+            exit $INVALID_PROG_ID
+            ;;
     esac
 }
 
@@ -136,6 +142,10 @@ curl_search () {
 
 is_online () {
     curl_search "$1" | jq -M $JQ_ONLINE | grep -q "\"$1\""
+}
+
+valid_id () {
+    [[ "$1" =~ $ID_REGEX ]]
 }
 
 get_programs () {
@@ -178,6 +188,7 @@ direct_link () {
     if [[ -z $_prog ]]; then
         get_programs _data
         read -rp "Select a program ID: " _prog
+        valid_id "$_prog" || send_exit_error $INVALID_PROG_ID
     fi
     local _chunk
     declare -i _current=0
