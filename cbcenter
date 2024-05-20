@@ -286,6 +286,11 @@ do_global_fetch () {
     fi
 }
 
+force_fetch () {
+    valid_room "$1" || send_exit_error $INVALID_USERNAME
+    show_fetch "$1"
+}
+
 show_fetched_rooms () {
     $VIEWER "$FETCH_DIR"
 }
@@ -429,6 +434,9 @@ case "$1" in
         ;;
     __clear_fetched)
         $CLEAR_FETCHED
+        ;;
+    __force_fetch)
+        force_fetch "$2"
         ;;
     -h|--help|help)
         show_help
