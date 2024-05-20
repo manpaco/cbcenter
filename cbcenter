@@ -51,6 +51,7 @@ CURL_SEARCH_HEADER="X-Requested-With: XMLHttpRequest"
 HTTP_NOT_FOUND_TEXT="404 Not Found"
 HTTP_TOO_MANY_REQUESTS_TEXT="429 Too Many Requests"
 
+OK_CODE=0
 INVALID_USERNAME=1
 OFFLINE_ROOM=2
 PLAYLIST_NOT_FOUND=4
@@ -212,7 +213,7 @@ extract_playlist () {
     _page="$(echo -e "$_page")"
     [[ "$_page" =~ $COMPLETE_CAM_REGEX ]] || send_exit_error $PLAYLIST_NOT_FOUND
     ep_out="${BASH_REMATCH[0]}"
-    return 0
+    return $OK_CODE
 }
 
 direct_link () {
@@ -243,6 +244,7 @@ direct_link () {
         _root_locat="${_link%/*}"
     fi
     dl_out="${_root_locat}/${_chunk}"
+    return $OK_CODE
 }
 
 valid_room () {
@@ -284,8 +286,8 @@ fetch_all_previews () {
         valid_room "$room" && is_online "$room" && save_preview "$room" && echo "$room fetched" &
     done < "$CBROOMS_FILE"
     wait
-    read -rp "Open fetched previews? (Y/N): " save && [[ $save == [yY] || $save == [yY][eE][sS] ]] ||
-        return 0
+    read -rp "Open fetched previews? (Y/N): " save &&
+        [[ $save == [yY] || $save == [yY][eE][sS] ]] || return $OK_CODE
     open_previews_dir
 }
 
