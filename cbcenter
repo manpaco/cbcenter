@@ -77,9 +77,9 @@ show_help () {
     del              <username>  - Delete user room from favs.\n\
     list                         - List fav user rooms.\n\
     status           [username]  - Same as 'list' command, plus status.\n\
-    preview          [username]  - Save previews of fav user rooms (online only).\n\
-                                   If 'username' is not empty, only save the preview of the given room.\n\
+    get-previews                 - Save previews of fav user rooms (online only).\n\
     show-previews                - Open last saved previews.\n\
+    quick-preview    <username>  - Show (not save) the preview of the given user room.\n\
     play             <username>  - Play stream of user room.\n\
     save             <username>  - Save stream of user room in *DOWNLOADS*.\n\
     capture          <username>  - Save a screenshot (high resolution) in *DOWNLOADS*.\n\
@@ -276,29 +276,19 @@ show_preview () {
     curl -s --connect-timeout "$CONNECT_TIMEOUT" "${PREVIEW_URL}/$1.$IMG_FORMAT" | $VIEWER -
 }
 
-save_all_previews () {
+get_all_previews () {
+    $CLEAR_PREVIEWS
     while IFS="" read -r room || [ -n "$room" ]
     do
         valid_room "$room" && is_online "$room" && save_preview "$room" && echo "$room preview saved" &
     done < "$CBROOMS_FILE"
     wait
+    read -rp "Show previews? (Y/N): " save && [[ $save == [yY] || $save == [yY][eE][sS] ]] ||
+        return 0
+    show_previews_dir
 }
 
-do_global_preview () {
-    if [[ -z $1 ]]; then
-        $CLEAR_PREVIEWS
-        save_all_previews
-        read -rp "Show previews? (Y/N): " save && [[ $save == [yY] || $save == [yY][eE][sS] ]] ||
-            return 0
-        show_previews_dir
-    else
-        valid_room "$1" || send_exit_error $INVALID_USERNAME
-        is_online "$1" || send_exit_error $OFFLINE_ROOM
-        show_preview "$1"
-    fi
-}
-
-bypass_preview () {
+show_quick_preview () {
     valid_room "$1" || send_exit_error $INVALID_USERNAME
     show_preview "$1"
 }
@@ -411,11 +401,14 @@ case "$1" in
     list)
         favs_list
         ;;
-    preview)
-        do_global_preview "$2"
+    get-previews)
+        get_all_previews
         ;;
     show-previews)
         show_previews_dir
+        ;;
+    quick-preview)
+        show_quick_preview "$2"
         ;;
     play)
         play_room "$2"
@@ -448,9 +441,6 @@ case "$1" in
         ;;
     __clear_previews)
         $CLEAR_PREVIEWS
-        ;;
-    __bypass_preview)
-        bypass_preview "$2"
         ;;
     -h|--help|help)
         show_help
