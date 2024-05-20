@@ -48,6 +48,8 @@ JQ_ONLINE=".online"
 JQ_OFFLINE=".offline"
 JQ_HASGTAGS=".hashtags"
 CURL_SEARCH_HEADER="X-Requested-With: XMLHttpRequest"
+HTTP_NOT_FOUND_TEXT="404 Not Found"
+HTTP_TOO_MANY_REQUESTS_TEXT="429 Too Many Requests"
 
 INVALID_USERNAME=1
 OFFLINE_ROOM=2
@@ -61,6 +63,8 @@ DIRECT_LINK_NOT_FOUND=9
 INVALID_PROG_ID=10
 INVALID_KEYWORD=11
 INVALID_COMMAND=12
+HTTP_NOT_FOUND_ERROR=13
+HTTP_TOO_MANY_REQUESTS_ERROR=14
 
 RED_FG="\033[0;31m"
 GREEN_FG="\033[0;32m"
@@ -161,6 +165,15 @@ send_exit_error () {
         "$INVALID_COMMAND")
             echo "Error: invalid command. Use '$mybasename help' for more info." 1>&2
             exit $INVALID_COMMAND
+            ;;
+        "$HTTP_NOT_FOUND_ERROR")
+            echo "Server response: $HTTP_NOT_FOUND_TEXT" 1>&2
+            exit $HTTP_NOT_FOUND_ERROR
+            ;;
+        "$HTTP_TOO_MANY_REQUESTS_ERROR")
+            echo "Server response: $HTTP_TOO_MANY_REQUESTS_TEXT" 1>&2
+            exit $HTTP_TOO_MANY_REQUESTS_ERROR
+            ;;
     esac
 }
 
@@ -200,11 +213,13 @@ extract_playlist () {
     declare -n ep_out="$2"
     local _cblink
     _cblink="$(wrap_cb_user "$1")"
-    local _web
-    _web="$(wget -4 -q -O - "$_cblink" 2>/dev/null)"
-    [[ -z $_web ]] && send_exit_error $EMPTY_WEBSITE
-    _web="$(echo -e "$_web")"
-    [[ "$_web" =~ $COMPLETE_CAM_REGEX ]]
+    local _page
+    if ! _page="$(wget -4 -qS -O - "$_cblink" 2>&1)"; then
+        [[ "$_page" =~ $HTTP_NOT_FOUND_TEXT ]] && send_exit_error $HTTP_NOT_FOUND_ERROR
+        [[ "$_page" =~ $HTTP_TOO_MANY_REQUESTS_TEXT ]] && send_exit_error $HTTP_TOO_MANY_REQUESTS_ERROR
+    fi
+    _page="$(echo -e "$_page")"
+    [[ "$_page" =~ $COMPLETE_CAM_REGEX ]]
     ep_out="${BASH_REMATCH[0]}"
     [[ -z "$ep_out" ]] && send_exit_error $PLAYLIST_NOT_FOUND
     return 0
