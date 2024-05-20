@@ -257,6 +257,9 @@ do_global_fetch () {
     if [[ -z $1 ]]; then
         $CLEAR_FETCHED
         fetch_all
+        read -rp "Show previews? (Y/N): " save && [[ $save == [yY] || $save == [yY][eE][sS] ]] ||
+            return 0
+        show_fetched_rooms
     else
         valid_room "$1" || send_exit_error $INVALID_USERNAME
         is_online "$1" || send_exit_error $OFFLINE_ROOM
