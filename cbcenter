@@ -119,11 +119,11 @@ send_exit_error () {
             exit $EMPTY_WEBSITE
             ;;
         "$PLAYLIST_NOT_FOUND")
-            echo "An error occurred while fetching the page ! (PLAYLIST_NOT_FOUND)" 1>&2
+            echo "An error occurred while processing the page ! (PLAYLIST_NOT_FOUND)" 1>&2
             exit $PLAYLIST_NOT_FOUND
             ;;
         "$CHUNK_NOT_FOUND")
-            echo "An error occurred while fetching room data ! (CHUNK_NOT_FOUND)" 1>&2
+            echo "An error occurred while processing room data ! (CHUNK_NOT_FOUND)" 1>&2
             exit $CHUNK_NOT_FOUND
             ;;
         "$ROOM_ALREADY_EXIST")
@@ -139,7 +139,7 @@ send_exit_error () {
             exit $EMPTY_DATA
             ;;
         "$DIRECT_LINK_NOT_FOUND")
-            echo "An error occurred while getting direct link ! (DIRECT_LINK_NOT_FOUND)" 1>&2
+            echo "An error occurred while processing room data ! (DIRECT_LINK_NOT_FOUND)" 1>&2
             exit $DIRECT_LINK_NOT_FOUND
             ;;
         "$INVALID_PROG_ID")
