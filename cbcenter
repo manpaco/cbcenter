@@ -49,6 +49,16 @@ JQ_OFFLINE=".offline"
 JQ_HASGTAGS=".hashtags"
 CURL_SEARCH_HEADER="X-Requested-With: XMLHttpRequest"
 
+INVALID_USERNAME=1
+OFFLINE_ROOM=2
+EMPTY_WEBSITE=3
+PLAYLIST_NOT_FOUND=4
+CHUNK_NOT_FOUND=5
+ROOM_ALREADY_EXIST=6
+ROOM_DOESNT_EXIST=7
+EMPTY_DATA=8
+DIRECT_LINK_NOT_FOUND=9
+
 show_help () {
     echo -e "Usage of $PROJECT\nManage your favorite user rooms from $CB_ROOT_URL.\n\n\
     $mybasename COMMAND OPTION\n\nList of commands and options:\n\n\
@@ -73,6 +83,47 @@ show_help () {
       A 'program' represent the stream 'channel' or 'quality'. This channels are identified by ID,\n\
       from '0' (lowest quality) to 'n' (highest quality). To get cam programs use 'info' command.\n\
       You can go to FFMPEG Documentation for more info.\n"
+}
+
+send_exit_error () {
+    case "$1" in
+        "$INVALID_USERNAME")
+            echo "Invalid username !" 1>&2
+            exit $INVALID_USERNAME
+            ;;
+        "$OFFLINE_ROOM")
+            echo "Offline room !" 1>&2
+            exit $OFFLINE_ROOM
+            ;;
+        "$EMPTY_WEBSITE")
+            echo "An error occurred while fetching the page ! (EMPTY_WEBSITE)" 1>&2
+            exit $EMPTY_WEBSITE
+            ;;
+        "$PLAYLIST_NOT_FOUND")
+            echo "An error occurred while fetching the page ! (PLAYLIST_NOT_FOUND)" 1>&2
+            exit $PLAYLIST_NOT_FOUND
+            ;;
+        "$CHUNK_NOT_FOUND")
+            echo "An error occurred while fetching room data ! (CHUNK_NOT_FOUND)" 1>&2
+            exit $CHUNK_NOT_FOUND
+            ;;
+        "$ROOM_ALREADY_EXIST")
+            echo "The user room already exists !" 1>&2
+            exit $ROOM_ALREADY_EXIST
+            ;;
+        "$ROOM_DOESNT_EXIST")
+            echo "The user room does not exists !" 1>&2
+            exit $ROOM_DOESNT_EXIST
+            ;;
+        "$EMPTY_DATA")
+            echo "An error occurred while getting room data ! (EMPTY_DATA)" 1>&2
+            exit $EMPTY_DATA
+            ;;
+        "$DIRECT_LINK_NOT_FOUND")
+            echo "An error occurred while getting direct link ! (DIRECT_LINK_NOT_FOUND)" 1>&2
+            exit $DIRECT_LINK_NOT_FOUND
+            ;;
+    esac
 }
 
 wrap_cb_user () {
@@ -108,10 +159,10 @@ extract_playlist () {
     cblink="$(wrap_cb_user "$1")"
     local web
     web="$(wget -4 -q -O - "$cblink" 2>/dev/null)"
-    [[ -z $web ]] && return 2
+    [[ -z $web ]] && send_exit_error $EMPTY_WEBSITE
     web="$(echo -e "$web")"
     [[ "$web" =~ $COMPLETE_CAM_REGEX ]]
-    [[ -z "${BASH_REMATCH[0]}" ]] && return 3
+    [[ -z "${BASH_REMATCH[0]}" ]] && send_exit_error $PLAYLIST_NOT_FOUND
     echo "${BASH_REMATCH[0]}"
     return 0
 }
@@ -123,6 +174,7 @@ direct_link () {
     local _prog="$3"
     local _data
     _data="$(get_data "$_link")"
+    [[ -z $_data ]] && send_exit_error $EMPTY_DATA
     if [[ -z $_prog ]]; then
         get_programs _data
         read -rp "Select a program ID: " _prog
@@ -134,7 +186,7 @@ direct_link () {
         _data="${_data/${BASH_REMATCH[0]}/}"
         _current+=1
     done
-    [[ -z $_chunk ]] && return 1
+    [[ -z $_chunk ]] && send_exit_error $CHUNK_NOT_FOUND
     local _root_locat
     if [[ $_data =~ $LOCATION_REGEX ]]; then
         _root_locat="${_link%%"${LIVE_PREFIX}"*}${BASH_REMATCH[0]}"
@@ -142,6 +194,7 @@ direct_link () {
         _root_locat="${_link%/*}"
     fi
     dl_out="${_root_locat}/${_chunk}"
+    [[ -z $dl_out ]] && send_exit_error $DIRECT_LINK_NOT_FOUND
 }
 
 valid_room () {
@@ -157,14 +210,14 @@ room_exists () {
 }
 
 new_room () {
-    valid_room "$1" || return 1
-    room_exists "$1" && return 1
+    valid_room "$1" || send_exit_error $INVALID_USERNAME
+    room_exists "$1" && send_exit_error $ROOM_ALREADY_EXIST
     echo "$1" >> "$CBROOMS_FILE"
 }
 
 del_room () {
-    valid_room "$1" || return 1
-    room_exists "$1" || return 1
+    valid_room "$1" || send_exit_error $INVALID_USERNAME
+    room_exists "$1" || send_exit_error $ROOM_DOESNT_EXIST
     sed -i "/^$1$/d" "$CBROOMS_FILE"
 }
 
@@ -179,7 +232,7 @@ show_fetch () {
 fetch_all () {
     while IFS="" read -r room || [ -n "$room" ]
     do
-        valid_room "$room" && is_online "$room" && fetch_room "$room" &
+        valid_room "$room" && is_online "$room" && fetch_room "$room" && echo "$room fetched" &
     done < "$CBROOMS_FILE"
     wait
 }
@@ -189,7 +242,9 @@ do_global_fetch () {
         $CLEAR_FETCHED
         fetch_all
     else
-        valid_room "$1" && is_online "$1" && show_fetch "$1"
+        valid_room "$1" || send_exit_error $INVALID_USERNAME
+        is_online "$1" || send_exit_error $OFFLINE_ROOM
+        show_fetch "$1"
     fi
 }
 
@@ -198,16 +253,16 @@ show_fetched_rooms () {
 }
 
 play_room () {
-    valid_room "$1" || return 1
-    is_online "$1" || return 1
+    valid_room "$1" || send_exit_error $INVALID_USERNAME
+    is_online "$1" || send_exit_error $OFFLINE_ROOM
     local room_link
     room_link="$(extract_playlist "$1")"
     ffplay -i "$room_link"
 }
 
 save_room () {
-    valid_room "$1" || return 1
-    is_online "$1" || return 1
+    valid_room "$1" || send_exit_error $INVALID_USERNAME
+    is_online "$1" || send_exit_error $OFFLINE_ROOM
     local room_link
     direct_link "$1" room_link
     local output
@@ -221,8 +276,8 @@ save_room () {
 }
 
 room_capture () {
-    valid_room "$1" || return 1
-    is_online "$1" || return 1
+    valid_room "$1" || send_exit_error $INVALID_USERNAME
+    is_online "$1" || send_exit_error $OFFLINE_ROOM
     local room_link
     direct_link "$1" room_link "$HIGH_PROG"
     local output
@@ -231,17 +286,18 @@ room_capture () {
 }
 
 room_info () {
-    valid_room "$1" || return 1
-    is_online "$1" || return 1
+    valid_room "$1" || send_exit_error $INVALID_USERNAME
+    is_online "$1" || send_exit_error $OFFLINE_ROOM
     local room_link
     room_link="$(extract_playlist "$1")"
     local room_data
     room_data="$(get_data "$room_link")"
+    [[ -z $room_data ]] && send_exit_error $EMPTY_DATA
     get_programs room_data
 }
 
 keyword_search () {
-    valid_room "$1" || return 1
+    valid_room "$1" || send_exit_error $INVALID_USERNAME
     curl_search "$1" > "$LASTSEARCH_FILE"
     echo "Online users:"
     jq -M "$JQ_ONLINE" "$LASTSEARCH_FILE"
@@ -271,7 +327,8 @@ do_global_status () {
     if [[ -z $1 ]]; then
         status_all
     else
-        valid_room "$1" && show_status "$1"
+        valid_room "$1" || send_exit_error $INVALID_USERNAME
+        show_status "$1"
     fi
 }
 
