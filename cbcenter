@@ -201,10 +201,10 @@ get_data () {
 
 extract_playlist () {
     declare -n ep_out="$2"
-    local _cblink
-    _cblink="$(wrap_cb_user "$1")"
+    local _cburl
+    _cburl="$(wrap_cb_user "$1")"
     local _page
-    if ! _page="$(wget -4 -qS -O - "$_cblink" 2>&1)"; then
+    if ! _page="$(wget -4 -qS -O - "$_cburl" 2>&1)"; then
         [[ "$_page" =~ $HTTP_NOT_FOUND_TEXT ]] && send_exit_error $HTTP_NOT_FOUND_ERROR
         [[ "$_page" =~ $HTTP_TOO_MANY_REQUESTS_TEXT ]] && send_exit_error $HTTP_TOO_MANY_REQUESTS_ERROR
     fi
