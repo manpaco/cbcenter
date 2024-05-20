@@ -301,7 +301,7 @@ room_capture () {
     direct_link "$1" room_link "$HIGH_PROG"
     local output
     output="${CAPTURES_DIR}/$(formated_date)-$1.$CAPTURE_FORMAT"
-    ffmpeg -loglevel quiet -i "$room_link" -frames:v 1 -update true "$output"
+    ffmpeg -i "$room_link" -frames:v 1 -update true "$output"
 }
 
 room_info () {
