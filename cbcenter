@@ -375,7 +375,7 @@ do_global_status () {
     fi
 }
 
-rooms_list () {
+favs_list () {
     while IFS="" read -r room || [ -n "$room" ]
     do
         echo "$room"
@@ -397,7 +397,7 @@ case "$1" in
         del_room "$2"
         ;;
     list)
-        rooms_list
+        favs_list
         ;;
     fetch)
         do_global_fetch "$2"
