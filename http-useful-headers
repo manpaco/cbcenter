@@ -1,4 +1,3 @@
-header = Accept-Encoding: gzip, none
-header = X-Requested-With: XMLHttpRequest
-header = x-requested-with: XMLHttpRequest
-header = User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:126.0) Gecko/20100101 Firefox/126.0
+Accept-Encoding: gzip, none
+X-Requested-With: XMLHttpRequest
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:126.0) Gecko/20100101 Firefox/126.0
