@@ -61,6 +61,7 @@ EMPTY_DATA=8
 DIRECT_LINK_NOT_FOUND=9
 INVALID_PROG_ID=10
 INVALID_KEYWORD=11
+INVALID_COMMAND=12
 
 show_help () {
     echo -e "Usage of $PROJECT\nManage your favorite user rooms from $CB_ROOT_URL.\n\n\
@@ -134,6 +135,9 @@ send_exit_error () {
             echo "Invalid keyword to search !" 1>&2
             exit $INVALID_KEYWORD
             ;;
+        "$INVALID_COMMAND")
+            echo "Error: invalid command. Use '$mybasename help' for more info." 1>&2
+            exit $INVALID_COMMAND
     esac
 }
 
@@ -415,5 +419,6 @@ case "$1" in
         show_help
         ;;
     *)
-        echo "Error: execute '$mybasename help' for more info."
+        send_exit_error $INVALID_COMMAND
+        ;;
 esac
