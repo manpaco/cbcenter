@@ -177,7 +177,7 @@ get_programs () {
     local _progs
     declare -i _current=0
     while [[ $gp_data =~ $PROG_REGEX ]]; do
-        _progs="$_progs\tPROG_ID=\"$_current\" - ${BASH_REMATCH[0]}\n"
+        _progs="$_progs\t${YELLOW_FG}PROG_ID=\"$_current\"${CLEAR_FG} - ${BASH_REMATCH[0]}\n"
         gp_data="${gp_data/${BASH_REMATCH[0]}/}"
         _current+=1
     done
