@@ -64,7 +64,7 @@ INVALID_KEYWORD=11
 INVALID_COMMAND=12
 
 show_help () {
-    echo -e "Usage of $PROJECT\nManage your favorite user rooms from $CB_ROOT_URL.\n\n\
+    echo -e "$PROJECT usage:\nManage your favorite user rooms from $CB_ROOT_URL.\n\n\
     $mybasename COMMAND OPTION\n\nList of commands and options:\n\n\
     new              <username>  - Add new user room to favs.\n\
     del              <username>  - Delete user room from favs.\n\
