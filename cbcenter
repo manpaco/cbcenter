@@ -74,9 +74,9 @@ CLEAR_FG="\033[0m"
 show_help () {
     echo -e "$PROJECT usage:\nManage your favorite user rooms from $CB_ROOT_URL.\n\n\
     $mybasename COMMAND OPTION\n\nList of commands and options:\n\n\
-    new              <username>  - Add new user room to favs.\n\
-    del              <username>  - Delete user room from favs.\n\
-    show-favorites               - List of fav user rooms.\n\
+    new              <username>  - Add new user room to favorites.\n\
+    del              <username>  - Delete user room from favorites.\n\
+    show-favorites               - List of favorite user rooms.\n\
     show-status      [username]  - Same as 'show-favorites' command, plus status.\n\
                                    If 'username' is provided, only show that.\n\
     fetch-previews               - Fetch previews of fav user rooms and ask to open (online only).\n\
