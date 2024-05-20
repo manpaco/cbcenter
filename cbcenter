@@ -189,21 +189,22 @@ get_data () {
 }
 
 extract_playlist () {
-    local cblink
-    cblink="$(wrap_cb_user "$1")"
-    local web
-    web="$(wget -4 -q -O - "$cblink" 2>/dev/null)"
-    [[ -z $web ]] && send_exit_error $EMPTY_WEBSITE
-    web="$(echo -e "$web")"
-    [[ "$web" =~ $COMPLETE_CAM_REGEX ]]
-    [[ -z "${BASH_REMATCH[0]}" ]] && send_exit_error $PLAYLIST_NOT_FOUND
-    echo "${BASH_REMATCH[0]}"
+    declare -n ep_out="$2"
+    local _cblink
+    _cblink="$(wrap_cb_user "$1")"
+    local _web
+    _web="$(wget -4 -q -O - "$_cblink" 2>/dev/null)"
+    [[ -z $_web ]] && send_exit_error $EMPTY_WEBSITE
+    _web="$(echo -e "$_web")"
+    [[ "$_web" =~ $COMPLETE_CAM_REGEX ]]
+    ep_out="${BASH_REMATCH[0]}"
+    [[ -z "$ep_out" ]] && send_exit_error $PLAYLIST_NOT_FOUND
     return 0
 }
 
 direct_link () {
     local _link
-    _link="$(extract_playlist "$1")"
+    extract_playlist "$1" _link
     declare -n dl_out="$2"
     local _prog="$3"
     local _data
@@ -299,7 +300,7 @@ play_room () {
     valid_room "$1" || send_exit_error $INVALID_USERNAME
     is_online "$1" || send_exit_error $OFFLINE_ROOM
     local room_link
-    room_link="$(extract_playlist "$1")"
+    extract_playlist "$1" room_link
     ffplay -i "$room_link"
 }
 
@@ -313,7 +314,7 @@ save_room () {
     ffmpeg -i "$room_link" -codec copy "$output"
 
     # Another way (slower ffmpeg startup)
-    #room_link="$(extract_playlist "$1")"
+    #extract_playlist "$1" room_link
     #room_prog=99
     #ffmpeg -i "$room_link" -map v:p:$room_prog -map a:p:$room_prog -codec copy "$output"
 }
@@ -332,7 +333,7 @@ room_info () {
     valid_room "$1" || send_exit_error $INVALID_USERNAME
     is_online "$1" || send_exit_error $OFFLINE_ROOM
     local room_link
-    room_link="$(extract_playlist "$1")"
+    extract_playlist "$1" room_link
     local room_data
     room_data="$(get_data "$room_link")"
     [[ -z $room_data ]] && send_exit_error $EMPTY_DATA
@@ -424,7 +425,9 @@ case "$1" in
         do_global_status "$2"
         ;;
     __extract_playlist)
-        extract_playlist "$2"
+        __ep=""
+        extract_playlist "$2" __ep
+        echo "$__ep"
         ;;
     __clear_streams)
         $CLEAR_STREAMS
