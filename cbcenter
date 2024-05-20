@@ -77,8 +77,8 @@ show_help () {
     del              <username>  - Delete user room from favs.\n\
     list                         - List fav user rooms.\n\
     status           [username]  - Same as 'list' command, plus status.\n\
-    get-previews                 - Save previews of fav user rooms (online only).\n\
-    show-previews                - Open last saved previews.\n\
+    save-previews                - Save previews of fav user rooms (online only).\n\
+    open-previews                - Open last saved previews.\n\
     quick-preview    <username>  - Show (not save) the preview of the given user room.\n\
     play             <username>  - Play stream of user room.\n\
     save             <username>  - Save stream of user room in *DOWNLOADS*.\n\
@@ -276,16 +276,16 @@ show_preview () {
     curl -s --connect-timeout "$CONNECT_TIMEOUT" "${PREVIEW_URL}/$1.$IMG_FORMAT" | $VIEWER -
 }
 
-get_all_previews () {
+save_all_previews () {
     $CLEAR_PREVIEWS
     while IFS="" read -r room || [ -n "$room" ]
     do
         valid_room "$room" && is_online "$room" && save_preview "$room" && echo "$room preview saved" &
     done < "$CBROOMS_FILE"
     wait
-    read -rp "Show previews? (Y/N): " save && [[ $save == [yY] || $save == [yY][eE][sS] ]] ||
+    read -rp "Open saved previews? (Y/N): " save && [[ $save == [yY] || $save == [yY][eE][sS] ]] ||
         return 0
-    show_previews_dir
+    open_previews_dir
 }
 
 show_quick_preview () {
@@ -293,7 +293,7 @@ show_quick_preview () {
     show_preview "$1"
 }
 
-show_previews_dir () {
+open_previews_dir () {
     $VIEWER "$PREVIEWS_DIR"
 }
 
@@ -401,11 +401,11 @@ case "$1" in
     list)
         favs_list
         ;;
-    get-previews)
-        get_all_previews
+    save-previews)
+        save_all_previews
         ;;
-    show-previews)
-        show_previews_dir
+    open-previews)
+        open_previews_dir
         ;;
     quick-preview)
         show_quick_preview "$2"
