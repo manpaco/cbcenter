@@ -76,10 +76,10 @@ show_help () {
     new              <username>  - Add new user room to favs.\n\
     del              <username>  - Delete user room from favs.\n\
     show-favorites               - List of fav user rooms.\n\
-    show-status      [username]  - Same as 'show-favs' command, plus status.\n\
-                                   If 'username' is provided, only show that\n\
-    save-previews                - Save previews of fav user rooms (online only).\n\
-    open-previews                - Open last saved previews.\n\
+    show-status      [username]  - Same as 'show-favorites' command, plus status.\n\
+                                   If 'username' is provided, only show that.\n\
+    fetch-previews               - Fetch previews of fav user rooms and ask to open (online only).\n\
+    open-previews                - Open last fetched previews.\n\
     quick-preview    <username>  - Show (not save) the preview of the given user room.\n\
     play-stream      <username>  - Play stream of user room.\n\
     save-stream      <username>  - Save stream of user room in *DOWNLOADS*.\n\
@@ -277,14 +277,14 @@ show_preview () {
     curl -s --connect-timeout "$CONNECT_TIMEOUT" "${PREVIEW_URL}/$1.$IMG_FORMAT" | $VIEWER -
 }
 
-save_all_previews () {
+fetch_all_previews () {
     $CLEAR_PREVIEWS
     while IFS="" read -r room || [ -n "$room" ]
     do
-        valid_room "$room" && is_online "$room" && save_preview "$room" && echo "$room preview saved" &
+        valid_room "$room" && is_online "$room" && save_preview "$room" && echo "$room fetched" &
     done < "$CBROOMS_FILE"
     wait
-    read -rp "Open saved previews? (Y/N): " save && [[ $save == [yY] || $save == [yY][eE][sS] ]] ||
+    read -rp "Open fetched previews? (Y/N): " save && [[ $save == [yY] || $save == [yY][eE][sS] ]] ||
         return 0
     open_previews_dir
 }
@@ -402,8 +402,8 @@ case "$1" in
     show-favorites)
         favorites_list
         ;;
-    save-previews)
-        save_all_previews
+    fetch-previews)
+        fetch_all_previews
         ;;
     open-previews)
         open_previews_dir
