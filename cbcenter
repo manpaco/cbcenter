@@ -60,6 +60,7 @@ ROOM_DOESNT_EXIST=7
 EMPTY_DATA=8
 DIRECT_LINK_NOT_FOUND=9
 INVALID_PROG_ID=10
+INVALID_KEYWORD=11
 
 show_help () {
     echo -e "Usage of $PROJECT\nManage your favorite user rooms from $CB_ROOT_URL.\n\n\
@@ -128,6 +129,10 @@ send_exit_error () {
         "$INVALID_PROG_ID")
             echo "Invalid program ID !" 1>&2
             exit $INVALID_PROG_ID
+            ;;
+        "$INVALID_KEYWORD")
+            echo "Invalid keyword to search !" 1>&2
+            exit $INVALID_KEYWORD
             ;;
     esac
 }
@@ -308,7 +313,7 @@ room_info () {
 }
 
 keyword_search () {
-    valid_room "$1" || send_exit_error $INVALID_USERNAME
+    valid_room "$1" || send_exit_error $INVALID_KEYWORD
     curl_search "$1" > "$LASTSEARCH_FILE"
     echo "Online users:"
     jq -M "$JQ_ONLINE" "$LASTSEARCH_FILE"
