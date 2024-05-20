@@ -347,7 +347,7 @@ keyword_search () {
 
 show_status () {
     if is_online "$1"; then
-        echo -e "$1 is ${GREEN_FG}online${CLEAR_FG}"
+        echo -e "$1 is ${LIGHT_BLUE_FG}online${CLEAR_FG}"
     else
         echo "$1 is offline"
     fi
