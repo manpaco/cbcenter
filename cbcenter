@@ -528,6 +528,8 @@ show_info () {
     jq -M '.languages' "$BIOCONTEXT_FILE"
     echo -n "Room status: "
     jq -M '.room_status' "$BIOCONTEXT_FILE"
+    echo -n "Last stream: "
+    jq -M '.time_since_last_broadcast' "$BIOCONTEXT_FILE"
 }
 
 show_bio () {
