@@ -16,6 +16,13 @@ CLEAR_PREVIEWS="rm -f ${PREVIEWS_DIR}/*"
 PREVIEW_URL="https://thumb.live.mmcdn.com/riw"
 SEARCH_URL="https://chaturbate.com/ax/search/?keywords="
 LASTSEARCH_FILE="${TEMP_DIR}/lastsearch"
+ROOMS_URL="https://chaturbate.com/api/ts/roomlist/room-list"
+LASTROOMS_FILE="${TEMP_DIR}/lastrooms"
+FEMALE_ROOM="f"
+MALE_ROOM="m"
+COUPLE_ROOM="c"
+TRANS_ROOM="t"
+ROOM_RANGE_TEXT="<gender>:<offset>:<limit>"
 
 CODEC="h264"
 VIDEO_FORMAT="mp4"
@@ -42,6 +49,7 @@ COMPLETE_CAM_REGEX="${MINIMAL_CAM_REGEX}${EXTRA_STUFF_REGEX}\/${PLAYLIST}"
 CHUNK_REGEX="chunklist_w[0-9]+_b[0-9]+_t[0-9a-zA-Z=]+\.m3u8"
 PROG_REGEX="BANDWIDTH=[0-9]+,NAME=\"FPS:[0-9]+\.[0-9]+\",CODECS=\"[a-z0-9.,]*\",RESOLUTION=[0-9]+x[0-9]+"
 ROOM_REGEX="$USER_REGEX"
+ROOM_RANGE_REGEX="^[$FEMALE_ROOM|$MALE_ROOM|$COUPLE_ROOM|$TRANS_ROOM]:[0-9]{1,2}:[0-9]{1,2}$"
 
 VIEWER="imv -d"
 JQ_ONLINE=".online"
@@ -54,11 +62,13 @@ HTTP_TOO_MANY_REQUESTS_TEXT="429 Too Many Requests"
 OK_CODE=0
 INVALID_USERNAME=1
 OFFLINE_ROOM=2
+UNKNOWN_ERROR=3
 PLAYLIST_NOT_FOUND=4
 CHUNK_NOT_FOUND=5
 ROOM_ALREADY_EXIST=6
 ROOM_DOESNT_EXIST=7
 EMPTY_DATA=8
+INVALID_ROOM_RANGE=9
 INVALID_PROG_ID=10
 INVALID_KEYWORD=11
 INVALID_COMMAND=12
@@ -80,6 +90,11 @@ show_help () {
     show-programs     <username>  - Show available programs of given user room.\n\
     show-status       [username]  - Same as 'show-favorites' command, plus status.\n\
                                     If 'username' is provided, only show that.\n\
+    fetch-rooms       $ROOM_RANGE_TEXT\n\
+                                  - Fetch <gender> rooms from <offset> to\n\
+                                    <offset>+<limit>.\n\
+                                      <gender>: 'f' or 'm' or 'c' or 't'\n\
+                                      <offset> and <limit>: integer from 0 to 99\n\
     fetch-previews                - Fetch previews of fav user rooms and ask to\n\
                                     open (online only).\n\
     open-previews                 - Open last fetched previews.\n\
@@ -172,6 +187,14 @@ send_exit_error () {
             echo "Server response: $HTTP_TOO_MANY_REQUESTS_TEXT" 1>&2
             exit $HTTP_TOO_MANY_REQUESTS_ERROR
             ;;
+        "$INVALID_ROOM_RANGE")
+            echo -e "Invalid room range !" 1>&2
+            exit $INVALID_ROOM_RANGE
+            ;;
+        *)
+            echo "UNKNOWN_ERROR" 1>&2
+            exit $UNKNOWN_ERROR
+            ;;
     esac
 }
 
@@ -189,6 +212,10 @@ is_online () {
 
 valid_id () {
     [[ "$1" =~ $ID_REGEX ]]
+}
+
+valid_room_range () {
+    [[ "$1" =~ $ROOM_RANGE_REGEX ]]
 }
 
 get_programs () {
@@ -393,6 +420,24 @@ favorites_list () {
     done < "$CBROOMS_FILE"
 }
 
+save_room_list () {
+    curl -s --compressed "$ROOMS_URL/?genders=$1&offset=$2&limit=$3&enable_recommendations=false" -o "$LASTROOMS_FILE"
+}
+
+fetch_all_rooms () {
+    valid_room_range "$1" || send_exit_error $INVALID_ROOM_RANGE
+    local gender
+    gender="${1%%:*}"
+    local offset
+    offset="${1#*:}"
+    offset="${offset%:*}"
+    local limit
+    limit="${1##*:}"
+
+    echo "g:$gender o:$offset l:$limit"
+    save_room_list "$gender" "$offset" "$limit"
+}
+
 mkdir -p "$MYPATH"
 mkdir -p "$DOWNLOADS_DIR"
 mkdir -p "$STREAMS_DIR"
@@ -415,6 +460,9 @@ case "$1" in
         ;;
     show-status)
         do_global_status "$2"
+        ;;
+    fetch-rooms)
+        fetch_all_rooms "$2"
         ;;
     fetch-previews)
         fetch_all_previews
