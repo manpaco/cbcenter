@@ -219,7 +219,7 @@ wrap_cb_user () {
 }
 
 curl_search () {
-    curl -s --compressed -H "$CURL_SEARCH_HEADER" "${SEARCH_URL}$1"
+    curl -sL --compressed -H "$CURL_SEARCH_HEADER" "${SEARCH_URL}$1"
 }
 
 is_online () {
@@ -321,11 +321,11 @@ remove_room () {
 }
 
 save_preview () {
-    curl -s --compressed --connect-timeout "$CONNECT_TIMEOUT" "${PREVIEW_URL}/$1.$IMG_FORMAT" -o "${2}/$(formated_date)-$1.$IMG_FORMAT"
+    curl -sL --compressed --connect-timeout "$CONNECT_TIMEOUT" "${PREVIEW_URL}/$1.$IMG_FORMAT" -o "${2}/$(formated_date)-$1.$IMG_FORMAT"
 }
 
 show_preview () {
-    curl -s --compressed --connect-timeout "$CONNECT_TIMEOUT" "${PREVIEW_URL}/$1.$IMG_FORMAT" | $VIEWER -
+    curl -sL --compressed --connect-timeout "$CONNECT_TIMEOUT" "${PREVIEW_URL}/$1.$IMG_FORMAT" | $VIEWER -
 }
 
 fetch_all_previews () {
@@ -441,7 +441,7 @@ open_rooms_dir () {
 }
 
 save_room_list () {
-    curl -s --compressed "$ROOMS_URL/?genders=$1&offset=$2&limit=$3&enable_recommendations=false" -o "$LASTROOMS_FILE"
+    curl -sL --compressed "$ROOMS_URL/?genders=$1&offset=$2&limit=$3&enable_recommendations=false" -o "$LASTROOMS_FILE"
 }
 
 fetch_all_rooms () {
