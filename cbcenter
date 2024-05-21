@@ -494,6 +494,7 @@ fetch_room_range () {
     declare -i num_rooms
     num_rooms="$(jq -e '.rooms | length' "$LASTROOMS_FILE")"
     [[ $num_rooms -eq 0 ]] && send_exit_error $UNKNOWN_ERROR
+    echo -e "${RED_FG}TIP:${CLEAR_FG} Go back in the image viewer to see the most recent ones."
     [[ $limit -lt $num_rooms ]] && echo -e "$RED_FG$((num_rooms-limit)) promoted room(s) found !$CLEAR_FG"
     $CLEAR_ROOMS_DIR
 
