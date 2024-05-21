@@ -174,7 +174,7 @@ wrap_cb_user () {
 }
 
 curl_search () {
-    curl -s -H "$CURL_SEARCH_HEADER" --compressed "${SEARCH_URL}$1"
+    curl -s --compressed -H "$CURL_SEARCH_HEADER" "${SEARCH_URL}$1"
 }
 
 is_online () {
@@ -272,11 +272,11 @@ del_room () {
 }
 
 save_preview () {
-    curl -s --connect-timeout "$CONNECT_TIMEOUT" "${PREVIEW_URL}/$1.$IMG_FORMAT" -o "${PREVIEWS_DIR}/$(formated_date)-$1.$IMG_FORMAT"
+    curl -s --compressed --connect-timeout "$CONNECT_TIMEOUT" "${PREVIEW_URL}/$1.$IMG_FORMAT" -o "${PREVIEWS_DIR}/$(formated_date)-$1.$IMG_FORMAT"
 }
 
 show_preview () {
-    curl -s --connect-timeout "$CONNECT_TIMEOUT" "${PREVIEW_URL}/$1.$IMG_FORMAT" | $VIEWER -
+    curl -s --compressed --connect-timeout "$CONNECT_TIMEOUT" "${PREVIEW_URL}/$1.$IMG_FORMAT" | $VIEWER -
 }
 
 fetch_all_previews () {
