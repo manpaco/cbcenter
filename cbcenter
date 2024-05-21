@@ -469,6 +469,7 @@ fetch_all_rooms () {
     declare -i num_rooms
     num_rooms="$(jq -e '.rooms | length' "$LASTROOMS_FILE")"
     [[ $num_rooms -eq 0 ]] && send_exit_error $UNKNOWN_ERROR
+    [[ $limit -lt $num_rooms ]] && echo -e "$RED_FG$((num_rooms-limit)) promoted room(s) found !$CLEAR_FG"
     $CLEAR_ROOMS_DIR
 
     declare -i index=0
