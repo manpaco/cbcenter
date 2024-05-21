@@ -663,7 +663,7 @@ case "$1" in
         $CLEAR_PREVIEWS_DIR && $CLEAR_CAPTURES_DIR && $CLEAR_STREAMS_DIR && $CLEAR_ROOMS_DIR
         ;;
     __set_viewer)
-        sed -i "s/VIEWER=\".*\"/VIEWER=\"$2\"/" "${MYPATH}/$PROJECT"
+        sed -i --follow-symlinks "s/VIEWER=\".*\"/VIEWER=\"$2\"/" "$0"
         ;;
     help)
         show_help
