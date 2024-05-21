@@ -11,7 +11,7 @@ CLEAR_STREAMS="rm -f ${STREAMS_DIR}/*"
 CLEAR_CAPTURES="rm -f ${CAPTURES_DIR}/*"
 
 TEMP_DIR="/tmp/$PROJECT"
-PREVIEWS_DIR="${TEMP_DIR}/preview"
+PREVIEWS_DIR="${TEMP_DIR}/previews"
 CLEAR_PREVIEWS="rm -f ${PREVIEWS_DIR}/*"
 PREVIEW_URL="https://thumb.live.mmcdn.com/riw"
 SEARCH_URL="https://chaturbate.com/ax/search/?keywords="
