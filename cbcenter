@@ -55,7 +55,7 @@ PROG_REGEX="BANDWIDTH=[0-9]+,NAME=\"FPS:[0-9]+\.[0-9]+\",CODECS=\"[a-z0-9.,]*\",
 ROOM_REGEX="$USER_REGEX"
 ROOM_RANGE_REGEX="^[$FEMALE_ROOM|$MALE_ROOM|$COUPLE_ROOM|$TRANS_ROOM]:[0-9]{0,2}:[0-9]{1,2}$"
 
-VIEWER="imv -d"
+VIEWER="imv -fd"
 JQ_ONLINE=".online"
 JQ_OFFLINE=".offline"
 JQ_HASGTAGS=".hashtags"
