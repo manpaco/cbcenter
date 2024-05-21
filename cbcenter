@@ -79,6 +79,10 @@ INVALID_COMMAND=12
 HTTP_NOT_FOUND_ERROR=13
 HTTP_TOO_MANY_REQUESTS_ERROR=14
 BAD_CHOICE=15
+ROOM_LIST_ERROR=16
+EMPTY_ROOM_LIST=17
+BIOCONTEXT_ERROR=19
+JQ_ERROR=19
 
 RED_FG="\033[0;31m"
 GREEN_FG="\033[0;32m"
@@ -191,7 +195,7 @@ send_exit_error () {
             exit $ROOM_DOESNT_EXIST
             ;;
         "$EMPTY_DATA")
-            echo "An error occurred while getting room data ! (EMPTY_DATA)" 1>&2
+            echo "Error getting room data ! (EMPTY_DATA)" 1>&2
             exit $EMPTY_DATA
             ;;
         "$INVALID_PROG_ID")
@@ -221,6 +225,22 @@ send_exit_error () {
         "$BAD_CHOICE")
             echo -e "Bad choice !" 1>&2
             exit $BAD_CHOICE
+            ;;
+        "$ROOM_LIST_ERROR")
+            echo -e "Error gettig room list !" 1>&2
+            exit $ROOM_LIST_ERROR
+            ;;
+        "$EMPTY_ROOM_LIST")
+            echo -e "Empty room list !" 1>&2
+            exit $EMPTY_ROOM_LIST
+            ;;
+        "$BIOCONTEXT_ERROR")
+            echo -e "Error getting biocontext" 1>&2
+            exit $BIOCONTEXT_ERROR
+            ;;
+        "$JQ_ERROR")
+            echo -e "An error occurred while processing json data !" 1>&2
+            exit $JQ_ERROR
             ;;
         *)
             echo "UNKNOWN_ERROR" 1>&2
@@ -490,10 +510,10 @@ fetch_room_range () {
 
     echo "Fetching $gender rooms from $offset to $((offset+limit-1)) ..."
 
-    save_room_list "$gender" "$offset" "$limit" || send_exit_error $UNKNOWN_ERROR
+    save_room_list "$gender" "$offset" "$limit" || send_exit_error $ROOM_LIST_ERROR
     declare -i num_rooms
-    num_rooms="$(jq -e '.rooms | length' "$LASTROOMS_FILE")"
-    [[ $num_rooms -eq 0 ]] && send_exit_error $UNKNOWN_ERROR
+    num_rooms="$(jq -e '.rooms | length' "$LASTROOMS_FILE")" || send_exit_error $JQ_ERROR
+    [[ $num_rooms -eq 0 ]] && send_exit_error $EMPTY_ROOM_LIST
     echo -e "${RED_FG}TIP:${CLEAR_FG} Go back in the image viewer to see the most recent ones."
     [[ $limit -lt $num_rooms ]] && echo -e "$RED_FG$((num_rooms-limit)) promoted room(s) found !$CLEAR_FG"
     $CLEAR_ROOMS_DIR
@@ -523,7 +543,7 @@ get_bio () {
 
 show_info () {
     valid_room "$1" || send_exit_error $INVALID_USERNAME
-    get_bio "$1"
+    get_bio "$1" || send_exit_error $BIOCONTEXT_ERROR
     echo -n "Real name: "
     jq -M '.real_name' "$BIOCONTEXT_FILE"
     echo -n "Location: "
@@ -542,7 +562,7 @@ show_info () {
 
 show_bio () {
     valid_room "$1" || send_exit_error $INVALID_USERNAME
-    get_bio "$1"
+    get_bio "$1" || send_exit_error $BIOCONTEXT_ERROR
     jq . "$BIOCONTEXT_FILE"
 }
 
@@ -558,13 +578,10 @@ fetch_random_room () {
         3) gender=t
             ;;
     esac
-    save_room_list "$gender" $((RANDOM%100)) 1
-    if room="$(jq -Mre ".rooms.[0].username" "$LASTROOMS_FILE")"; then
-        show_preview "$room"
-        echo "Fetched $room room ($gender). Enjoy!"
-    else
-        send_exit_error $UNKNOWN_ERROR
-    fi
+    save_room_list "$gender" $((RANDOM%100)) 1 || send_exit_error $ROOM_LIST_ERROR
+    room="$(jq -Mre ".rooms.[0].username" "$LASTROOMS_FILE")" || send_exit_error $JQ_ERROR
+    show_preview "$room"
+    echo "Fetched $room room ($gender). Enjoy!"
 }
 
 mkdir -p "$MYPATH"
