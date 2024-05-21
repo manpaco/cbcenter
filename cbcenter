@@ -157,7 +157,11 @@ show_help () {
         executable), or use '__set_viewer' command.\n\
         NOTE: the image viewer must support opening entire directories.\n\
     - Why are the rooms fetched in $FETCH_STEPS at a time?\n\
-        To avoid error code $HTTP_TOO_MANY_REQUESTS_ERROR. See 'Exit codes' section."
+        To avoid error code $HTTP_TOO_MANY_REQUESTS_ERROR. See 'Exit codes' section.\n\nExamples:\n\n\
+    - Fetch the first 10 female rooms:\n\
+        cbcenter fetch-rooms f::10\n\
+    - Fetch 30 rooms starting from 13th:\n\
+        cbcenter fetch-rooms c:13:30\n"
 }
 
 send_exit_error () {
