@@ -74,8 +74,8 @@ CLEAR_FG="\033[0m"
 show_help () {
     echo -e "$PROJECT usage:\nManage your favorite user rooms from $CB_ROOT_URL.\n\n\
     $mybasename COMMAND OPTION\n\nList of commands and options:\n\n\
-    new              <username>  - Add new user room to favorites.\n\
-    del              <username>  - Delete user room from favorites.\n\
+    add              <username>  - Add new user room to favorites.\n\
+    remove           <username>  - Remove user room from favorites.\n\
     show-favorites               - List of favorite user rooms.\n\
     show-status      [username]  - Same as 'show-favorites' command, plus status.\n\
                                    If 'username' is provided, only show that.\n\
@@ -261,13 +261,13 @@ room_exists () {
     grep -qx "$1" "$CBROOMS_FILE"
 }
 
-new_room () {
+add_room () {
     valid_room "$1" || send_exit_error $INVALID_USERNAME
     room_exists "$1" && send_exit_error $ROOM_ALREADY_EXIST
     echo "$1" >> "$CBROOMS_FILE"
 }
 
-del_room () {
+remove_room () {
     valid_room "$1" || send_exit_error $INVALID_USERNAME
     room_exists "$1" || send_exit_error $ROOM_DOESNT_EXIST
     sed -i "/^$1$/d" "$CBROOMS_FILE"
@@ -397,11 +397,11 @@ mkdir -p "$PREVIEWS_DIR"
 touch "$CBROOMS_FILE"
 
 case "$1" in
-    new)
-        new_room "$2"
+    add)
+        add_room "$2"
         ;;
-    del)
-        del_room "$2"
+    remove)
+        remove_room "$2"
         ;;
     show-favorites)
         favorites_list
