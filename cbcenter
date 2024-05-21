@@ -94,8 +94,8 @@ show_help () {
     show-programs     username    - Show available programs of given user room.\n\
     show-status       [username]  - Same as 'show-favorites' command, plus status.\n\
                                     If 'username' is provided, only show that.\n\
-    show-info                     - Get biocontext and show basic info.\n\
-    show-bio                      - Show biocontext.\n\
+    show-info         username    - Get biocontext and show basic info.\n\
+    show-bio          username    - Show biocontext.\n\
     fetch-rooms       gender:[offset]:limit\n\
                                   - Fetch 'gender' rooms from 'offset' to\n\
                                     'offset'+'limit'-1. See 'Fetch ranges' section.\n\
