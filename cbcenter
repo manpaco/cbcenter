@@ -316,13 +316,28 @@ room_exists () {
 add_room () {
     valid_room "$1" || send_exit_error $INVALID_USERNAME
     room_exists "$1" && send_exit_error $ROOM_ALREADY_EXIST
-    echo "$1" >> "$FAVORITES_FILE"
+    echo "$1" >> "$FAVORITES_FILE" && echo "Favorite added!"
 }
 
 remove_room () {
     valid_room "$1" || send_exit_error $INVALID_USERNAME
-    room_exists "$1" || send_exit_error $ROOM_DOESNT_EXIST
-    sed -i "/^$1$/d" "$FAVORITES_FILE"
+    if match="$(grep -xn "$1" "$FAVORITES_FILE")"; then
+        sed -i "${match%%:*}d" "$FAVORITES_FILE" && echo "Favorite removed!"
+        echo "devel"
+    else
+        match="$(grep -n "$1" "$FAVORITES_FILE")"
+        [[ -z $match ]] && send_exit_error $ROOM_DOESNT_EXIST
+        echo "No exact match found!"
+        echo "$match"
+        read -rp "Type your choice to remove it (i.e. the number before ':'), or (q)uit: " line
+        [[ $line == q ]] && return $OK_CODE
+        valid_id "$line" || send_exit_error $BAD_CHOICE
+        if echo "$match" | grep -q -e "^$line:" -; then
+            sed -i "${line}d" "$FAVORITES_FILE" && echo "Favorite removed!"
+        else
+            send_exit_error $BAD_CHOICE
+        fi
+    fi
 }
 
 save_preview () {
