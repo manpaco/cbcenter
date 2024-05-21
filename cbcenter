@@ -93,7 +93,7 @@ show_help () {
                                     If 'username' is provided, only show that.\n\
     fetch-rooms       gender:[offset]:limit\n\
                                   - Fetch 'gender' rooms from 'offset' to\n\
-                                    'offset'+'limit'. See 'Fetch ranges' section.\n\
+                                    'offset'+'limit'-1. See 'Fetch ranges' section.\n\
     fetch-previews                - Fetch previews of favorite user rooms and\n\
                                     ask to open (online only).\n\
     open-previews                 - Open last fetched previews.\n\
@@ -450,7 +450,7 @@ fetch_all_rooms () {
     [[ ${#limit} -ne 1 ]] && limit="${limit#0}"
     [[ $limit -eq 0 ]] && send_exit_error $INVALID_ROOM_RANGE
 
-    echo "Fetching $gender rooms from $offset to $((offset+limit)) ..."
+    echo "Fetching $gender rooms from $offset to $((offset+limit-1)) ..."
 
     save_room_list "$gender" "$offset" "$limit" || send_exit_error $UNKNOWN_ERROR
     declare -i num_rooms
