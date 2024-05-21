@@ -334,7 +334,7 @@ show_preview () {
     curl -sL --compressed --connect-timeout "$CONNECT_TIMEOUT" "${PREVIEW_URL}/$1.$IMG_FORMAT" | $VIEWER -
 }
 
-fetch_all_previews () {
+fetch_previews () {
     $CLEAR_PREVIEWS_DIR
     while IFS="" read -r room || [ -n "$room" ]
     do
@@ -450,7 +450,7 @@ save_room_list () {
     curl -sL --compressed "$ROOMS_URL/?genders=$1&offset=$2&limit=$3&enable_recommendations=false" -o "$LASTROOMS_FILE"
 }
 
-fetch_all_rooms () {
+fetch_room_range () {
     valid_room_range "$1" || send_exit_error $INVALID_ROOM_RANGE
     local gender
     gender="${1%%:*}"
@@ -569,13 +569,13 @@ case "$1" in
         show_bio "$2"
         ;;
     fetch-rooms)
-        fetch_all_rooms "$2"
+        fetch_room_range "$2"
         ;;
     fetch-random)
         fetch_random_room
         ;;
     fetch-previews)
-        fetch_all_previews
+        fetch_previews
         ;;
     open-previews)
         open_previews_dir
