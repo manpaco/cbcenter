@@ -176,7 +176,7 @@ send_exit_error () {
 }
 
 wrap_cb_user () {
-    echo "${CB_ROOT_URL}/$1"
+    echo "${CB_ROOT_URL}/$1/"
 }
 
 curl_search () {
