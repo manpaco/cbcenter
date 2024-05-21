@@ -327,8 +327,8 @@ fetch_all_previews () {
         valid_room "$room" && is_online "$room" && save_preview "$room" "$PREVIEWS_DIR" && echo "$room fetched" &
     done < "$FAVORITES_FILE"
     wait
-    read -rp "Open fetched previews? (Y/N): " save &&
-        [[ $save == [yY] || $save == [yY][eE][sS] ]] || return $OK_CODE
+    read -rp "Open fetched previews? (Y/N): " save
+    [[ $save == [yY] || $save == [yY][eE][sS] ]] || return $OK_CODE
     open_previews_dir
 }
 
@@ -438,7 +438,6 @@ save_room_list () {
 
 fetch_all_rooms () {
     valid_room_range "$1" || send_exit_error $INVALID_ROOM_RANGE
-    $CLEAR_ROOMS
     local gender
     gender="${1%%:*}"
     local offset
@@ -451,20 +450,30 @@ fetch_all_rooms () {
     [[ ${#limit} -ne 1 ]] && limit="${limit#0}"
     [[ $limit -eq 0 ]] && send_exit_error $INVALID_ROOM_RANGE
 
-    echo "Fetching $gender rooms from $offset to $((offset+limit))"
+    echo "Fetching $gender rooms from $offset to $((offset+limit)) ..."
 
-    # save_room_list "$gender" "$offset" "$limit"
-    #
-    # declare -i index=0
-    # local room
-    # while room="$(jq -Mre ".rooms.[$index].username" "$LASTROOMS_FILE")"; do
-    #     save_preview "$room" "$ROOMS_DIR" && echo "$room fetched" &
-    #     index+=1
-    # done
-    # wait
-    # read -rp "Open previews of fetched rooms? (Y/N): " save &&
-    #     [[ $save == [yY] || $save == [yY][eE][sS] ]] || return $OK_CODE
-    # open_rooms_dir
+    save_room_list "$gender" "$offset" "$limit" || send_exit_error $UNKNOWN_ERROR
+    declare -i num_rooms
+    num_rooms="$(jq -e '.rooms | length' "$LASTROOMS_FILE")"
+    [[ $num_rooms -eq 0 ]] && send_exit_error $UNKNOWN_ERROR
+    $CLEAR_ROOMS
+
+    declare -i index=0
+    local room
+    local action="c"
+    while [[ $action == "c" ]]; do
+        while room="$(jq -Mre ".rooms.[$index].username" "$LASTROOMS_FILE")"; do
+            save_preview "$room" "$ROOMS_DIR" && echo "$room fetched" &
+            index+=1
+            [[ $((index%10)) -ne 0 ]] || break
+        done
+        wait
+        read -rp "Open previews of fetched rooms? (Y/N): " save
+        [[ $save == [yY] || $save == [yY][eE][sS] ]] && open_rooms_dir
+        [[ $index -eq $num_rooms ]] && break
+        read -rp "Continue fetching previews? $((num_rooms-index)) remaining (Y/N): " save
+        [[ $save == [yY] || $save == [yY][eE][sS] ]] || break
+    done
 }
 
 mkdir -p "$MYPATH"
