@@ -59,7 +59,7 @@ VIEWER="imv -fd"
 JQ_ONLINE=".online"
 JQ_OFFLINE=".offline"
 JQ_HASGTAGS=".hashtags"
-CURL_SEARCH_HEADER="X-Requested-With: XMLHttpRequest"
+XRW_HEADER="X-Requested-With: XMLHttpRequest"
 HTTP_NOT_FOUND_TEXT="404 Not Found"
 HTTP_TOO_MANY_REQUESTS_TEXT="429 Too Many Requests"
 
@@ -254,7 +254,7 @@ wrap_cb_user () {
 }
 
 curl_search () {
-    curl -sL --compressed -H "$CURL_SEARCH_HEADER" "${SEARCH_URL}$1"
+    curl -sL --compressed -H "$XRW_HEADER" "${SEARCH_URL}$1"
 }
 
 is_online () {
@@ -371,11 +371,11 @@ remove_room () {
 }
 
 save_preview () {
-    curl -sL --compressed --connect-timeout "$CONNECT_TIMEOUT" "${PREVIEW_URL}/$1.$IMG_FORMAT" -o "${2}/$3$(formated_date)-$1.$IMG_FORMAT"
+    curl -sL --compressed -H "$XRW_HEADER" --connect-timeout "$CONNECT_TIMEOUT" "${PREVIEW_URL}/$1.$IMG_FORMAT" -o "${2}/$3$(formated_date)-$1.$IMG_FORMAT"
 }
 
 show_preview () {
-    curl -sL --compressed --connect-timeout "$CONNECT_TIMEOUT" "${PREVIEW_URL}/$1.$IMG_FORMAT" | $VIEWER -
+    curl -sL --compressed -H "$XRW_HEADER" --connect-timeout "$CONNECT_TIMEOUT" "${PREVIEW_URL}/$1.$IMG_FORMAT" | $VIEWER -
 }
 
 fetch_previews () {
@@ -491,7 +491,7 @@ open_rooms_dir () {
 }
 
 save_room_list () {
-    curl -sL --compressed "$ROOMS_URL/?genders=$1&offset=$2&limit=$3&enable_recommendations=false" -o "$LASTROOMS_FILE"
+    curl -sL --compressed -H "$XRW_HEADER" "$ROOMS_URL/?genders=$1&offset=$2&limit=$3&enable_recommendations=false" -o "$LASTROOMS_FILE"
 }
 
 fetch_room_range () {
@@ -538,7 +538,7 @@ fetch_room_range () {
 }
 
 get_bio () {
-    curl -sL --compressed "${BIOCONTEXT_URL}/$1" -o "$BIOCONTEXT_FILE"
+    curl -sL --compressed -H "$XRW_HEADER" "${BIOCONTEXT_URL}/$1" -o "$BIOCONTEXT_FILE"
 }
 
 show_info () {
