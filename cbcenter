@@ -25,6 +25,8 @@ MALE_ROOM="m"
 COUPLE_ROOM="c"
 TRANS_ROOM="t"
 FETCH_STEPS=10
+BIOCONTEXT_URL="https://chaturbate.com/api/biocontext"
+BIOCONTEXT_FILE="${TEMP_DIR}/biocontext"
 
 CODEC="h264"
 VIDEO_FORMAT="mp4"
@@ -122,7 +124,8 @@ show_help () {
     PREVIEWS DIR:  $PREVIEWS_DIR/\n\
     ROOMS DIR:     $ROOMS_DIR/\n\
     LAST SEARCH:   $LASTSEARCH_FILE\n\
-    LAST ROOMS:    $LASTROOMS_FILE\n\nExit codes:\n\n\
+    LAST ROOMS:    $LASTROOMS_FILE\n\
+    BIOCONTEXT:    $BIOCONTEXT_FILE\n\nExit codes:\n\n\
     exit code $HTTP_TOO_MANY_REQUESTS_ERROR)\n\
         You are probably being blocked by rate limiting.\n\
         A rate limiting solution measures the amount of time between each\n\
@@ -483,6 +486,16 @@ fetch_all_rooms () {
     done
 }
 
+get_bio () {
+    curl -sL --compressed "${BIOCONTEXT_URL}/$1" -o "$BIOCONTEXT_FILE"
+}
+
+show_bio () {
+    valid_room "$1" || send_exit_error $INVALID_USERNAME
+    get_bio "$1"
+    jq . "$BIOCONTEXT_FILE"
+}
+
 mkdir -p "$MYPATH"
 mkdir -p "$DOWNLOADS_DIR"
 mkdir -p "$STREAMS_DIR"
@@ -530,6 +543,9 @@ case "$1" in
         ;;
     search)
         keyword_search "$2"
+        ;;
+    show-bio)
+        show_bio "$2"
         ;;
     __extract_playlist)
         valid_room "$2" || send_exit_error $INVALID_USERNAME
