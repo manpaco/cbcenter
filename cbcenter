@@ -111,7 +111,12 @@ show_help () {
     limit:  two digits (max) integer from 1 (or 01) to 99.\n\nDirectories and files:\n\n\
     PROJECT DIR:   $MYPATH/\n\
     DOWNLOADS DIR: $DOWNLOADS_DIR/\n\
-    FAVORITES:     $FAVORITES_FILE\n\nExit codes:\n\n\
+    FAVORITES:     $FAVORITES_FILE\n\
+    TEMPORAL DIR:  $TEMP_DIR/\n\
+    PREVIEWS DIR:  $PREVIEWS_DIR/\n\
+    ROOMS DIR:     $ROOMS_DIR/\n\
+    LAST SEARCH:   $LASTSEARCH_FILE\n\
+    LAST ROOMS:    $LASTROOMS_FILE\n\nExit codes:\n\n\
     exit code $HTTP_TOO_MANY_REQUESTS_ERROR)\n\
         You are probably being blocked by rate limiting.\n\
         A rate limiting solution measures the amount of time between each\n\
