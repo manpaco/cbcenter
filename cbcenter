@@ -107,7 +107,7 @@ show_help () {
     __clear_streams               - Remove all the saved stream files.\n\nFetch ranges:\n\n\
     gender: 'f' or 'm' or 'c' or 't'\n\
     offset: two digits (max) integer from 0 (or 00) to 99.\n\
-              If none is provided, the value 0 is taken.\n\
+            If none is provided, the value 0 is taken.\n\
     limit:  two digits (max) integer from 1 (or 01) to 99.\n\nDirectories and files:\n\n\
     PROJECT DIR:   $MYPATH/\n\
     DOWNLOADS DIR: $DOWNLOADS_DIR/\n\
