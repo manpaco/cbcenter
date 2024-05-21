@@ -372,19 +372,19 @@ remove_room () {
 }
 
 clear_favorites_dir () {
-    rm -f ${FAVORITES_DIR}/*
+    rm -f ${FAVORITES_DIR:?}/*
 }
 
 clear_captures_dir () {
-    rm -f ${CAPTURES_DIR}/*
+    rm -f ${CAPTURES_DIR:?}/*
 }
 
 clear_streams_dir () {
-    rm -f ${STREAMS_DIR}/*
+    rm -f ${STREAMS_DIR:?}/*
 }
 
 clear_rooms_dir () {
-    rm -f ${ROOMS_DIR}/*
+    rm -f ${ROOMS_DIR:?}/*
 }
 
 save_preview_in () {
@@ -588,11 +588,11 @@ show_bio () {
 }
 
 clear_random_file () {
-    rm -f ${RANDOM_FILE_T}*
+    rm -f ${RANDOM_FILE_T:?}*
 }
 
 open_random_file () {
-    $VIEWER ${RANDOM_FILE_T}*
+    $VIEWER ${RANDOM_FILE_T:?}*
 }
 
 fetch_random_room () {
