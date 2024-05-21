@@ -434,6 +434,7 @@ case "$1" in
         do_global_status "$2"
         ;;
     __extract_playlist)
+        valid_room "$2" || send_exit_error $INVALID_USERNAME
         __ep=""
         extract_playlist "$2" __ep
         echo "$__ep"
