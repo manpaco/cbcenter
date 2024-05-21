@@ -452,6 +452,9 @@ case "$1" in
     __clear_previews)
         $CLEAR_PREVIEWS
         ;;
+    __clear_all)
+        $CLEAR_STREAMS && $CLEAR_CAPTURES && $CLEAR_PREVIEWS
+        ;;
     -h|--help|help)
         show_help
         ;;
