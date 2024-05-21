@@ -31,7 +31,6 @@ FETCH_STEPS=10
 BIOCONTEXT_URL="https://chaturbate.com/api/biocontext"
 BIOCONTEXT_FILE="${TEMP_DIR}/biocontext"
 RANDOM_FILE_T="${TEMP_DIR}/random-"
-CLEAR_RANDOM_FILE="rm -f ${RANDOM_FILE_T}*"
 
 CODEC="h264"
 HIGH_PROG=99
@@ -576,6 +575,10 @@ show_bio () {
     jq . "$BIOCONTEXT_FILE"
 }
 
+clear_random_file () {
+    rm -f ${RANDOM_FILE_T}*
+}
+
 open_random_file () {
     $VIEWER ${RANDOM_FILE_T}*
 }
@@ -594,7 +597,7 @@ fetch_random_room () {
     esac
     save_room_list "$gender" $((RANDOM%100)) 1 || send_exit_error $ROOM_LIST_ERROR
     room="$(jq -Mre ".rooms.[0].username" "$LASTROOMS_FILE")" || send_exit_error $JQ_ERROR
-    $CLEAR_RANDOM_FILE
+    clear_random_file
     save_preview_in "$room" "$RANDOM_FILE_T${room}.$IMG_FORMAT" && open_random_file
     echo "Fetched $room room ($gender). Enjoy!"
 }
