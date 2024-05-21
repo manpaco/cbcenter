@@ -34,7 +34,7 @@ IMG_FORMAT="jpg"
 HIGH_PROG=99
 ID_REGEX="^[0-9]+$"
 
-CONNECT_TIMEOUT=5
+CONNECT_TIMEOUT=10
 CB_ROOT_URL="https://www.chaturbate.com"
 CAM_ROOT_REGEX="https:\/\/edge[0-9]+-[a-z]+\.live\.mmcdn\.com"
 LIVE_PREFIX="live-"
