@@ -101,11 +101,10 @@ show_help () {
                                         the value 0 is taken.\n\
                                       <limit>: two digits (max) integer from 1\n\
                                         (or 01) to 99\n\
-    fetch-previews                - Fetch previews of fav user rooms and ask to\n\
-                                    open (online only).\n\
+    fetch-previews                - Fetch previews of favorite user rooms and\n\
+                                    ask to open (online only).\n\
     open-previews                 - Open last fetched previews.\n\
-    quick-thumb       <username>  - Show (not save) the preview of the given user\n\
-                                    room.\n\
+    quick-thumb       <username>  - Show (not save) preview of given user room.\n\
     save-capture      <username>  - Save a screenshot (high resolution).\n\
     save-stream       <username>  - Save stream of user room in *DOWNLOADS*.\n\
     play-stream       <username>  - Play stream of user room.\n\
