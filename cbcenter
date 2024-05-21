@@ -99,6 +99,7 @@ show_help () {
     fetch-rooms       gender:[offset]:limit\n\
                                   - Fetch 'gender' rooms from 'offset' to\n\
                                     'offset'+'limit'-1. See 'Fetch ranges' section.\n\
+    fetch-random                  - Fetch a random room.\n\
     fetch-previews                - Fetch previews of favorite user rooms and\n\
                                     ask to open (online only).\n\
     open-previews                 - Open last fetched previews.\n\
@@ -516,6 +517,27 @@ show_bio () {
     jq . "$BIOCONTEXT_FILE"
 }
 
+fetch_random_room () {
+    local gender
+    case $((RANDOM%4)) in
+        0) gender=f
+            ;;
+        1) gender=m
+            ;;
+        2) gender=c
+            ;;
+        3) gender=t
+            ;;
+    esac
+    save_room_list "$gender" $((RANDOM%100)) 1
+    if room="$(jq -Mre ".rooms.[0].username" "$LASTROOMS_FILE")"; then
+        show_preview "$room"
+        echo "Fetched $room room ($gender). Enjoy!"
+    else
+        send_exit_error $UNKNOWN_ERROR
+    fi
+}
+
 mkdir -p "$MYPATH"
 mkdir -p "$DOWNLOADS_DIR"
 mkdir -p "$STREAMS_DIR"
@@ -548,6 +570,9 @@ case "$1" in
         ;;
     fetch-rooms)
         fetch_all_rooms "$2"
+        ;;
+    fetch-random)
+        fetch_random_room
         ;;
     fetch-previews)
         fetch_all_previews
