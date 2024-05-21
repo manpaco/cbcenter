@@ -98,19 +98,21 @@ show_help () {
         from '0' (lowest quality) to 'n' (highest quality). To get cam programs use 'info' command.\n\
         You can go to FFMPEG Documentation for more info.\n\
     - What do the strange errors mean when I want to play/save/capture?\n\
-        If the room is online:\n\
-            a) The room could be private or hidden (you get PLAYLIST_NOT_FOUND error).\n\
-            b) You are probably being blocked by rate limiting (you get EMPTY_WEBSITE error).\n\
-                A rate limiting solution measures the amount of time between each request from each IP address,\n\
-                and also measures the number of requests within a specified timeframe. If there are too many\n\
-                requests from a single IP within the given timeframe, the rate limiting solution will not\n\
-                fulfill the IP address's requests for a certain amount of time.\n\
-        If the room is offline, and force playlist extraction:\n\
-            c) The room is offline (expected, you get PLAYLIST_NOT_FOUND error).\n\
-            d) same as b)
-        If the room does not exist, and force playlist extraction:\n\
-            e) The room does not exist (expected, you get EMPTY_WEBSITE error).\n\
-            f) same as b)
+        exit code $HTTP_TOO_MANY_REQUESTS_ERROR)\n\
+            You are probably being blocked by rate limiting.\n\
+            A rate limiting solution measures the amount of time between each\n\
+            request from each IP address, and also measures the number of\n\
+            requests within a specified timeframe. If there are too many\n\
+            requests from a single IP within the given timeframe, the rate\n\
+            limiting solution will not fulfill the IP address's requests for a\n\
+            certain amount of time.\n\
+        exit code $HTTP_NOT_FOUND_ERROR)\n\
+            The user room does not exist.\n\
+        exit code $EMPTY_DATA or $CHUNK_NOT_FOUND)\n\
+            Connection error or corrupted data.\n\
+        exit code $PLAYLIST_NOT_FOUND)
+            If the room is online it could be private or hidden, otherwise it\n\
+            is offline.
     - How can I change the default image viewer for previews?\n\
         Just change the 'VIEWER' variable to whatever you want (within the executable).\n\
         NOTE: the image viewer must support opening entire directories."
