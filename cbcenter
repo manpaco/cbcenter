@@ -7,20 +7,16 @@ DOWNLOADS_DIR="${MYPATH}/downloads"
 FAVORITES_FILE="${MYPATH}/favorites"
 STREAMS_DIR="${DOWNLOADS_DIR}/streams"
 CAPTURES_DIR="${DOWNLOADS_DIR}/captures"
-CLEAR_STREAMS_DIR="rm -f ${STREAMS_DIR}/*"
-CLEAR_CAPTURES_DIR="rm -f ${CAPTURES_DIR}/*"
 
 VIDEO_FORMAT="mp4"
 IMG_FORMAT="jpg"
 
 TEMP_DIR="/tmp/$PROJECT"
 FAVORITES_DIR="${TEMP_DIR}/favorites"
-CLEAR_FAVORITES_DIR="rm -f ${FAVORITES_DIR}/*"
 PREVIEW_URL="https://thumb.live.mmcdn.com/riw"
 SEARCH_URL="https://chaturbate.com/ax/search/?keywords="
 LASTSEARCH_FILE="${TEMP_DIR}/lastsearch"
 ROOMS_DIR="${TEMP_DIR}/rooms"
-CLEAR_ROOMS_DIR="rm -f ${ROOMS_DIR}/*"
 ROOMS_URL="https://chaturbate.com/api/ts/roomlist/room-list"
 LASTROOMS_FILE="${TEMP_DIR}/lastrooms"
 FEMALE_ROOM="f"
@@ -375,6 +371,22 @@ remove_room () {
     fi
 }
 
+clear_favorites_dir () {
+    rm -f ${FAVORITES_DIR}/*
+}
+
+clear_captures_dir () {
+    rm -f ${CAPTURES_DIR}/*
+}
+
+clear_streams_dir () {
+    rm -f ${STREAMS_DIR}/*
+}
+
+clear_rooms_dir () {
+    rm -f ${ROOMS_DIR}/*
+}
+
 save_preview_in () {
     curl -sL --compressed -H "$XRW_HEADER" --connect-timeout "$CONNECT_TIMEOUT" "${PREVIEW_URL}/$1.$IMG_FORMAT" -o "$2"
 }
@@ -388,7 +400,7 @@ show_preview () {
 }
 
 fetch_favorites () {
-    $CLEAR_FAVORITES_DIR
+    clear_favorites_dir
     while IFS="" read -r room || [ -n "$room" ]
     do
         valid_username "$room" && is_online "$room" && save_preview "$room" "$FAVORITES_DIR" && echo "$room fetched" &
@@ -525,7 +537,7 @@ fetch_room_range () {
     [[ $num_rooms -eq 0 ]] && send_exit_error $EMPTY_ROOM_LIST
     echo -e "${GREEN_FG}TIP:${CLEAR_FG} Go back in the image viewer to see the most recent ones."
     [[ $limit -lt $num_rooms ]] && echo -e "$RED_FG$((num_rooms-limit)) promoted room(s) found !$CLEAR_FG"
-    $CLEAR_ROOMS_DIR
+    clear_rooms_dir
 
     declare -i index=0
     local preffix
@@ -679,19 +691,26 @@ case "$1" in
         echo "$__ep"
         ;;
     __clear_favorites)
-        $CLEAR_FAVORITES_DIR
+        clear_favorites_dir
         ;;
     __clear_captures)
-        $CLEAR_CAPTURES_DIR
+        clear_captures_dir
         ;;
     __clear_streams)
-        $CLEAR_STREAMS_DIR
+        clear_streams_dir
+        ;;
+    __clear_random)
+        clear_random_file
         ;;
     __clear_rooms)
-        $CLEAR_ROOMS_DIR
+        clear_rooms_dir
         ;;
     __clear_all)
-        $CLEAR_FAVORITES_DIR && $CLEAR_CAPTURES_DIR && $CLEAR_STREAMS_DIR && $CLEAR_ROOMS_DIR
+        clear_favorites_dir &&
+            clear_captures_dir &&
+            clear_streams_dir &&
+            clear_random_file &&
+            clear_rooms_dir
         ;;
     __set_viewer)
         sed -i --follow-symlinks "s/VIEWER=\".*\"/VIEWER=\"$2\"/" "$0"
