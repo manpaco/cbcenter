@@ -1,7 +1,7 @@
 Useful links
 
 - Previews: https://thumb.live.mmcdn.com/riw/<user>.jpg
-- Search: https://chaturbate.com/ax/search/?keywords=<user>
+- Search: https://chaturbate.com/ax/search/?keywords=<keyword>
 - Rooms: https://chaturbate.com/api/ts/roomlist/room-list/
     ?                            (extras key=value)
     genders=f                    (<f>emale, <m>ale, <c>ouple, <t>rans)
@@ -9,3 +9,4 @@ Useful links
     offset=0                     (default int)
     enable_recommendations=false (bool)
   example: https://chaturbate.com/api/ts/roomlist/room-list/?genders=f&enable_recommendations=false
+- Bio: https://chaturbate.com/api/biocontext/<user>
