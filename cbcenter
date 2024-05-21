@@ -24,7 +24,6 @@ FEMALE_ROOM="f"
 MALE_ROOM="m"
 COUPLE_ROOM="c"
 TRANS_ROOM="t"
-ROOM_RANGE_TEXT="<gender>:<offset>:<limit>"
 
 CODEC="h264"
 VIDEO_FORMAT="mp4"
@@ -85,57 +84,56 @@ CLEAR_FG="\033[0m"
 
 show_help () {
     echo -e "$PROJECT usage:\nManage your favorite user rooms from $CB_ROOT_URL.\n\n\
-    $mybasename COMMAND OPTION\n\nList of commands and options:\n\n\
-    add               <username>  - Add new user room to favorites.\n\
-    remove            <username>  - Remove user room from favorites.\n\
+    $mybasename COMMAND OPTION\n\nCommands and options:\n\n\
+    add               username    - Add new user room to favorites.\n\
+    remove            username    - Remove user room from favorites.\n\
     show-favorites                - List of favorite user rooms.\n\
-    show-programs     <username>  - Show available programs of given user room.\n\
+    show-programs     username    - Show available programs of given user room.\n\
     show-status       [username]  - Same as 'show-favorites' command, plus status.\n\
                                     If 'username' is provided, only show that.\n\
-    fetch-rooms       $ROOM_RANGE_TEXT\n\
-                                  - Fetch <gender> rooms from <offset> to\n\
-                                    <offset>+<limit>.\n\
-                                      <gender>: 'f' or 'm' or 'c' or 't'\n\
-                                      <offset>: two digits (max) integer from 0\n\
-                                        (or 00) to 99. If none is provided,\n\
-                                        the value 0 is taken.\n\
-                                      <limit>: two digits (max) integer from 1\n\
-                                        (or 01) to 99\n\
+    fetch-rooms       gender:[offset]:limit\n\
+                                  - Fetch 'gender' rooms from 'offset' to\n\
+                                    'offset'+'limit'. See 'Fetch ranges' section.\n\
     fetch-previews                - Fetch previews of favorite user rooms and\n\
                                     ask to open (online only).\n\
     open-previews                 - Open last fetched previews.\n\
-    quick-thumb       <username>  - Show (not save) preview of given user room.\n\
-    save-capture      <username>  - Save a screenshot (high resolution).\n\
-    save-stream       <username>  - Save stream of user room in *DOWNLOADS*.\n\
-    play-stream       <username>  - Play stream of user room.\n\
-    search            <keyword>   - Search a keyword on the website.\n\
+    quick-thumb       username    - Show (not save) preview of given user room.\n\
+    save-capture      username    - Save a screenshot (high resolution).\n\
+    save-stream       username    - Save stream of user room.\n\
+    play-stream       username    - Play stream of user room.\n\
+    search            keyword     - Search a keyword on the website.\n\
     __clear_previews              - Remove all the saved preview files.\n\
     __clear_captures              - Remove all the saved capture files.\n\
-    __clear_streams               - Remove all the saved stream files.\n\nDirectories and files:\n\n\
+    __clear_streams               - Remove all the saved stream files.\n\nFetch ranges:\n\n\
+    gender: 'f' or 'm' or 'c' or 't'\n\
+    offset: two digits (max) integer from 0 (or 00) to 99.\n\
+              If none is provided, the value 0 is taken.\n\
+    limit:  two digits (max) integer from 1 (or 01) to 99.\n\nDirectories and files:\n\n\
     PROJECT DIR:   $MYPATH/\n\
     DOWNLOADS DIR: $DOWNLOADS_DIR/\n\
-    ROOMS FILE:    $CBROOMS_FILE\n\nFAQs:\n\n\
+    ROOMS FILE:    $CBROOMS_FILE\n\nExit codes:\n\n\
+    exit code $HTTP_TOO_MANY_REQUESTS_ERROR)\n\
+        You are probably being blocked by rate limiting.\n\
+        A rate limiting solution measures the amount of time between each\n\
+        request from each IP address, and also measures the number of\n\
+        requests within a specified timeframe. If there are too many\n\
+        requests from a single IP within the given timeframe, the rate\n\
+        limiting solution will not fulfill the IP address's requests for a\n\
+        certain amount of time.\n\
+    exit code $HTTP_NOT_FOUND_ERROR)\n\
+        The user room does not exist.\n\
+    exit code $EMPTY_DATA or $CHUNK_NOT_FOUND)\n\
+        Connection error or corrupted data.\n\
+    exit code $PLAYLIST_NOT_FOUND)
+        If the room is online it could be private or hidden, otherwise it\n\
+        is offline.\n\nFAQs:\n\n\
     - What is a 'program ID'?\n\
         A 'program' represent the stream 'channel' or 'quality'. This channels\n\
         are identified by ID, from '0' (lowest quality) to 'n' (highest quality).\n\
         To get cam programs use 'info' command. You can go to FFMPEG Documentation\n\
         for more info.\n\
     - What do the strange errors mean when I want to play/save/capture?\n\
-        exit code $HTTP_TOO_MANY_REQUESTS_ERROR)\n\
-            You are probably being blocked by rate limiting.\n\
-            A rate limiting solution measures the amount of time between each\n\
-            request from each IP address, and also measures the number of\n\
-            requests within a specified timeframe. If there are too many\n\
-            requests from a single IP within the given timeframe, the rate\n\
-            limiting solution will not fulfill the IP address's requests for a\n\
-            certain amount of time.\n\
-        exit code $HTTP_NOT_FOUND_ERROR)\n\
-            The user room does not exist.\n\
-        exit code $EMPTY_DATA or $CHUNK_NOT_FOUND)\n\
-            Connection error or corrupted data.\n\
-        exit code $PLAYLIST_NOT_FOUND)
-            If the room is online it could be private or hidden, otherwise it\n\
-            is offline.
+        See above 'Exit codes' section.
     - How can I change the default image viewer for previews?\n\
         Just change the 'VIEWER' variable to whatever you want (within the\n\
         executable).\n\
