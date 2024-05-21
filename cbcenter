@@ -4,7 +4,7 @@ mybasename="$(basename "$0")"
 PROJECT="cbcenter"
 MYPATH="${HOME}/.local/$PROJECT"
 DOWNLOADS_DIR="${MYPATH}/downloads"
-CBROOMS_FILE="${MYPATH}/cbrooms"
+FAVORITES_FILE="${MYPATH}/favorites"
 STREAMS_DIR="${DOWNLOADS_DIR}/streams"
 CAPTURES_DIR="${DOWNLOADS_DIR}/captures"
 CLEAR_STREAMS="rm -f ${STREAMS_DIR}/*"
@@ -111,7 +111,7 @@ show_help () {
     limit:  two digits (max) integer from 1 (or 01) to 99.\n\nDirectories and files:\n\n\
     PROJECT DIR:   $MYPATH/\n\
     DOWNLOADS DIR: $DOWNLOADS_DIR/\n\
-    ROOMS FILE:    $CBROOMS_FILE\n\nExit codes:\n\n\
+    FAVORITES:     $FAVORITES_FILE\n\nExit codes:\n\n\
     exit code $HTTP_TOO_MANY_REQUESTS_ERROR)\n\
         You are probably being blocked by rate limiting.\n\
         A rate limiting solution measures the amount of time between each\n\
@@ -292,19 +292,19 @@ formated_date () {
 }
 
 room_exists () {
-    grep -qx "$1" "$CBROOMS_FILE"
+    grep -qx "$1" "$FAVORITES_FILE"
 }
 
 add_room () {
     valid_room "$1" || send_exit_error $INVALID_USERNAME
     room_exists "$1" && send_exit_error $ROOM_ALREADY_EXIST
-    echo "$1" >> "$CBROOMS_FILE"
+    echo "$1" >> "$FAVORITES_FILE"
 }
 
 remove_room () {
     valid_room "$1" || send_exit_error $INVALID_USERNAME
     room_exists "$1" || send_exit_error $ROOM_DOESNT_EXIST
-    sed -i "/^$1$/d" "$CBROOMS_FILE"
+    sed -i "/^$1$/d" "$FAVORITES_FILE"
 }
 
 save_preview () {
@@ -320,7 +320,7 @@ fetch_all_previews () {
     while IFS="" read -r room || [ -n "$room" ]
     do
         valid_room "$room" && is_online "$room" && save_preview "$room" "$PREVIEWS_DIR" && echo "$room fetched" &
-    done < "$CBROOMS_FILE"
+    done < "$FAVORITES_FILE"
     wait
     read -rp "Open fetched previews? (Y/N): " save &&
         [[ $save == [yY] || $save == [yY][eE][sS] ]] || return $OK_CODE
@@ -403,7 +403,7 @@ status_all () {
     while IFS="" read -r room || [ -n "$room" ]
     do
         valid_room "$room" && show_status "$room" &
-    done < "$CBROOMS_FILE"
+    done < "$FAVORITES_FILE"
     wait
 }
 
@@ -420,7 +420,7 @@ favorites_list () {
     while IFS="" read -r room || [ -n "$room" ]
     do
         echo "$room"
-    done < "$CBROOMS_FILE"
+    done < "$FAVORITES_FILE"
 }
 
 open_rooms_dir () {
@@ -468,7 +468,7 @@ mkdir -p "$STREAMS_DIR"
 mkdir -p "$CAPTURES_DIR"
 mkdir -p "$PREVIEWS_DIR"
 mkdir -p "$ROOMS_DIR"
-touch "$CBROOMS_FILE"
+touch "$FAVORITES_FILE"
 
 case "$1" in
     add)
