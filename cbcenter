@@ -78,6 +78,7 @@ INVALID_KEYWORD=11
 INVALID_COMMAND=12
 HTTP_NOT_FOUND_ERROR=13
 HTTP_TOO_MANY_REQUESTS_ERROR=14
+BAD_CHOICE=15
 
 RED_FG="\033[0;31m"
 GREEN_FG="\033[0;32m"
@@ -211,6 +212,10 @@ send_exit_error () {
         "$INVALID_ROOM_RANGE")
             echo -e "Invalid room range !" 1>&2
             exit $INVALID_ROOM_RANGE
+            ;;
+        "$BAD_CHOICE")
+            echo -e "Bad choice !" 1>&2
+            exit $BAD_CHOICE
             ;;
         *)
             echo "UNKNOWN_ERROR" 1>&2
