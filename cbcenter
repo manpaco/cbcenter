@@ -100,8 +100,7 @@ show_help () {
                                   - Fetch 'gender' rooms from 'offset' to\n\
                                     'offset'+'limit'-1. See 'Fetch ranges' section.\n\
     fetch-random                  - Fetch a random room.\n\
-    fetch-previews                - Fetch previews of favorite user rooms and\n\
-                                    ask to open (online only).\n\
+    fetch-previews                - Fetch previews of favorite user rooms.\n\
     open-previews                 - Open last fetched previews.\n\
     quick-thumb       username    - Show (not save) preview of given user room.\n\
     save-capture      username    - Save a screenshot (high resolution).\n\
