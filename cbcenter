@@ -460,8 +460,7 @@ fetch_all_rooms () {
 
     declare -i index=0
     local room
-    local action="c"
-    while [[ $action == "c" ]]; do
+    while true; do
         while room="$(jq -Mre ".rooms.[$index].username" "$LASTROOMS_FILE")"; do
             save_preview "$room" "$ROOMS_DIR" && echo "$room fetched" &
             index+=1
