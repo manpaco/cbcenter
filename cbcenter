@@ -51,7 +51,7 @@ COMPLETE_CAM_REGEX="${MINIMAL_CAM_REGEX}${EXTRA_STUFF_REGEX}\/${PLAYLIST}"
 CHUNK_REGEX="chunklist_w[0-9]+_b[0-9]+_t[0-9a-zA-Z=]+\.m3u8"
 PROG_REGEX="BANDWIDTH=[0-9]+,NAME=\"FPS:[0-9]+\.[0-9]+\",CODECS=\"[a-z0-9.,]*\",RESOLUTION=[0-9]+x[0-9]+"
 ROOM_REGEX="$USER_REGEX"
-ROOM_RANGE_REGEX="^[$FEMALE_ROOM|$MALE_ROOM|$COUPLE_ROOM|$TRANS_ROOM]:[0-9]{1,2}:[0-9]{1,2}$"
+ROOM_RANGE_REGEX="^[$FEMALE_ROOM|$MALE_ROOM|$COUPLE_ROOM|$TRANS_ROOM]:[0-9]{0,2}:[0-9]{1,2}$"
 
 VIEWER="imv -d"
 JQ_ONLINE=".online"
@@ -96,7 +96,11 @@ show_help () {
                                   - Fetch <gender> rooms from <offset> to\n\
                                     <offset>+<limit>.\n\
                                       <gender>: 'f' or 'm' or 'c' or 't'\n\
-                                      <offset> and <limit>: integer from 0 to 99\n\
+                                      <offset>: two digits (max) integer from 0\n\
+                                        (or 00) to 99. If none is provided,\n\
+                                        the value 0 is taken.\n\
+                                      <limit>: two digits (max) integer from 1\n\
+                                        (or 01) to 99\n\
     fetch-previews                - Fetch previews of fav user rooms and ask to\n\
                                     open (online only).\n\
     open-previews                 - Open last fetched previews.\n\
@@ -438,21 +442,27 @@ fetch_all_rooms () {
     local offset
     offset="${1#*:}"
     offset="${offset%:*}"
+    [[ -z $offset ]] && offset=0
+    [[ ${#offset} -ne 1 ]] && offset="${offset#0}"
     local limit
     limit="${1##*:}"
+    [[ ${#limit} -ne 1 ]] && limit="${limit#0}"
+    [[ $limit -eq 0 ]] && send_exit_error $INVALID_ROOM_RANGE
 
-    save_room_list "$gender" "$offset" "$limit"
+    echo "Fetching $gender rooms from $offset to $((offset+limit))"
 
-    declare -i index=0
-    local room
-    while room="$(jq -Mre ".rooms.[$index].username" "$LASTROOMS_FILE")"; do
-        save_preview "$room" "$ROOMS_DIR" &
-        index+=1
-    done
-    wait
-    read -rp "Open previews of fetched rooms? (Y/N): " save &&
-        [[ $save == [yY] || $save == [yY][eE][sS] ]] || return $OK_CODE
-    open_rooms_dir
+    # save_room_list "$gender" "$offset" "$limit"
+    #
+    # declare -i index=0
+    # local room
+    # while room="$(jq -Mre ".rooms.[$index].username" "$LASTROOMS_FILE")"; do
+    #     save_preview "$room" "$ROOMS_DIR" && echo "$room fetched" &
+    #     index+=1
+    # done
+    # wait
+    # read -rp "Open previews of fetched rooms? (Y/N): " save &&
+    #     [[ $save == [yY] || $save == [yY][eE][sS] ]] || return $OK_CODE
+    # open_rooms_dir
 }
 
 mkdir -p "$MYPATH"
