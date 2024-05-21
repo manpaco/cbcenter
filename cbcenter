@@ -637,6 +637,9 @@ case "$1" in
     __clear_all)
         $CLEAR_PREVIEWS_DIR && $CLEAR_CAPTURES_DIR && $CLEAR_STREAMS_DIR && $CLEAR_ROOMS_DIR
         ;;
+    __set_viewer)
+        sed -i "s/VIEWER=\".*\"/VIEWER=\"$2\"/" "${MYPATH}/$PROJECT"
+        ;;
     help)
         show_help
         ;;
