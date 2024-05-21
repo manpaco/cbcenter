@@ -112,7 +112,8 @@ show_help () {
     __clear_captures              - Remove all the saved capture files.\n\
     __clear_streams               - Remove all the saved stream files.\n\
     __clear_rooms                 - Remove all the fetched room files.\n\
-    __clear_all\n\nFetch ranges:\n\n\
+    __clear_all\n\
+    __set_viewer      command     - Set the 'command' as viewer.\n\nFetch ranges:\n\n\
     gender: Users gender.\n\
             'f' (female) or 'm' (male) or 'c' (couple) or 't' (trans)\n\
     offset: Begining room.\n\
