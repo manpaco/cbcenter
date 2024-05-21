@@ -490,6 +490,23 @@ get_bio () {
     curl -sL --compressed "${BIOCONTEXT_URL}/$1" -o "$BIOCONTEXT_FILE"
 }
 
+show_info () {
+    valid_room "$1" || send_exit_error $INVALID_USERNAME
+    get_bio "$1"
+    echo -n "Real name: "
+    jq -M '.real_name' "$BIOCONTEXT_FILE"
+    echo -n "Location: "
+    jq -M '.location' "$BIOCONTEXT_FILE"
+    echo -n "Sex: "
+    jq -M '.sex' "$BIOCONTEXT_FILE"
+    echo -n "Age: "
+    jq -M '.display_age' "$BIOCONTEXT_FILE"
+    echo -n "Languages: "
+    jq -M '.languages' "$BIOCONTEXT_FILE"
+    echo -n "Room status: "
+    jq -M '.room_status' "$BIOCONTEXT_FILE"
+}
+
 show_bio () {
     valid_room "$1" || send_exit_error $INVALID_USERNAME
     get_bio "$1"
@@ -543,6 +560,9 @@ case "$1" in
         ;;
     search)
         keyword_search "$2"
+        ;;
+    show-info)
+        show_info "$2"
         ;;
     show-bio)
         show_bio "$2"
