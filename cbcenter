@@ -24,6 +24,7 @@ FEMALE_ROOM="f"
 MALE_ROOM="m"
 COUPLE_ROOM="c"
 TRANS_ROOM="t"
+FETCH_STEPS=10
 
 CODEC="h264"
 VIDEO_FORMAT="mp4"
@@ -141,11 +142,13 @@ show_help () {
         To get cam programs use 'info' command. You can go to FFMPEG Documentation\n\
         for more info.\n\
     - What do the strange errors mean when I want to play/save/capture?\n\
-        See above 'Exit codes' section.
+        See 'Exit codes' section.
     - How can I change the default image viewer for previews?\n\
         Just change the 'VIEWER' variable to whatever you want (within the\n\
         executable).\n\
-        NOTE: the image viewer must support opening entire directories."
+        NOTE: the image viewer must support opening entire directories.\n\
+    - Why are the rooms fetched in $FETCH_STEPS at a time?\n\
+        To avoid error code $HTTP_TOO_MANY_REQUESTS_ERROR. See 'Exit codes' section."
 }
 
 send_exit_error () {
@@ -467,7 +470,7 @@ fetch_all_rooms () {
         while room="$(jq -Mre ".rooms.[$index].username" "$LASTROOMS_FILE")"; do
             save_preview "$room" "$ROOMS_DIR" && echo "$room fetched" &
             index+=1
-            [[ $((index%10)) -ne 0 ]] || break
+            [[ $((index%FETCH_STEPS)) -ne 0 ]] || break
         done
         wait
         read -rp "Open previews of fetched rooms? (Y/N): " save
