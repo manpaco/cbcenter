@@ -16,6 +16,8 @@ CLEAR_PREVIEWS="rm -f ${PREVIEWS_DIR}/*"
 PREVIEW_URL="https://thumb.live.mmcdn.com/riw"
 SEARCH_URL="https://chaturbate.com/ax/search/?keywords="
 LASTSEARCH_FILE="${TEMP_DIR}/lastsearch"
+ROOMS_DIR="${TEMP_DIR}/rooms"
+CLEAR_ROOMS="rm -f ${ROOMS_DIR}/*"
 ROOMS_URL="https://chaturbate.com/api/ts/roomlist/room-list"
 LASTROOMS_FILE="${TEMP_DIR}/lastrooms"
 FEMALE_ROOM="f"
@@ -305,7 +307,7 @@ remove_room () {
 }
 
 save_preview () {
-    curl -s --compressed --connect-timeout "$CONNECT_TIMEOUT" "${PREVIEW_URL}/$1.$IMG_FORMAT" -o "${PREVIEWS_DIR}/$(formated_date)-$1.$IMG_FORMAT"
+    curl -s --compressed --connect-timeout "$CONNECT_TIMEOUT" "${PREVIEW_URL}/$1.$IMG_FORMAT" -o "${2}/$(formated_date)-$1.$IMG_FORMAT"
 }
 
 show_preview () {
@@ -316,7 +318,7 @@ fetch_all_previews () {
     $CLEAR_PREVIEWS
     while IFS="" read -r room || [ -n "$room" ]
     do
-        valid_room "$room" && is_online "$room" && save_preview "$room" && echo "$room fetched" &
+        valid_room "$room" && is_online "$room" && save_preview "$room" "$PREVIEWS_DIR" && echo "$room fetched" &
     done < "$CBROOMS_FILE"
     wait
     read -rp "Open fetched previews? (Y/N): " save &&
@@ -420,12 +422,17 @@ favorites_list () {
     done < "$CBROOMS_FILE"
 }
 
+open_rooms_dir () {
+    $VIEWER "$ROOMS_DIR"
+}
+
 save_room_list () {
     curl -s --compressed "$ROOMS_URL/?genders=$1&offset=$2&limit=$3&enable_recommendations=false" -o "$LASTROOMS_FILE"
 }
 
 fetch_all_rooms () {
     valid_room_range "$1" || send_exit_error $INVALID_ROOM_RANGE
+    $CLEAR_ROOMS
     local gender
     gender="${1%%:*}"
     local offset
@@ -434,8 +441,18 @@ fetch_all_rooms () {
     local limit
     limit="${1##*:}"
 
-    echo "g:$gender o:$offset l:$limit"
     save_room_list "$gender" "$offset" "$limit"
+
+    declare -i index=0
+    local room
+    while room="$(jq -Mre ".rooms.[$index].username" "$LASTROOMS_FILE")"; do
+        save_preview "$room" "$ROOMS_DIR" &
+        index+=1
+    done
+    wait
+    read -rp "Open previews of fetched rooms? (Y/N): " save &&
+        [[ $save == [yY] || $save == [yY][eE][sS] ]] || return $OK_CODE
+    open_rooms_dir
 }
 
 mkdir -p "$MYPATH"
@@ -443,6 +460,7 @@ mkdir -p "$DOWNLOADS_DIR"
 mkdir -p "$STREAMS_DIR"
 mkdir -p "$CAPTURES_DIR"
 mkdir -p "$PREVIEWS_DIR"
+mkdir -p "$ROOMS_DIR"
 touch "$CBROOMS_FILE"
 
 case "$1" in
