@@ -351,7 +351,7 @@ remove_room () {
 }
 
 save_preview () {
-    curl -sL --compressed --connect-timeout "$CONNECT_TIMEOUT" "${PREVIEW_URL}/$1.$IMG_FORMAT" -o "${2}/$(formated_date)-$1.$IMG_FORMAT"
+    curl -sL --compressed --connect-timeout "$CONNECT_TIMEOUT" "${PREVIEW_URL}/$1.$IMG_FORMAT" -o "${2}/$3$(formated_date)-$1.$IMG_FORMAT"
 }
 
 show_preview () {
@@ -498,11 +498,13 @@ fetch_room_range () {
     $CLEAR_ROOMS_DIR
 
     declare -i index=0
+    local preffix
     local room
     while true; do
         while room="$(jq -Mre ".rooms.[$index].username" "$LASTROOMS_FILE")"; do
-            save_preview "$room" "$ROOMS_DIR" && echo "$room fetched" &
             index+=1
+            [[ $index -lt 10 ]] && preffix="0$index" || preffix="$index"
+            save_preview "$room" "$ROOMS_DIR" "$preffix" && echo "$room fetched" &
             [[ $((index%FETCH_STEPS)) -ne 0 ]] || break
         done
         wait
