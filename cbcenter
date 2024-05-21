@@ -83,11 +83,11 @@ show_help () {
     fetch-previews                - Fetch previews of fav user rooms and ask to\n\
                                     open (online only).\n\
     open-previews                 - Open last fetched previews.\n\
-    quick-preview     <username>  - Show (not save) the preview of the given user\n\
+    quick-thumb       <username>  - Show (not save) the preview of the given user\n\
                                     room.\n\
-    play-stream       <username>  - Play stream of user room.\n\
-    save-stream       <username>  - Save stream of user room in *DOWNLOADS*.\n\
     save-capture      <username>  - Save a screenshot (high resolution).\n\
+    save-stream       <username>  - Save stream of user room in *DOWNLOADS*.\n\
+    play-stream       <username>  - Play stream of user room.\n\
     search            <keyword>   - Search a keyword on the website.\n\
     __clear_previews              - Remove all the saved preview files.\n\
     __clear_captures              - Remove all the saved capture files.\n\
@@ -297,7 +297,7 @@ fetch_all_previews () {
     open_previews_dir
 }
 
-show_quick_preview () {
+show_quick_thumb () {
     valid_room "$1" || send_exit_error $INVALID_USERNAME
     show_preview "$1"
 }
@@ -410,32 +410,32 @@ case "$1" in
     show-favorites)
         favorites_list
         ;;
+    show-programs)
+        room_programs "$2"
+        ;;
+    show-status)
+        do_global_status "$2"
+        ;;
     fetch-previews)
         fetch_all_previews
         ;;
     open-previews)
         open_previews_dir
         ;;
-    quick-preview)
-        show_quick_preview "$2"
-        ;;
-    play-stream)
-        play_room "$2"
-        ;;
-    save-stream)
-        save_room "$2"
+    quick-thumb)
+        show_quick_thumb "$2"
         ;;
     save-capture)
         room_capture "$2"
         ;;
-    show-programs)
-        room_programs "$2"
+    save-stream)
+        save_room "$2"
+        ;;
+    play-stream)
+        play_room "$2"
         ;;
     search)
         keyword_search "$2"
-        ;;
-    show-status)
-        do_global_status "$2"
         ;;
     __extract_playlist)
         valid_room "$2" || send_exit_error $INVALID_USERNAME
@@ -443,19 +443,19 @@ case "$1" in
         extract_playlist "$2" __ep
         echo "$__ep"
         ;;
-    __clear_streams)
-        $CLEAR_STREAMS
+    __clear_previews)
+        $CLEAR_PREVIEWS
         ;;
     __clear_captures)
         $CLEAR_CAPTURES
         ;;
-    __clear_previews)
-        $CLEAR_PREVIEWS
+    __clear_streams)
+        $CLEAR_STREAMS
         ;;
     __clear_all)
-        $CLEAR_STREAMS && $CLEAR_CAPTURES && $CLEAR_PREVIEWS
+        $CLEAR_PREVIEWS && $CLEAR_CAPTURES && $CLEAR_STREAMS
         ;;
-    -h|--help|help)
+    help)
         show_help
         ;;
     *)
