@@ -406,7 +406,7 @@ remove_room () {
         [[ -z $match ]] && send_exit_error $ROOM_DOESNT_EXIST
         echo "No exact match found!"
         echo "$match"
-        read -rp "Type your choice to remove it (i.e. the number before ':'), or (q)uit: " line
+        read -rp "Type your choice to remove it (i.e. the beginning number before the ':'), or (q)uit: " line
         [[ $line == q ]] && return $OK_CODE
         valid_id "$line" || send_exit_error $BAD_CHOICE
         # Validate choice
@@ -612,7 +612,7 @@ fetch_room_range () {
     offset="${1#*:}"
     offset="${offset%:*}"
     [[ -z $offset ]] && offset=0
-    # If offset contains 2 digits, remove 0 from begining if exist. (09 -> 9)
+    # If offset contains 2 digits, remove 0 from beginning if exist. (09 -> 9)
     [[ ${#offset} -ne 1 ]] && offset="${offset#0}"
     local limit
     # Extract limit
