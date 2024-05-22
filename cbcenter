@@ -94,9 +94,9 @@ show_help () {
     add                username    - Add new room to favorites.\n\
     remove             username    - Remove room from favorites.\n\
     list                           - List of favorite rooms.\n\
-    status             [username]  - Same as 'list' command, plus status.\n\
-    show-programs      username    - Show available programs of given room.\n\
+    show-status        [username]  - Same as 'list' command, plus status.\n\
                                      If 'username' is provided, only show that.\n\
+    show-programs      username    - Show available programs of given room.\n\
     show-info          username    - Get biocontext and show basic info.\n\
     show-bio           username    - Show biocontext.\n\
     fetch-rooms        gender:[offset]:limit\n\
@@ -636,7 +636,7 @@ case "$1" in
     list)
         favorites_list
         ;;
-    status)
+    show-status)
         global_status "$2"
         ;;
     show-programs)
