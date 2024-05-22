@@ -1,16 +1,21 @@
 #!/bin/bash
 
+# ---------- NAMES -----------
 mybasename="$(basename "$0")"
 PROJECT="cbcenter"
+# ---------- FILES AND DIRECTORIES -----------
 MYPATH="${HOME}/.local/$PROJECT"
 DOWNLOADS_DIR="${MYPATH}/downloads"
 FAVORITES_FILE="${MYPATH}/favorites"
 STREAMS_DIR="${DOWNLOADS_DIR}/streams"
 CAPTURES_DIR="${DOWNLOADS_DIR}/captures"
 
+# ----------- FORMATS ---------------
 VIDEO_FORMAT="mp4"
 IMG_FORMAT="jpg"
+CODEC="h264"
 
+# ----------- TEMP FILES AND DIRECTORIES -------------
 TEMP_DIR="/tmp/$PROJECT"
 FAVORITES_DIR="${TEMP_DIR}/favorites"
 PREVIEW_URL="https://thumb.live.mmcdn.com/riw"
@@ -28,11 +33,8 @@ BIOCONTEXT_URL="https://chaturbate.com/api/biocontext"
 BIOCONTEXT_FILE="${TEMP_DIR}/biocontext"
 RANDOM_FILE_T="${TEMP_DIR}/random-"
 
-CODEC="h264"
-HIGH_PROG=99
+# ------------ REGULAR EXPRESSIONS -------------
 ID_REGEX="^[0-9]+$"
-
-CONNECT_TIMEOUT=10
 CB_ROOT_URL="https://www.chaturbate.com"
 CAM_ROOT_REGEX="https:\/\/edge[0-9]+-[a-z]+\.live\.mmcdn\.com"
 LIVE_PREFIX="live-"
@@ -53,6 +55,7 @@ PROG_REGEX="BANDWIDTH=[0-9]+,NAME=\"FPS:[0-9]+\.[0-9]+\",CODECS=\"[a-z0-9.,]*\",
 ROOM_REGEX="$USER_REGEX"
 ROOM_RANGE_REGEX="^[$FEMALE_ROOM|$MALE_ROOM|$COUPLE_ROOM|$TRANS_ROOM]:[0-9]{0,2}:[0-9]{1,2}$"
 
+# ----------- TOOLS ------------
 VIEWER="imv -fd"
 JQ_ONLINE=".online"
 JQ_OFFLINE=".offline"
@@ -60,7 +63,9 @@ JQ_HASGTAGS=".hashtags"
 XRW_HEADER="X-Requested-With: XMLHttpRequest"
 HTTP_NOT_FOUND_TEXT="404 Not Found"
 HTTP_TOO_MANY_REQUESTS_TEXT="429 Too Many Requests"
+CONNECT_TIMEOUT=10
 
+# ----------- EXIT CODES -----------
 OK_CODE=0
 INVALID_USERNAME=1
 OFFLINE_ROOM=2
@@ -82,12 +87,14 @@ EMPTY_ROOM_LIST=17
 BIOCONTEXT_ERROR=19
 JQ_ERROR=19
 
+# ------------ COLORS -------------
 RED_FG="\033[0;31m"
 GREEN_FG="\033[0;32m"
 LIGHT_BLUE_FG="\033[1;34m"
 YELLOW_FG="\033[1;33m"
 CLEAR_FG="\033[0m"
 
+# Show help block
 show_help () {
     echo -e "$PROJECT usage:\nManage your favorite rooms from $CB_ROOT_URL.\n\n\
     $mybasename COMMAND OPTION\n\nCommands and options:\n\n\
@@ -169,6 +176,8 @@ show_help () {
         cbcenter fetch-rooms c:13:30\n"
 }
 
+# Send error messange and exit program
+# '$1' error code
 send_exit_error () {
     case "$1" in
         "$INVALID_USERNAME")
@@ -250,26 +259,38 @@ send_exit_error () {
     esac
 }
 
+# Wrap username using cb url
+# '$1' username
 wrap_username () {
     echo "${CB_ROOT_URL}/$1/"
 }
 
+# Show search response on stdout
+# '$1' keyword
 curl_search () {
     curl -sL --compressed -H "$XRW_HEADER" "${SEARCH_URL}$1"
 }
 
+# return 0 if online, else 1
+# '$1' username
 is_online () {
     curl_search "$1" | jq -M $JQ_ONLINE | grep -q "\"$1\""
 }
 
+# return 0 if valid, else 1
+# '$1' id
 valid_id () {
     [[ "$1" =~ $ID_REGEX ]]
 }
 
+# return 0 if valid, else 1
+# '$1' room range
 valid_room_range () {
     [[ "$1" =~ $ROOM_RANGE_REGEX ]]
 }
 
+# Extract programs from playlist data and show on stdout
+# '$1' playlist data
 get_programs () {
     declare -n gp_data="$1"
     local _progs
@@ -282,10 +303,15 @@ get_programs () {
     echo -e "$_progs"
 }
 
+# Get data from playlist and show on stdout
+# '$1' room playlist
 get_data () {
     curl -siL --compressed --connect-timeout "$CONNECT_TIMEOUT" "$1"
 }
 
+# Extract playlist from room page
+# '$1' username
+# '$2' store extracted playlist
 extract_playlist () {
     declare -n ep_out="$2"
     local _cburl
@@ -301,6 +327,9 @@ extract_playlist () {
     return $OK_CODE
 }
 
+# Extract direct link from playlist. Useful for speedup fetch process of save/capture streams.
+# '$1' username
+# '$2' store extracted link
 direct_link () {
     local _link
     extract_playlist "$1" _link
@@ -316,46 +345,63 @@ direct_link () {
     fi
     local _chunk
     declare -i _current=0
+    # Extract chunk from data (chunks are .m3u8 files for specific stream quality)
+    # If user choice prog id 0, then first chunk is extracted (low quality stream)
+    # For high quality stream, pass high prog id (e.g. 99)
     while [[ $_data =~ $CHUNK_REGEX ]] && [[ $_current -le $_prog ]]; do
         _chunk="${BASH_REMATCH[0]}"
+        # Remove match from data
         _data="${_data/${BASH_REMATCH[0]}/}"
         _current+=1
     done
     [[ -z $_chunk ]] && send_exit_error $CHUNK_NOT_FOUND
     local _root_locat
+    # In some cases stream is located in another place than main playlist (_link)
     if [[ $_data =~ $LOCATION_REGEX ]]; then
+        # If new location is found, replace it
         _root_locat="${_link%%"${LIVE_PREFIX}"*}${BASH_REMATCH[0]}"
     else
+        # Else keep location and only remove '/playlist.m3u8' from '_link'
         _root_locat="${_link%/*}"
     fi
     dl_out="${_root_locat}/${_chunk}"
     return $OK_CODE
 }
 
+# return 0 if valid, else 1
+# '$1' username
 valid_username () {
     [[ "$1" =~ ^${ROOM_REGEX}$ ]]
 }
 
+# Show formated date on stdout
 formated_date () {
     date +%Y%m%d%H%M%S
 }
 
+# return 0 if room exists on favorites file, else 1
+# '$1' room
 room_exists () {
     grep -qx "$1" "$FAVORITES_FILE"
 }
 
+# Add new room to favorites
+# '$1' room
 add_room () {
     valid_username "$1" || send_exit_error $INVALID_USERNAME
     room_exists "$1" && send_exit_error $ROOM_ALREADY_EXIST
     echo "$1" >> "$FAVORITES_FILE" && echo "Favorite added!"
 }
 
+# Remove room from favorites
+# '$1' room
 remove_room () {
     valid_username "$1" || send_exit_error $INVALID_USERNAME
-    if match="$(grep -xn "$1" "$FAVORITES_FILE")"; then
+    if match="$(grep -xn "$1" "$FAVORITES_FILE")"; then # Exact match
         sed -i "${match%%:*}d" "$FAVORITES_FILE" && echo "Favorite removed!"
         echo "devel"
-    else
+    else # Search partial matches
+        # Use '-n' option on grep to use line numbers as choices if partial matches found
         match="$(grep -n "$1" "$FAVORITES_FILE")"
         [[ -z $match ]] && send_exit_error $ROOM_DOESNT_EXIST
         echo "No exact match found!"
@@ -363,6 +409,7 @@ remove_room () {
         read -rp "Type your choice to remove it (i.e. the number before ':'), or (q)uit: " line
         [[ $line == q ]] && return $OK_CODE
         valid_id "$line" || send_exit_error $BAD_CHOICE
+        # Validate choice
         if echo "$match" | grep -q -e "^$line:" -; then
             sed -i "${line}d" "$FAVORITES_FILE" && echo "Favorite removed!"
         else
@@ -371,34 +418,47 @@ remove_room () {
     fi
 }
 
+# Clear favorites directory
 clear_favorites_dir () {
     rm -f ${FAVORITES_DIR:?}/*
 }
 
+# Clear captures directory
 clear_captures_dir () {
     rm -f ${CAPTURES_DIR:?}/*
 }
 
+# Clear streams directory
 clear_streams_dir () {
     rm -f ${STREAMS_DIR:?}/*
 }
 
+# Clear rooms directory
 clear_rooms_dir () {
     rm -f ${ROOMS_DIR:?}/*
 }
 
+# Get preview and save it in given file
+# '$1' username
+# '$2' file
 save_preview_in () {
     curl -sL --compressed -H "$XRW_HEADER" --connect-timeout "$CONNECT_TIMEOUT" "${PREVIEW_URL}/$1.$IMG_FORMAT" -o "$2"
 }
 
+# Get preview and save it in given directory with predefined preffix (custom preffix is optional)
+# '$1' username
+# '$2' directory
+# '$3' custom preffix (optional)
 save_preview () {
     curl -sL --compressed -H "$XRW_HEADER" --connect-timeout "$CONNECT_TIMEOUT" "${PREVIEW_URL}/$1.$IMG_FORMAT" -o "${2}/$3$(formated_date)-$1.$IMG_FORMAT"
 }
 
+# Get preview and show it using image viewer (not save file)
 show_preview () {
     curl -sL --compressed -H "$XRW_HEADER" --connect-timeout "$CONNECT_TIMEOUT" "${PREVIEW_URL}/$1.$IMG_FORMAT" | $VIEWER -
 }
 
+# Get previews of favorites (online only)
 fetch_favorites () {
     clear_favorites_dir
     while IFS="" read -r room || [ -n "$room" ]
@@ -406,20 +466,26 @@ fetch_favorites () {
         valid_username "$room" && is_online "$room" && save_preview "$room" "$FAVORITES_DIR" && echo "$room fetched" &
     done < "$FAVORITES_FILE"
     wait
+    # Ask to show fetched previews
     read -rp "Open fetched previews? (Y/N): " save
     [[ $save == [yY] || $save == [yY][eE][sS] ]] || return $OK_CODE
     open_favorites_dir
 }
 
+# Get and show preview of given room
+# '$1' username
 show_quick_thumb () {
     valid_username "$1" || send_exit_error $INVALID_USERNAME
     show_preview "$1"
 }
 
+# Open favorites directory
 open_favorites_dir () {
     $VIEWER "$FAVORITES_DIR"
 }
 
+# Play room stream
+# '$1' room
 play_room () {
     valid_username "$1" || send_exit_error $INVALID_USERNAME
     is_online "$1" || send_exit_error $OFFLINE_ROOM
@@ -428,6 +494,8 @@ play_room () {
     ffplay -i "$room_link"
 }
 
+# Save room stream
+# '$1' room
 save_room () {
     valid_username "$1" || send_exit_error $INVALID_USERNAME
     is_online "$1" || send_exit_error $OFFLINE_ROOM
@@ -443,16 +511,20 @@ save_room () {
     #ffmpeg -i "$room_link" -map v:p:$room_prog -map a:p:$room_prog -codec copy "$output"
 }
 
+# Save room screenshot
+# '$1' room
 room_capture () {
     valid_username "$1" || send_exit_error $INVALID_USERNAME
     is_online "$1" || send_exit_error $OFFLINE_ROOM
     local room_link
-    direct_link "$1" room_link "$HIGH_PROG"
+    direct_link "$1" room_link 99
     local output
     output="${CAPTURES_DIR}/$(formated_date)-$1.$IMG_FORMAT"
     ffmpeg -i "$room_link" -frames:v 1 -update true "$output"
 }
 
+# Show room programs
+# '$1' room
 room_programs () {
     valid_username "$1" || send_exit_error $INVALID_USERNAME
     is_online "$1" || send_exit_error $OFFLINE_ROOM
@@ -464,6 +536,8 @@ room_programs () {
     get_programs room_data
 }
 
+# Search given keyword
+# '$1' keyword
 keyword_search () {
     valid_username "$1" || send_exit_error $INVALID_KEYWORD
     curl_search "$1" > "$LASTSEARCH_FILE"
@@ -475,6 +549,8 @@ keyword_search () {
     jq -M "$JQ_HASGTAGS" "$LASTSEARCH_FILE"
 }
 
+# Show status of given room
+# '$1' room
 show_status () {
     if is_online "$1"; then
         echo -e "$1 is ${LIGHT_BLUE_FG}online${CLEAR_FG}"
@@ -483,6 +559,7 @@ show_status () {
     fi
 }
 
+# Show status of favorites
 status_all () {
     while IFS="" read -r room || [ -n "$room" ]
     do
@@ -491,6 +568,8 @@ status_all () {
     wait
 }
 
+# If '$1' is not empty, show room status. Else show status of favorites
+# '$1' room (optional)
 global_status () {
     if [[ -z $1 ]]; then
         status_all
@@ -500,6 +579,7 @@ global_status () {
     fi
 }
 
+# Show favorites on stdout
 favorites_list () {
     while IFS="" read -r room || [ -n "$room" ]
     do
@@ -507,24 +587,35 @@ favorites_list () {
     done < "$FAVORITES_FILE"
 }
 
+# Open rooms directory
 open_rooms_dir () {
     $VIEWER "$ROOMS_DIR"
 }
 
+# Save rooms list from given range
+# '$1' gender
+# '$2' offset
+# '$3' limit
 save_room_list () {
     curl -sL --compressed -H "$XRW_HEADER" "$ROOMS_URL/?genders=$1&offset=$2&limit=$3&enable_recommendations=false" -o "$LASTROOMS_FILE"
 }
 
+# Get and show rooms from given range
+# '$1' range
 fetch_room_range () {
     valid_room_range "$1" || send_exit_error $INVALID_ROOM_RANGE
     local gender
+    # Extract gender
     gender="${1%%:*}"
     local offset
+    # Extract offset
     offset="${1#*:}"
     offset="${offset%:*}"
     [[ -z $offset ]] && offset=0
+    # If offset contains 2 digits, remove 0 from begining if exist. (09 -> 9)
     [[ ${#offset} -ne 1 ]] && offset="${offset#0}"
     local limit
+    # Extract limit
     limit="${1##*:}"
     [[ ${#limit} -ne 1 ]] && limit="${limit#0}"
     [[ $limit -eq 0 ]] && send_exit_error $INVALID_ROOM_RANGE
@@ -536,6 +627,7 @@ fetch_room_range () {
     num_rooms="$(jq -e '.rooms | length' "$LASTROOMS_FILE")" || send_exit_error $JQ_ERROR
     [[ $num_rooms -eq 0 ]] && send_exit_error $EMPTY_ROOM_LIST
     echo -e "${GREEN_FG}TIP:${CLEAR_FG} Go back in the image viewer to see the most recent ones."
+    # In some cases promoted rooms are found
     [[ $limit -lt $num_rooms ]] && echo -e "$RED_FG$((num_rooms-limit)) promoted room(s) found !$CLEAR_FG"
     clear_rooms_dir
 
@@ -543,6 +635,7 @@ fetch_room_range () {
     local preffix
     local room
     while true; do
+        # Fetch room previews by 'FETCH_STEPS' at time
         while room="$(jq -Mre ".rooms.[$index].username" "$LASTROOMS_FILE")"; do
             index+=1
             [[ $index -lt 10 ]] && preffix="0$index" || preffix="$index"
@@ -552,16 +645,20 @@ fetch_room_range () {
         wait
         read -rp "Open previews of fetched rooms? (Y/N): " save
         [[ $save == [yY] || $save == [yY][eE][sS] ]] && open_rooms_dir
-        [[ $index -eq $num_rooms ]] && break
+        [[ $index -eq $num_rooms ]] && break # There are no remaining rooms
         read -rp "Continue fetching previews? $((num_rooms-index)) remaining (Y/N): " save
         [[ $save == [yY] || $save == [yY][eE][sS] ]] || break
     done
 }
 
+# Save biocontext of given room
+# '$1' room
 get_bio () {
     curl -sL --compressed -H "$XRW_HEADER" "${BIOCONTEXT_URL}/$1" -o "$BIOCONTEXT_FILE"
 }
 
+# Show basic info using biocontext
+# '$1' room
 show_info () {
     valid_username "$1" || send_exit_error $INVALID_USERNAME
     get_bio "$1" || send_exit_error $BIOCONTEXT_ERROR
@@ -581,20 +678,25 @@ show_info () {
     jq -M '.time_since_last_broadcast' "$BIOCONTEXT_FILE"
 }
 
+# Show biocontext
+# '$1' room
 show_bio () {
     valid_username "$1" || send_exit_error $INVALID_USERNAME
     get_bio "$1" || send_exit_error $BIOCONTEXT_ERROR
     jq . "$BIOCONTEXT_FILE"
 }
 
+# Clear random file
 clear_random_file () {
     rm -f ${RANDOM_FILE_T:?}*
 }
 
+# Open random file
 open_random_file () {
     $VIEWER ${RANDOM_FILE_T:?}*
 }
 
+# Fetch random preview using a custom range (*:*:1)
 fetch_random_room () {
     local gender
     case $((RANDOM%4)) in
@@ -614,10 +716,12 @@ fetch_random_room () {
     echo "Fetched $room room ($gender). Enjoy!"
 }
 
+# Open captures directory
 open_captures_dir () {
     $VIEWER "$CAPTURES_DIR"
 }
 
+# Make directories
 mkdir -p "$MYPATH"
 mkdir -p "$DOWNLOADS_DIR"
 mkdir -p "$STREAMS_DIR"
@@ -626,6 +730,7 @@ mkdir -p "$FAVORITES_DIR"
 mkdir -p "$ROOMS_DIR"
 touch "$FAVORITES_FILE"
 
+# Main switch
 case "$1" in
     add)
         add_room "$2"
@@ -684,7 +789,7 @@ case "$1" in
     search)
         keyword_search "$2"
         ;;
-    __extract_playlist)
+    __extract_playlist) # debug proposes
         valid_username "$2" || send_exit_error $INVALID_USERNAME
         __ep=""
         extract_playlist "$2" __ep
