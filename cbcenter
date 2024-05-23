@@ -96,6 +96,8 @@ LIGHT_BLUE_FG="\033[1;34m"
 YELLOW_FG="\033[1;33m"
 CLEAR_FG="\033[0m"
 
+# Check if a executable if found on PATH
+# '$1' executable name
 which_check () {
     echo -n "$1: "
     if which "$1" &>/dev/null; then
@@ -107,6 +109,7 @@ which_check () {
     fi
 }
 
+# Check dependencies and show info on stdout
 check_dependencies () {
     which_check curl
     which_check wget
@@ -115,9 +118,11 @@ check_dependencies () {
     which_check ffmpeg
     which_check ffplay
     echo "Use one of the following image viewers:"
-    echo -n "  "; [[ "$VIEWER" =~ ^imv ]] && echo -en "${LIGHT_BLUE_FG}using${CLEAR_FG} --> "; which_check imv
-    echo -n "  "; [[ "$VIEWER" =~ ^imv-x11 ]] && echo -n "${LIGHT_BLUE_FG}using${CLEAR_FG} --> "; which_check imv-x11
-    echo -n "  "; [[ "$VIEWER" =~ ^imv-wayland ]] && echo -n "${LIGHT_BLUE_FG}using${CLEAR_FG} --> "; which_check imv-wayland
+    # If found exact match on the first "word"
+    # (continuous characters without spaces) of viewer variable, then show 'using'
+    echo -n "  "; [[ "${VIEWER%% *}" =~ ^imv$ ]] && echo -en "${LIGHT_BLUE_FG}using${CLEAR_FG} --> "; which_check imv
+    echo -n "  "; [[ "${VIEWER%% *}" =~ ^imv-x11$ ]] && echo -n "${LIGHT_BLUE_FG}using${CLEAR_FG} --> "; which_check imv-x11
+    echo -n "  "; [[ "${VIEWER%% *}" =~ ^imv-wayland$ ]] && echo -n "${LIGHT_BLUE_FG}using${CLEAR_FG} --> "; which_check imv-wayland
     echo "... or use what you want. Execute '$mybasename __set_viewer command'."
 }
 
@@ -755,6 +760,26 @@ open_captures_dir () {
     $VIEWER "$CAPTURES_DIR"
 }
 
+# Set the image viewer command
+# '$1' image viewer
+set_viewer () {
+    # Verify that only contains letters, numbers, spaces, and '/' '.' '_' '-' symbols
+    if ! [[ "$1" =~ ^[a-zA-Z0-9\ \/\._-]+$ ]]; then
+        echo "Invalid image viewer" 2>&1
+        return $UNKNOWN_ERROR
+    fi
+    echo "Setting image viewer ..."
+    # Verify if it is on PATH
+    if ! which_check "${1%% *}"; then
+        echo "... but not found on PATH"
+        read -rp "Set anyway? (Y/N): " choice
+        [[ $choice == [yY] || $choice == [yY][eE][sS] ]] || return $UNKNOWN_ERROR
+    fi
+    # Escape slashes with backslashes: ${1//\//\\\/} (the first two slashes means 'replace all')
+    sed -i --follow-symlinks "s/VIEWER=\".*\"/VIEWER=\"${1//\//\\\/}\"/" "$0"
+    echo "Now you are using '$1'"
+}
+
 # Make directories
 mkdir -p "$MYPATH"
 mkdir -p "$DOWNLOADS_DIR"
@@ -854,7 +879,7 @@ case "$1" in
             clear_rooms_dir
         ;;
     __set_viewer)
-        sed -i --follow-symlinks "s/VIEWER=\".*\"/VIEWER=\"$2\"/" "$0"
+        set_viewer "$2"
         ;;
     __check_deps)
         check_dependencies
