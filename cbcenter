@@ -147,7 +147,9 @@ show_help () {
                                  - Fetch previews of public rooms.\n\
                                    See 'Fetch ranges' section.\n\
   view-rooms                     - Open fetched rooms.\n\
-  fetch-random                   - Fetch preview of random room.\n\
+  fetch-random       [gender]    - Fetch preview of random room.\n\
+                                   If 'gender' is provided, only fetch rooms\n\
+                                   with this 'gender'\n\
   view-random                    - Open fetched random.\n\
   fetch-favorites                - Fetch previews of favorite rooms.\n\
   view-favorites                 - Open fetched favorites.\n\
