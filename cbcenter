@@ -94,6 +94,11 @@ LIGHT_BLUE_FG="\033[1;34m"
 YELLOW_FG="\033[1;33m"
 CLEAR_FG="\033[0m"
 
+show_dist_warning () {
+    echo -e "${RED_FG}WARNING: Do not distribute the content obtained with this program\n\
+without the user's consent.${CLEAR_FG}"
+}
+
 # Show help block
 show_help () {
     echo -e "$PROJECT usage:\nManage your favorite rooms from $CB_ROOT_URL.\n\n\
@@ -628,7 +633,7 @@ fetch_room_range () {
     [[ $num_rooms -eq 0 ]] && send_exit_error $EMPTY_ROOM_LIST
     echo -e "${GREEN_FG}TIP:${CLEAR_FG} Go back in the image viewer to see the most recent ones."
     # In some cases promoted rooms are found
-    [[ $limit -lt $num_rooms ]] && echo -e "$RED_FG$((num_rooms-limit)) promoted room(s) found !$CLEAR_FG"
+    [[ $limit -lt $num_rooms ]] && echo -e "$GREEN_FG$((num_rooms-limit)) promoted room(s) found !$CLEAR_FG"
     clear_rooms_dir
 
     declare -i index=0
@@ -729,6 +734,8 @@ mkdir -p "$CAPTURES_DIR"
 mkdir -p "$FAVORITES_DIR"
 mkdir -p "$ROOMS_DIR"
 touch "$FAVORITES_FILE"
+
+show_dist_warning
 
 # Main switch
 case "$1" in
