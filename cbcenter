@@ -814,37 +814,39 @@ touch "$FAVORITES_FILE"
 
 show_dist_warning
 
+[[ -n "$2" ]] && param="$(trim_string "$2")"
+
 # Main switch
 case "$1" in
     add)
-        add_room "$2"
+        add_room "$param"
         ;;
     remove)
-        remove_room "$2"
+        remove_room "$param"
         ;;
     list)
         favorites_list
         ;;
     show-status)
-        global_status "$2"
+        global_status "$param"
         ;;
     show-programs)
-        room_programs "$2"
+        room_programs "$param"
         ;;
     show-info)
-        show_info "$2"
+        show_info "$param"
         ;;
     show-bio)
-        show_bio "$2"
+        show_bio "$param"
         ;;
     fetch-rooms)
-        fetch_room_range "$2"
+        fetch_room_range "$param"
         ;;
     view-rooms)
         open_rooms_dir
         ;;
     fetch-random)
-        fetch_random_room "$2"
+        fetch_random_room "$param"
         ;;
     view-random)
         open_random_file
@@ -856,27 +858,27 @@ case "$1" in
         open_favorites_dir
         ;;
     quick-thumb)
-        show_quick_thumb "$2"
+        show_quick_thumb "$param"
         ;;
     save-capture)
-        room_capture "$2"
+        room_capture "$param"
         ;;
     view-captures)
         open_captures_dir
         ;;
     save-stream)
-        save_room "$2"
+        save_room "$param"
         ;;
     play-stream)
-        play_room "$2"
+        play_room "$param"
         ;;
     search)
-        keyword_search "$2"
+        keyword_search "$param"
         ;;
     __extract_playlist) # debug proposes
-        valid_username "$2" || send_exit_error $INVALID_USERNAME
+        valid_username "$param" || send_exit_error $INVALID_USERNAME
         __ep=""
-        extract_playlist "$2" __ep
+        extract_playlist "$param" __ep
         echo "$__ep"
         ;;
     __clear_favorites)
@@ -902,7 +904,7 @@ case "$1" in
             clear_rooms_dir
         ;;
     __set_viewer)
-        set_viewer "$2"
+        set_viewer "$param"
         ;;
     __check_deps)
         check_dependencies
