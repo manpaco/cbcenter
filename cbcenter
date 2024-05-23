@@ -219,7 +219,7 @@ show_help () {
   - Fetch a (random) trans room:\n\
       $mybasename fetch-random t\n\
   - Set the image viewer:
-      $mybasename __set_viewer gpicviewer\n\
+      $mybasename __set_viewer gpicview\n\
       $mybasename __set_viewer \"imv-wayland -fd\"\n"
 }
 
