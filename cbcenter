@@ -94,6 +94,31 @@ LIGHT_BLUE_FG="\033[1;34m"
 YELLOW_FG="\033[1;33m"
 CLEAR_FG="\033[0m"
 
+which_check () {
+    echo -n "$1: "
+    if which "$1" &>/dev/null; then
+        echo "OK"
+        return $OK_CODE
+    else
+        echo -e "${RED_FG}NOT FOUND${CLEAR_FG}"
+        return $UNKNOWN_ERROR
+    fi
+}
+
+check_dependencies () {
+    which_check curl
+    which_check wget
+    which_check sed
+    which_check jq
+    which_check ffmpeg
+    which_check ffplay
+    echo "Use one of the following image viewers:"
+    echo -n "    "; which_check imv
+    echo -n "    "; which_check imv-x11
+    echo -n "    "; which_check imv-wayland
+    echo "... or use what you want. Execute '$mybasename __set_viewer command'."
+}
+
 show_dist_warning () {
     echo -e "${RED_FG}WARNING: Do not distribute the content obtained with this program\n\
 without the user's consent.${CLEAR_FG}"
@@ -130,7 +155,8 @@ show_help () {
     __clear_streams                - Remove all the saved stream files.\n\
     __clear_rooms                  - Remove all the fetched room files.\n\
     __clear_all\n\
-    __set_viewer       command     - Set the 'command' as viewer.\n\nFetch ranges:\n\n\
+    __set_viewer       command     - Set the 'command' as viewer.\n\
+    __check_deps                   - Check program dependencies.\n\nFetch ranges:\n\n\
     gender: Gender of room users.\n\
             'f' (female) or 'm' (male) or 'c' (couple) or 't' (trans)\n\
     offset: Begining room.\n\
@@ -826,6 +852,9 @@ case "$1" in
         ;;
     __set_viewer)
         sed -i --follow-symlinks "s/VIEWER=\".*\"/VIEWER=\"$2\"/" "$0"
+        ;;
+    __check_deps)
+        check_dependencies
         ;;
     help)
         show_help
