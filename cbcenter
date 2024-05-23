@@ -127,85 +127,85 @@ without the user's consent.${CLEAR_FG}"
 # Show help block
 show_help () {
     echo -e "$PROJECT usage:\nManage your favorite rooms from $CB_ROOT_URL.\n\n\
-    $mybasename COMMAND OPTION\n\nCommands and options:\n\n\
-    add                username    - Add new room to favorites.\n\
-    remove             username    - Remove room from favorites.\n\
-    list                           - List of favorite rooms.\n\
-    show-status        [username]  - Same as 'list' command, plus status.\n\
-                                     If 'username' is provided, only show that.\n\
-    show-programs      username    - Show available programs of given room.\n\
-    show-info          username    - Get biocontext and show basic info.\n\
-    show-bio           username    - Show biocontext.\n\
-    fetch-rooms        gender:[offset]:limit\n\
-                                   - Fetch previews of public rooms.\n\
-                                     See 'Fetch ranges' section.\n\
-    view-rooms                     - Open fetched rooms.\n\
-    fetch-random                   - Fetch preview of random room.\n\
-    view-random                    - Open fetched random.\n\
-    fetch-favorites                - Fetch previews of favorite rooms.\n\
-    view-favorites                 - Open fetched favorites.\n\
-    quick-thumb        username    - Show (not save) preview of given room.\n\
-    save-capture       username    - Save a screenshot (high resolution).\n\
-    view-captures                  - Open saved captures.\n\
-    save-stream        username    - Save stream of given room.\n\
-    play-stream        username    - Play stream of given room.\n\
-    search             keyword     - Search a keyword on the website.\n\
-    __clear_favorites              - Remove all the fetched preview files.\n\
-    __clear_captures               - Remove all the saved capture files.\n\
-    __clear_streams                - Remove all the saved stream files.\n\
-    __clear_rooms                  - Remove all the fetched room files.\n\
-    __clear_all\n\
-    __set_viewer       command     - Set the 'command' as viewer.\n\
-    __check_deps                   - Check program dependencies.\n\nFetch ranges:\n\n\
-    gender: Gender of room users.\n\
-            'f' (female) or 'm' (male) or 'c' (couple) or 't' (trans)\n\
-    offset: Begining room.\n\
-            Two digits (max) integer from 0 (or 00) to 99.\n\
-            If none is provided, the value 0 is taken.\n\
-    limit:  Number of rooms.\n\
-            Two digits (max) integer from 1 (or 01) to 99.\n\nDirectories and files:\n\n\
-    PROJECT DIR:   $MYPATH/\n\
-    DOWNLOADS DIR: $DOWNLOADS_DIR/\n\
-    FAVORITES:     $FAVORITES_FILE\n\
-    TEMPORAL DIR:  $TEMP_DIR/\n\
-    FAVORITES DIR: $FAVORITES_DIR/\n\
-    ROOMS DIR:     $ROOMS_DIR/\n\
-    LAST SEARCH:   $LASTSEARCH_FILE\n\
-    LAST ROOMS:    $LASTROOMS_FILE\n\
-    BIOCONTEXT:    $BIOCONTEXT_FILE\n\nExit codes:\n\n\
-    exit code $HTTP_TOO_MANY_REQUESTS_ERROR)\n\
-        You are probably being blocked by rate limiting.\n\
-        A rate limiting solution measures the amount of time between each\n\
-        request from each IP address, and also measures the number of\n\
-        requests within a specified timeframe. If there are too many\n\
-        requests from a single IP within the given timeframe, the rate\n\
-        limiting solution will not fulfill the IP address's requests for a\n\
-        certain amount of time.\n\
-    exit code $HTTP_NOT_FOUND_ERROR)\n\
-        The room does not exist.\n\
-    exit code $EMPTY_DATA or $CHUNK_NOT_FOUND)\n\
-        Connection error or corrupted data.\n\
-    exit code $PLAYLIST_NOT_FOUND)
-        If the room is online it could be private or hidden, otherwise it\n\
-        is offline. You can use 'show-info' command to see room status, i.e.\n\
-        public/private/hidden/offline.\n\nFAQs:\n\n\
-    - What is a 'program ID'?\n\
-        A 'program' represent the stream 'channel' or 'quality'. This channels\n\
-        are identified by ID, from '0' (lowest quality) to 'n' (highest quality).\n\
-        To get cam programs use 'info' command. You can go to FFMPEG Documentation\n\
-        for more info.\n\
-    - What do the strange errors mean when I want to play/save/capture?\n\
-        See 'Exit codes' section.
-    - How can I change the default image viewer for previews?\n\
-        Just change the 'VIEWER' variable to whatever you want (within the\n\
-        executable), or use '__set_viewer' command.\n\
-        NOTE: the image viewer must support opening entire directories.\n\
-    - Why are the rooms fetched in $FETCH_STEPS at a time?\n\
-        To avoid error code $HTTP_TOO_MANY_REQUESTS_ERROR. See 'Exit codes' section.\n\nExamples:\n\n\
-    - Fetch the first 10 female rooms:\n\
-        cbcenter fetch-rooms f::10\n\
-    - Fetch 30 rooms starting from 13th:\n\
-        cbcenter fetch-rooms c:13:30\n"
+  $mybasename COMMAND OPTION\n\nCommands and options:\n\n\
+  add                username    - Add new room to favorites.\n\
+  remove             username    - Remove room from favorites.\n\
+  list                           - List of favorite rooms.\n\
+  show-status        [username]  - Same as 'list' command, plus status.\n\
+                                   If 'username' is provided, only show that.\n\
+  show-programs      username    - Show available programs of given room.\n\
+  show-info          username    - Get biocontext and show basic info.\n\
+  show-bio           username    - Show biocontext.\n\
+  fetch-rooms        gender:[offset]:limit\n\
+                                 - Fetch previews of public rooms.\n\
+                                   See 'Fetch ranges' section.\n\
+  view-rooms                     - Open fetched rooms.\n\
+  fetch-random                   - Fetch preview of random room.\n\
+  view-random                    - Open fetched random.\n\
+  fetch-favorites                - Fetch previews of favorite rooms.\n\
+  view-favorites                 - Open fetched favorites.\n\
+  quick-thumb        username    - Show (not save) preview of given room.\n\
+  save-capture       username    - Save a screenshot (high resolution).\n\
+  view-captures                  - Open saved captures.\n\
+  save-stream        username    - Save stream of given room.\n\
+  play-stream        username    - Play stream of given room.\n\
+  search             keyword     - Search a keyword on the website.\n\
+  __clear_favorites              - Remove all the fetched preview files.\n\
+  __clear_captures               - Remove all the saved capture files.\n\
+  __clear_streams                - Remove all the saved stream files.\n\
+  __clear_rooms                  - Remove all the fetched room files.\n\
+  __clear_all\n\
+  __set_viewer       command     - Set the 'command' as viewer.\n\
+  __check_deps                   - Check program dependencies.\n\nFetch ranges:\n\n\
+  gender: Gender of room users.\n\
+          'f' (female) or 'm' (male) or 'c' (couple) or 't' (trans)\n\
+  offset: Begining room.\n\
+          Two digits (max) integer from 0 (or 00) to 99.\n\
+          If none is provided, the value 0 is taken.\n\
+  limit:  Number of rooms.\n\
+          Two digits (max) integer from 1 (or 01) to 99.\n\nDirectories and files:\n\n\
+  PROJECT DIR:   $MYPATH/\n\
+  DOWNLOADS DIR: $DOWNLOADS_DIR/\n\
+  FAVORITES:     $FAVORITES_FILE\n\
+  TEMPORAL DIR:  $TEMP_DIR/\n\
+  FAVORITES DIR: $FAVORITES_DIR/\n\
+  ROOMS DIR:     $ROOMS_DIR/\n\
+  LAST SEARCH:   $LASTSEARCH_FILE\n\
+  LAST ROOMS:    $LASTROOMS_FILE\n\
+  BIOCONTEXT:    $BIOCONTEXT_FILE\n\nExit codes:\n\n\
+  exit code $HTTP_TOO_MANY_REQUESTS_ERROR)\n\
+    You are probably being blocked by rate limiting.\n\
+    A rate limiting solution measures the amount of time between each\n\
+    request from each IP address, and also measures the number of\n\
+    requests within a specified timeframe. If there are too many\n\
+    requests from a single IP within the given timeframe, the rate\n\
+    limiting solution will not fulfill the IP address's requests for a\n\
+    certain amount of time.\n\
+  exit code $HTTP_NOT_FOUND_ERROR)\n\
+    The room does not exist.\n\
+  exit code $EMPTY_DATA or $CHUNK_NOT_FOUND)\n\
+    Connection error or corrupted data.\n\
+  exit code $PLAYLIST_NOT_FOUND)
+    If the room is online it could be private or hidden, otherwise it\n\
+    is offline. You can use 'show-info' command to see room status, i.e.\n\
+    public/private/hidden/offline.\n\nFAQs:\n\n\
+  - What is a 'program ID'?\n\
+      A 'program' represent the stream 'channel' or 'quality'. This channels\n\
+      are identified by ID, from '0' (lowest quality) to 'n' (highest quality).\n\
+      To get cam programs use 'info' command. You can go to FFMPEG Documentation\n\
+      for more info.\n\
+  - What do the strange errors mean when I want to play/save/capture?\n\
+      See 'Exit codes' section.
+  - How can I change the default image viewer for previews?\n\
+      Just change the 'VIEWER' variable to whatever you want (within the\n\
+      executable), or use '__set_viewer' command.\n\
+      NOTE: the image viewer must support opening entire directories.\n\
+  - Why are the rooms fetched in $FETCH_STEPS at a time?\n\
+      To avoid error code $HTTP_TOO_MANY_REQUESTS_ERROR. See 'Exit codes' section.\n\nExamples:\n\n\
+  - Fetch the first 10 female rooms:\n\
+      cbcenter fetch-rooms f::10\n\
+  - Fetch 30 rooms starting from 13th:\n\
+      cbcenter fetch-rooms c:13:30\n"
 }
 
 # Send error messange and exit program
