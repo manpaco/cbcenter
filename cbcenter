@@ -760,6 +760,17 @@ open_captures_dir () {
     $VIEWER "$CAPTURES_DIR"
 }
 
+# Remove leading and trailing spaces
+# '$1' string var
+trim_string() {
+    local var="$*"
+    # remove leading whitespace characters
+    var="${var#"${var%%[![:space:]]*}"}"
+    # remove trailing whitespace characters
+    var="${var%"${var##*[![:space:]]}"}"
+    printf '%s' "$var"
+}
+
 # Set the image viewer command
 # '$1' image viewer
 set_viewer () {
@@ -768,16 +779,18 @@ set_viewer () {
         echo "Invalid image viewer" 2>&1
         return $UNKNOWN_ERROR
     fi
+    local nviewer
+    nviewer="$(trim_string "$1")"
     echo "Setting image viewer ..."
     # Verify if it is on PATH
-    if ! which_check "${1%% *}"; then
+    if ! which_check "${nviewer%% *}"; then
         echo "... but not found on PATH"
         read -rp "Set anyway? (Y/N): " choice
         [[ $choice == [yY] || $choice == [yY][eE][sS] ]] || return $UNKNOWN_ERROR
     fi
-    # Escape slashes with backslashes: ${1//\//\\\/} (the first two slashes means 'replace all')
-    sed -i --follow-symlinks "s/VIEWER=\".*\"/VIEWER=\"${1//\//\\\/}\"/" "$0"
-    echo "Now you are using '$1'"
+    # Escape slashes with backslashes: ${nviewer//\//\\\/} (the first two slashes means 'replace all')
+    sed -i --follow-symlinks "s/VIEWER=\".*\"/VIEWER=\"${nviewer//\//\\\/}\"/" "$0"
+    echo "Now you are using '$nviewer'"
 }
 
 # Make directories
