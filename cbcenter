@@ -115,9 +115,9 @@ check_dependencies () {
     which_check ffmpeg
     which_check ffplay
     echo "Use one of the following image viewers:"
-    echo -n "  "; which_check imv
-    echo -n "  "; which_check imv-x11
-    echo -n "  "; which_check imv-wayland
+    echo -n "  "; [[ $VIEWER =~ ^imv ]] && echo -en "${LIGHT_BLUE_FG}using${CLEAR_FG} --> "; which_check imv
+    echo -n "  "; [[ $VIEWER =~ ^imv-x11 ]] && echo -n "${LIGHT_BLUE_FG}using${CLEAR_FG} --> "; which_check imv-x11
+    echo -n "  "; [[ $VIEWER =~ ^imv-wayland ]] && echo -n "${LIGHT_BLUE_FG}using${CLEAR_FG} --> "; which_check imv-wayland
     echo "... or use what you want. Execute '$mybasename __set_viewer command'."
 }
 
