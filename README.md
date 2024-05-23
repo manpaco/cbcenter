@@ -22,4 +22,4 @@ You need the following dependencies:
 
 - `imv` (or another image viewer) to open previews or captures.
 
-You can use `cbcenter __check_deps` to check the check the above list.
+You can use `cbcenter __check_deps` to check the list above.
