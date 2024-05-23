@@ -213,8 +213,10 @@ show_help () {
       To avoid error code $HTTP_TOO_MANY_REQUESTS_ERROR. See 'Exit codes' section.\n\nExamples:\n\n\
   - Fetch the first 10 female rooms:\n\
       cbcenter fetch-rooms f::10\n\
-  - Fetch 30 rooms starting from 13th:\n\
-      cbcenter fetch-rooms c:13:30\n"
+  - Fetch 30 (couples) rooms starting from 13th:\n\
+      cbcenter fetch-rooms c:13:30\n\
+  - Fetch a (random) trans room:\n\
+      cbcenter fetch-random t\n"
 }
 
 # Send error messange and exit program
