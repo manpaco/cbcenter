@@ -187,7 +187,8 @@ show_help () {
         Connection error or corrupted data.\n\
     exit code $PLAYLIST_NOT_FOUND)
         If the room is online it could be private or hidden, otherwise it\n\
-        is offline.\n\nFAQs:\n\n\
+        is offline. You can use 'show-info' command to see room status, i.e.\n\
+        public/private/hidden/offline.\n\nFAQs:\n\n\
     - What is a 'program ID'?\n\
         A 'program' represent the stream 'channel' or 'quality'. This channels\n\
         are identified by ID, from '0' (lowest quality) to 'n' (highest quality).\n\
