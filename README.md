@@ -21,3 +21,5 @@ You need the following dependencies:
 - `ffmpeg` (with `ffplay`) to save/play streams.
 
 - `imv` (or another image viewer) to open previews or captures.
+
+You can use `cbcenter __check_deps` to check the check the above list.
