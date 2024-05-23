@@ -1,6 +1,8 @@
 # cbcenter
 
-Copyright Chaturbate.com. All Rights Reserved. Do not distribute the content obtained with this program without the user's consent.
+Manage your favorite rooms.
+
+WARNING: Do not distribute the content obtained with this program without the user's consent.
 
 ## Usage
 
