@@ -1,10 +1,27 @@
-- Previews: https://thumb.live.mmcdn.com/riw/<user>.jpg
+- Previews:
+  https://thumb.live.mmcdn.com/riw/<user>.jpg (wide)
+  https://thumb.live.mmcdn.com/ri/<user>.jpg (narrow)
 - Search: https://chaturbate.com/ax/search/?keywords=<keyword>
 - Bio: https://chaturbate.com/api/biocontext/<user>
 - Rooms: https://chaturbate.com/api/ts/roomlist/room-list/
-    ?                            (extras key=value)
-    genders=f                    (<f>emale, <m>ale, <c>ouple, <t>rans)
-    limit=90                     (default int)
-    offset=0                     (default int)
-    enable_recommendations=false (bool)
-  example: https://chaturbate.com/api/ts/roomlist/room-list/?genders=f&enable_recommendations=false
+    ?                            (used to specify extras key=value)
+    genders=                     char: f (female), m (male), c (couple), t (trans)
+    limit=90                     int
+    offset=0                     int
+    hashtags=                    string
+    regions=                     string: AS (Asia), ER (Europe/Russia), NA (North America), SA (South America), O (Other)
+    from_age=                    int: greater (or equal) than 18
+    ages=                        int-int: <from>-<to>
+    to_age=                      int
+    enable_recommendations=false bool
+  example:
+    https://chaturbate.com/api/ts/roomlist/room-list/?genders=f&offset=12&limit=4&hashtags=tall&regions=SA,ER&from_age=20&ages=20-25&to_age=25&enable_recommendations=false
+- Media: https://chaturbate.com/photo_videos/api/pvcontext/<user>
+- Hashtags:
+  https://chaturbate.com/api/ts/hashtags/search_get_data/
+    ?
+    field=      string: JSON field. e.g. room_count
+    search=     idk
+  https://chaturbate.com/api/ts/hashtags/top_tags/
+    ?
+    count=      int
