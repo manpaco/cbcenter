@@ -748,7 +748,7 @@ open_random_file () {
 fetch_random_room () {
     local gender="$1"
     if [[ -n "$gender" ]] && ! [[ "$gender" =~ ^$GENDER_REGEX$ ]]; then
-        echo "Invalid gender"
+        echo "Invalid gender" 2>&1
         exit $UNKNOWN_ERROR
     fi
     [[ -z "$gender" ]] && case $((RANDOM%4)) in
