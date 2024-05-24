@@ -1,0 +1,12 @@
+- Add more fetch options:
+  hashtags, ages, and regions. See 'http-links' file for more info.
+  Command example: cbcenter fetch-rooms -g c -a 20:25 -r NA,SA -o 12 -l 40
+  -g --> gender
+  -a --> ages range
+  -r --> regions
+  -o --> offset
+  -l --> limit
+  An implementation with 'getopts' is probably better due to the use of
+  modifiers/switches (-x).
+- Open the first file in a directory, instead of the entire directory:
+  This way you can use a greater variety of image viewers.
