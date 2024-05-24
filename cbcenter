@@ -55,9 +55,9 @@ MINIMAL_CAM_REGEX="${CAM_ROOT_REGEX}\/${LIVE_USER_REGEX}"
 COMPLETE_CAM_REGEX="${MINIMAL_CAM_REGEX}${EXTRA_STUFF_REGEX}\/${PLAYLIST}"
 CHUNK_REGEX="chunklist_w[0-9]+_b[0-9]+_t[0-9a-zA-Z=]+\.m3u8"
 PROG_REGEX="BANDWIDTH=[0-9]+,NAME=\"FPS:[0-9]+\.[0-9]+\",CODECS=\"[a-z0-9.,]*\",RESOLUTION=[0-9]+x[0-9]+"
-ROOM_REGEX="$USER_REGEX"
-GENDER_REGEX="$FEMALE_ROOM|$MALE_ROOM|$COUPLE_ROOM|$TRANS_ROOM"
-ROOM_RANGE_REGEX="^${GENDER_REGEX}:[0-9]{0,2}:[0-9]{1,2}$"
+ROOM_REGEX="^${USER_REGEX}$"
+GENDER_REGEX="${FEMALE_ROOM}|${MALE_ROOM}|${COUPLE_ROOM}|${TRANS_ROOM}"
+ROOM_RANGE_REGEX="^(${GENDER_REGEX}:[0-9]{0,2}:[0-9]{1,2})$"
 
 # ----------- TOOLS ------------
 JQ_ONLINE=".online"
@@ -418,7 +418,7 @@ direct_link () {
 # return 0 if valid, else 1
 # '$1' username
 valid_username () {
-    [[ "$1" =~ ^${ROOM_REGEX}$ ]]
+    [[ "$1" =~ $ROOM_REGEX ]]
 }
 
 # Show formated date on stdout
@@ -457,7 +457,7 @@ remove_room () {
         [[ $line == q ]] && return $OK_CODE
         valid_id "$line" || send_exit_error $BAD_CHOICE
         # Validate choice
-        if echo "$match" | grep -q -e "^$line:" -; then
+        if echo "$match" | grep -q -E "^($line:)" -; then
             sed -i "${line}d" "$FAVORITES_FILE" && echo "Favorite removed!"
         else
             send_exit_error $BAD_CHOICE
@@ -747,7 +747,7 @@ open_random_file () {
 # '$1' gender
 fetch_random_room () {
     local gender="$1"
-    if [[ -n "$gender" ]] && ! [[ "$gender" =~ ^$GENDER_REGEX$ ]]; then
+    if [[ -n "$gender" ]] && ! [[ "$gender" =~ ^($GENDER_REGEX)$ ]]; then
         echo "Invalid gender" 2>&1
         exit $UNKNOWN_ERROR
     fi
@@ -781,7 +781,7 @@ trim_string() {
     var="${var#"${var%%[![:space:]]*}"}"
     # remove trailing whitespace characters
     var="${var%"${var##*[![:space:]]}"}"
-    printf '%s' "$var"
+    echo "$var"
 }
 
 # Set the image viewer command
