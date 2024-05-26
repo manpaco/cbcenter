@@ -144,9 +144,9 @@ show_help () {
                                    status (online/offline). If 'username' is\n\
                                    provided, only show that.\n\
   room-status        username    - Show room status (public/private/hidden/offline).
-  show-programs      username    - Show available programs of given room.\n\
-  show-info          username    - Get biocontext and show basic info.\n\
-  show-bio           username    - Show biocontext.\n\
+  room-programs      username    - Show available programs of given room.\n\
+  room-info          username    - Get biocontext and show basic info.\n\
+  room-bio           username    - Show biocontext.\n\
   fetch-rooms        gender:[offset]:limit\n\
                                  - Fetch previews of public rooms.\n\
                                    See 'Fetch ranges' section.\n\
@@ -542,7 +542,7 @@ fetch_favorites () {
 
 # Get and show preview of given room
 # '$1' username
-show_quick_thumb () {
+quick_thumb () {
     valid_username "$1" || send_exit_error $INVALID_USERNAME
     show_preview "$1"
 }
@@ -728,7 +728,7 @@ get_bio () {
 
 # Show basic info using biocontext
 # '$1' room
-show_info () {
+room_info () {
     valid_username "$1" || send_exit_error $INVALID_USERNAME
     get_bio "$1" || send_exit_error $BIOCONTEXT_ERROR
     echo -n "Real name: "
@@ -749,7 +749,7 @@ show_info () {
 
 # Show biocontext
 # '$1' room
-show_bio () {
+room_bio () {
     valid_username "$1" || send_exit_error $INVALID_USERNAME
     get_bio "$1" || send_exit_error $BIOCONTEXT_ERROR
     jq . "$BIOCONTEXT_FILE"
@@ -827,7 +827,7 @@ set_viewer () {
 }
 
 # Show room status (public/private/hidden/offline)
-show_status () {
+intern_status () {
     valid_username "$1" || send_exit_error $INVALID_USERNAME
     room_status "$1"
 }
@@ -860,16 +860,16 @@ case "$1" in
         global_status "$param"
         ;;
     room-status)
-        show_status "$param"
+        intern_status "$param"
         ;;
-    show-programs)
+    room-programs)
         room_programs "$param"
         ;;
-    show-info)
-        show_info "$param"
+    room-info)
+        room_info "$param"
         ;;
-    show-bio)
-        show_bio "$param"
+    room-bio)
+        room_bio "$param"
         ;;
     fetch-rooms)
         fetch_room_range "$param"
@@ -890,7 +890,7 @@ case "$1" in
         open_favorites_dir
         ;;
     quick-thumb)
-        show_quick_thumb "$param"
+        quick_thumb "$param"
         ;;
     save-capture)
         room_capture "$param"
