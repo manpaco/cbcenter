@@ -137,39 +137,39 @@ without the user's consent.${CLEAR_FG}\n"
 show_help () {
     echo -e "$PROJECT usage:\nManage your favorite rooms from $CB_ROOT_URL.\n\n\
   $mybasename COMMAND OPTION\n\nCommands and options:\n\n\
-  add                username    - Add new room to favorites.\n\
-  remove             username    - Remove room from favorites.\n\
-  list                           - List of favorite rooms.\n\
-  global-status      [username]  - Same as 'list' command, plus global\n\
-                                   status (online/offline). If 'username' is\n\
-                                   provided, only show that.\n\
-  room-status        username    - Show room status (public/private/hidden/offline).
-  room-programs      username    - Show available programs of given room.\n\
-  room-info          username    - Get biocontext and show basic info.\n\
-  room-bio           username    - Show biocontext.\n\
-  fetch-rooms        gender:[offset]:limit\n\
-                                 - Fetch previews of public rooms.\n\
-                                   See 'Fetch ranges' section.\n\
-  view-rooms                     - Open fetched rooms.\n\
-  fetch-random       [gender]    - Fetch preview of random room.\n\
-                                   If 'gender' is provided, only fetch rooms\n\
-                                   with this 'gender'\n\
-  view-random                    - Open fetched random.\n\
-  fetch-favorites                - Fetch previews of favorite rooms.\n\
-  view-favorites                 - Open fetched favorites.\n\
-  quick-thumb        username    - Show (not save) preview of given room.\n\
-  save-capture       username    - Save a screenshot (high resolution).\n\
-  view-captures                  - Open saved captures.\n\
-  save-stream        username    - Save stream of given room.\n\
-  play-stream        username    - Play stream of given room.\n\
-  search             keyword     - Search a keyword on the website.\n\
-  __clear_favorites              - Remove all the fetched preview files.\n\
-  __clear_captures               - Remove all the saved capture files.\n\
-  __clear_streams                - Remove all the saved stream files.\n\
-  __clear_rooms                  - Remove all the fetched room files.\n\
+  add            username    - Add new room to favorites.\n\
+  remove         username    - Remove room from favorites.\n\
+  list                       - List of favorite rooms.\n\
+  global-status  [username]  - Same as 'list' command, plus global\n\
+                               status (online/offline). If 'username' is\n\
+                               provided, only show that.\n\
+  room-status    username    - Show room status (public/private/hidden/offline).
+  room-programs  username    - Show available programs of given room.\n\
+  room-info      username    - Get biocontext and show basic info.\n\
+  room-bio       username    - Show biocontext.\n\
+  fetch-rooms    gender:[offset]:limit\n\
+                             - Fetch previews of public rooms.\n\
+                               See 'Fetch ranges' section.\n\
+  view-rooms                 - Open fetched rooms.\n\
+  fetch-random   [gender]    - Fetch preview of random room.\n\
+                               If 'gender' is provided, only fetch rooms\n\
+                               with this 'gender'\n\
+  view-random                - Open fetched random.\n\
+  fetch-favorites            - Fetch previews of favorite rooms.\n\
+  view-favorites             - Open fetched favorites.\n\
+  quick-thumb    username    - Show (not save) preview of given room.\n\
+  save-capture   username    - Save a screenshot (high resolution).\n\
+  view-captures              - Open saved captures.\n\
+  save-stream    username    - Save stream of given room.\n\
+  play-stream    username    - Play stream of given room.\n\
+  search         keyword     - Search a keyword on the website.\n\
+  __clear_favorites          - Remove all the fetched preview files.\n\
+  __clear_captures           - Remove all the saved capture files.\n\
+  __clear_streams            - Remove all the saved stream files.\n\
+  __clear_rooms              - Remove all the fetched room files.\n\
   __clear_all\n\
-  __set_viewer       command     - Set the 'command' as viewer.\n\
-  __check_deps                   - Check program dependencies.\n\nFetch ranges:\n\n\
+  __set_viewer   command     - Set the 'command' as viewer.\n\
+  __check_deps               - Check program dependencies.\n\nFetch ranges:\n\n\
   gender: Gender of room users.\n\
           'f' (female) or 'm' (male) or 'c' (couple) or 't' (trans)\n\
   offset: Begining room.\n\
