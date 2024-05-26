@@ -139,8 +139,10 @@ show_help () {
   add                username    - Add new room to favorites.\n\
   remove             username    - Remove room from favorites.\n\
   list                           - List of favorite rooms.\n\
-  show-status        [username]  - Same as 'list' command, plus status.\n\
-                                   If 'username' is provided, only show that.\n\
+  global-status      [username]  - Same as 'list' command, plus global\n\
+                                   status (online/offline). If 'username' is\n\
+                                   provided, only show that.\n\
+  room-status        username    - Show room status (public/private/hidden/offline).
   show-programs      username    - Show available programs of given room.\n\
   show-info          username    - Get biocontext and show basic info.\n\
   show-bio           username    - Show biocontext.\n\
@@ -197,7 +199,7 @@ show_help () {
     Connection error or corrupted data.\n\
   exit code $PLAYLIST_NOT_FOUND)
     If the room is online it could be private or hidden, otherwise it\n\
-    is offline. You can use 'show-info' command to see room status, i.e.\n\
+    is offline. You can use 'room-status' command to see room status, i.e.\n\
     public/private/hidden/offline.\n\nFAQs:\n\n\
   - What is a 'program ID'?\n\
       A 'program' represent the stream 'channel' or 'quality'. This channels\n\
@@ -318,10 +320,24 @@ curl_search () {
     curl -sL --compressed -H "$XRW_HEADER" "${SEARCH_URL}$1"
 }
 
-# return 0 if online, else 1
+# return 0 if online/private/hidden, else 1 (offline)
 # '$1' username
 is_online () {
     curl_search "$1" | jq -Mc $JQ_ONLINE | grep -q "\"$1\""
+}
+
+# Print room_status field from biocontext file (JSON)
+# '$1' room
+room_status () {
+    get_bio "$1"
+    jq -Mr '.room_status' "$BIOCONTEXT_FILE"
+}
+
+# return 0 if room is public, else 1 (private/hidden/offline)
+# not use in parallel jobs (using '&' at the end of function call)
+# '$1' room
+is_public () {
+    [[ "$(room_status "$1")" == "public" ]]
 }
 
 # return 0 if valid, else 1
@@ -535,7 +551,7 @@ open_favorites_dir () {
 # '$1' room
 play_room () {
     valid_username "$1" || send_exit_error $INVALID_USERNAME
-    is_online "$1" || send_exit_error $OFFLINE_ROOM
+    is_public "$1" || send_exit_error $NOT_PUBLIC_ROOM
     local room_link
     extract_playlist "$1" room_link
     ffplay -i "$room_link"
@@ -545,7 +561,7 @@ play_room () {
 # '$1' room
 save_room () {
     valid_username "$1" || send_exit_error $INVALID_USERNAME
-    is_online "$1" || send_exit_error $OFFLINE_ROOM
+    is_public "$1" || send_exit_error $NOT_PUBLIC_ROOM
     local room_link
     direct_link "$1" room_link
     local output
@@ -562,7 +578,7 @@ save_room () {
 # '$1' room
 room_capture () {
     valid_username "$1" || send_exit_error $INVALID_USERNAME
-    is_online "$1" || send_exit_error $OFFLINE_ROOM
+    is_public "$1" || send_exit_error $NOT_PUBLIC_ROOM
     local room_link
     direct_link "$1" room_link 99
     local output
@@ -574,7 +590,7 @@ room_capture () {
 # '$1' room
 room_programs () {
     valid_username "$1" || send_exit_error $INVALID_USERNAME
-    is_online "$1" || send_exit_error $OFFLINE_ROOM
+    is_public "$1" || send_exit_error $NOT_PUBLIC_ROOM
     local room_link
     extract_playlist "$1" room_link
     local room_data
@@ -598,7 +614,7 @@ keyword_search () {
 
 # Show status of given room
 # '$1' room
-show_status () {
+show_online_offline () {
     if is_online "$1"; then
         echo -e "$1 is ${LIGHT_BLUE_FG}online${CLEAR_FG}"
     else
@@ -610,19 +626,20 @@ show_status () {
 status_all () {
     while IFS="" read -r room || [ -n "$room" ]
     do
-        valid_username "$room" && show_status "$room" &
+        valid_username "$room" && show_online_offline "$room" &
     done < "$FAVORITES_FILE"
     wait
 }
 
 # If '$1' is not empty, show room status. Else show status of favorites
+# Only show online or offline (not the same as 'room_status' function)
 # '$1' room (optional)
 global_status () {
     if [[ -z $1 ]]; then
         status_all
     else
         valid_username "$1" || send_exit_error $INVALID_USERNAME
-        show_status "$1"
+        show_online_offline "$1"
     fi
 }
 
@@ -804,6 +821,12 @@ set_viewer () {
     echo "Now you are using '$1'"
 }
 
+# Show room status (public/private/hidden/offline)
+show_status () {
+    valid_username "$1" || send_exit_error $INVALID_USERNAME
+    room_status "$1"
+}
+
 # Make directories
 mkdir -p "$MYPATH"
 mkdir -p "$DOWNLOADS_DIR"
@@ -828,8 +851,11 @@ case "$1" in
     list)
         favorites_list
         ;;
-    show-status)
+    global-status)
         global_status "$param"
+        ;;
+    room-status)
+        show_status "$param"
         ;;
     show-programs)
         room_programs "$param"
