@@ -89,6 +89,7 @@ ROOM_LIST_ERROR=16
 EMPTY_ROOM_LIST=17
 BIOCONTEXT_ERROR=19
 JQ_ERROR=19
+NOT_PUBLIC_ROOM=20
 
 # ------------ COLORS -------------
 RED_FG="\033[0;31m"
@@ -300,6 +301,10 @@ send_exit_error () {
         "$JQ_ERROR")
             echo -e "An error occurred while processing json data !" 1>&2
             exit $JQ_ERROR
+            ;;
+        "$NOT_PUBLIC_ROOM")
+            echo -e "The room is not public !" 1>&2
+            exit $NOT_PUBLIC_ROOM
             ;;
         *)
             echo "UNKNOWN_ERROR" 1>&2
