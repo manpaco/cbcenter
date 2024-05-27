@@ -91,6 +91,7 @@ BIOCONTEXT_ERROR=19
 JQ_ERROR=19
 NOT_PUBLIC_ROOM=20
 ROOM_NOT_FOUND=21
+CURL_ERROR=22
 
 # ------------ COLORS -------------
 RED_FG="\033[0;31m"
@@ -310,6 +311,10 @@ send_exit_error () {
         "$ROOM_NOT_FOUND")
             echo -e "Room not found !" 1>&2
             exit $ROOM_NOT_FOUND
+            ;;
+        "$CURL_ERROR")
+            echo -e "An error occurred while fetching resource !" 1>&2
+            exit $CURL_ERROR
             ;;
         *)
             echo "UNKNOWN_ERROR" 1>&2
@@ -623,7 +628,7 @@ room_programs () {
 # '$1' keyword
 keyword_search () {
     valid_username "$1" || send_exit_error $INVALID_KEYWORD
-    curl_search "$1" > "$LASTSEARCH_FILE"
+    curl_search "$1" > "$LASTSEARCH_FILE" || send_exit_error $CURL_ERROR
     echo "Online rooms:"
     jq "$JQ_ONLINE" "$LASTSEARCH_FILE"
     echo "Recently online rooms:"
@@ -807,7 +812,8 @@ fetch_random_room () {
     save_room_list "$gender" $((RANDOM%100)) 1 || send_exit_error $ROOM_LIST_ERROR
     room="$(jq -Mre ".rooms[0].username" "$LASTROOMS_FILE")" || send_exit_error $JQ_ERROR
     clear_random_file
-    save_preview_in "$room" "$RANDOM_FILE_T${room}.$IMG_FORMAT" && open_random_file
+    save_preview_in "$room" "$RANDOM_FILE_T${room}.$IMG_FORMAT" || send_exit_error $CURL_ERROR
+    open_random_file
     echo "Fetched $room room ($gender). Enjoy!"
 }
 
