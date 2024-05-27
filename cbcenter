@@ -615,7 +615,7 @@ play_room () {
 # '$1' room
 save_room () {
     valid_username "$1" || send_exit_error $INVALID_USERNAME
-    assert_public_room "$1"
+    assert_public_room_alt "$1"
     local room_link
     direct_link "$1" room_link
     local output
@@ -632,7 +632,7 @@ save_room () {
 # '$1' room
 room_capture () {
     valid_username "$1" || send_exit_error $INVALID_USERNAME
-    assert_public_room "$1"
+    assert_public_room_alt "$1"
     local room_link
     direct_link "$1" room_link 99
     local output
@@ -644,7 +644,7 @@ room_capture () {
 # '$1' room
 room_programs () {
     valid_username "$1" || send_exit_error $INVALID_USERNAME
-    assert_public_room "$1"
+    assert_public_room_alt "$1"
     local room_link
     extract_playlist "$1" room_link
     local room_data
