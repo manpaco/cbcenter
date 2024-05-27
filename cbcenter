@@ -732,14 +732,14 @@ fetch_room_range () {
 # Save biocontext of given room
 # '$1' room
 get_bio () {
-    curl -sL --compressed -H "$XRW_HEADER" "${BIOCONTEXT_URL}/$1" -o "$BIOCONTEXT_FILE"
+    curl -sL --compressed -H "$XRW_HEADER" "${BIOCONTEXT_URL}/$1" -o "$BIOCONTEXT_FILE" || send_exit_error $BIOCONTEXT_ERROR
 }
 
 # Show basic info using biocontext
 # '$1' room
 room_info () {
     valid_username "$1" || send_exit_error $INVALID_USERNAME
-    get_bio "$1" || send_exit_error $BIOCONTEXT_ERROR
+    get_bio "$1"
     echo -n "Real name: "
     jq -M '.real_name' "$BIOCONTEXT_FILE"
     echo -n "Location: "
@@ -760,7 +760,7 @@ room_info () {
 # '$1' room
 room_bio () {
     valid_username "$1" || send_exit_error $INVALID_USERNAME
-    get_bio "$1" || send_exit_error $BIOCONTEXT_ERROR
+    get_bio "$1"
     jq . "$BIOCONTEXT_FILE"
 }
 
