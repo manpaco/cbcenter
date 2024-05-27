@@ -305,7 +305,7 @@ send_exit_error () {
             exit $JQ_ERROR
             ;;
         "$NOT_PUBLIC_ROOM")
-            echo -e "The room is not public !" 1>&2
+            echo -e "The room is not public (private/hidden) !" 1>&2
             exit $NOT_PUBLIC_ROOM
             ;;
         "$ROOM_NOT_FOUND")
@@ -572,12 +572,17 @@ open_favorites_dir () {
     $VIEWER "$FAVORITES_DIR"
 }
 
+assert_public_room () {
+    is_public "$1" && return $OK_CODE
+    ! is_online && send_exit_error $OFFLINE_ROOM
+    send_exit_error $NOT_PUBLIC_ROOM
+}
+
 # Play room stream
 # '$1' room
 play_room () {
     valid_username "$1" || send_exit_error $INVALID_USERNAME
-    is_online "$1" || send_exit_error $OFFLINE_ROOM
-    is_public "$1" || send_exit_error $NOT_PUBLIC_ROOM
+    assert_public_room "$1"
     local room_link
     extract_playlist "$1" room_link
     ffplay -i "$room_link"
@@ -587,8 +592,7 @@ play_room () {
 # '$1' room
 save_room () {
     valid_username "$1" || send_exit_error $INVALID_USERNAME
-    is_online "$1" || send_exit_error $OFFLINE_ROOM
-    is_public "$1" || send_exit_error $NOT_PUBLIC_ROOM
+    assert_public_room "$1"
     local room_link
     direct_link "$1" room_link
     local output
@@ -605,8 +609,7 @@ save_room () {
 # '$1' room
 room_capture () {
     valid_username "$1" || send_exit_error $INVALID_USERNAME
-    is_online "$1" || send_exit_error $OFFLINE_ROOM
-    is_public "$1" || send_exit_error $NOT_PUBLIC_ROOM
+    assert_public_room "$1"
     local room_link
     direct_link "$1" room_link 99
     local output
@@ -618,8 +621,7 @@ room_capture () {
 # '$1' room
 room_programs () {
     valid_username "$1" || send_exit_error $INVALID_USERNAME
-    is_online "$1" || send_exit_error $OFFLINE_ROOM
-    is_public "$1" || send_exit_error $NOT_PUBLIC_ROOM
+    assert_public_room "$1"
     local room_link
     extract_playlist "$1" room_link
     local room_data
