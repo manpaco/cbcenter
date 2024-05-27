@@ -741,7 +741,7 @@ room_info () {
     valid_username "$1" || send_exit_error $INVALID_USERNAME
     get_bio "$1"
     echo -n "Real name: "
-    jq -M '.real_name' "$BIOCONTEXT_FILE"
+    jq -M '.real_name' "$BIOCONTEXT_FILE" 2>/dev/null || send_exit_error $ROOM_NOT_FOUND
     echo -n "Location: "
     jq -M '.location' "$BIOCONTEXT_FILE"
     echo -n "Sex: "
@@ -761,7 +761,7 @@ room_info () {
 room_bio () {
     valid_username "$1" || send_exit_error $INVALID_USERNAME
     get_bio "$1"
-    jq . "$BIOCONTEXT_FILE"
+    jq . "$BIOCONTEXT_FILE" 2>/dev/null || send_exit_error $ROOM_NOT_FOUND
 }
 
 # Clear random file
