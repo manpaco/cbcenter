@@ -305,7 +305,7 @@ send_exit_error () {
             exit $JQ_ERROR
             ;;
         "$NOT_PUBLIC_ROOM")
-            echo -e "The room is not public (private/hidden) !" 1>&2
+            echo -e "The room is not public (${2:-private/hidden}) !" 1>&2
             exit $NOT_PUBLIC_ROOM
             ;;
         "$ROOM_NOT_FOUND")
@@ -348,6 +348,17 @@ room_status () {
     get_bio "$1"
     rs_out="$(jq -Mr '.room_status' "$BIOCONTEXT_FILE" 2>/dev/null)" ||
         send_exit_error $ROOM_NOT_FOUND
+}
+
+# return 0 if room is public, else 1 (private/hidden/offline)
+# not use in parallel jobs (using '&' at the end of function call)
+# Alternative implementation (store status on the second param)
+# '$1' room
+# '$2' status (out)
+is_public_alt () {
+    declare -n ipa_out="$2"
+    room_status "$1" ipa_out
+    [[ "$ipa_out" == "public" ]]
 }
 
 # return 0 if room is public, else 1 (private/hidden/offline)
@@ -572,6 +583,18 @@ open_favorites_dir () {
     $VIEWER "$FAVORITES_DIR"
 }
 
+# Make sure the room is public, else exit program with an error
+# Alternative implementation (less network usage)
+# '$1' room
+assert_public_room_alt () {
+    local apra_status
+    is_public_alt "$1" apra_status && return $OK_CODE
+    [[ "$apra_status" == "offline" ]] && send_exit_error $OFFLINE_ROOM
+    send_exit_error $NOT_PUBLIC_ROOM "$apra_status"
+}
+
+# Make sure the room is public, else exit program with an error
+# '$1' room
 assert_public_room () {
     is_public "$1" && return $OK_CODE
     ! is_online "$1" && send_exit_error $OFFLINE_ROOM
@@ -582,7 +605,7 @@ assert_public_room () {
 # '$1' room
 play_room () {
     valid_username "$1" || send_exit_error $INVALID_USERNAME
-    assert_public_room "$1"
+    assert_public_room_alt "$1"
     local room_link
     extract_playlist "$1" room_link
     ffplay -i "$room_link"
