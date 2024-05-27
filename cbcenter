@@ -90,6 +90,7 @@ EMPTY_ROOM_LIST=17
 BIOCONTEXT_ERROR=19
 JQ_ERROR=19
 NOT_PUBLIC_ROOM=20
+ROOM_NOT_FOUND=21
 
 # ------------ COLORS -------------
 RED_FG="\033[0;31m"
@@ -247,11 +248,11 @@ send_exit_error () {
             exit $CHUNK_NOT_FOUND
             ;;
         "$ROOM_ALREADY_EXIST")
-            echo "The room already exists !" 1>&2
+            echo "The room already exists in the favorites list !" 1>&2
             exit $ROOM_ALREADY_EXIST
             ;;
         "$ROOM_DOESNT_EXIST")
-            echo "The room does not exists !" 1>&2
+            echo "The room does not exists in the favorites list !" 1>&2
             exit $ROOM_DOESNT_EXIST
             ;;
         "$EMPTY_DATA")
@@ -306,6 +307,10 @@ send_exit_error () {
             echo -e "The room is not public !" 1>&2
             exit $NOT_PUBLIC_ROOM
             ;;
+        "$ROOM_NOT_FOUND")
+            echo -e "Room not found !" 1>&2
+            exit $ROOM_NOT_FOUND
+            ;;
         *)
             echo "UNKNOWN_ERROR" 1>&2
             exit $UNKNOWN_ERROR
@@ -334,15 +339,19 @@ is_online () {
 # Print room_status field from biocontext file (JSON)
 # '$1' room
 room_status () {
+    declare -n rs_out="$2"
     get_bio "$1"
-    jq -Mr '.room_status' "$BIOCONTEXT_FILE"
+    rs_out="$(jq -Mr '.room_status' "$BIOCONTEXT_FILE" 2>/dev/null)" ||
+        send_exit_error $ROOM_NOT_FOUND
 }
 
 # return 0 if room is public, else 1 (private/hidden/offline)
 # not use in parallel jobs (using '&' at the end of function call)
 # '$1' room
 is_public () {
-    [[ "$(room_status "$1")" == "public" ]]
+    local ip_status
+    room_status "$1" ip_status
+    [[ "$ip_status" == "public" ]]
 }
 
 # return 0 if valid, else 1
@@ -829,7 +838,9 @@ set_viewer () {
 # Show room status (public/private/hidden/offline)
 intern_status () {
     valid_username "$1" || send_exit_error $INVALID_USERNAME
-    room_status "$1"
+    local is=""
+    room_status "$1" is
+    echo "$is"
 }
 
 # Make directories
