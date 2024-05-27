@@ -535,12 +535,18 @@ show_preview () {
     curl -sL --compressed -H "$XRW_HEADER" --connect-timeout "$CONNECT_TIMEOUT" "${PREVIEW_URL}/$1.$IMG_FORMAT" | $VIEWER -
 }
 
+ff_helper () {
+    valid_username "$1" && is_online "$1" && save_preview "$1" "$FAVORITES_DIR" && echo "$1 fetched" && return $OK_CODE
+    echo -e "$1 ${RED_FG}error${CLEAR_FG}"
+    return $UNKNOWN_ERROR
+}
+
 # Get previews of favorites (online only)
 fetch_favorites () {
     clear_favorites_dir
     while IFS="" read -r room || [ -n "$room" ]
     do
-        valid_username "$room" && is_online "$room" && save_preview "$room" "$FAVORITES_DIR" && echo "$room fetched" &
+        ff_heler "$room" &
     done < "$FAVORITES_FILE"
     wait
     # Ask to show fetched previews
@@ -678,6 +684,12 @@ save_room_list () {
     curl -sL --compressed -H "$XRW_HEADER" "$ROOMS_URL/?genders=$1&offset=$2&limit=$3&enable_recommendations=false" -o "$LASTROOMS_FILE"
 }
 
+frr_helper () {
+    save_preview "$1" "$ROOMS_DIR" "$2" && echo "$1 fetched" && return $OK_CODE
+    echo -e "$1 ${RED_FG}error${CLEAR_FG}"
+    return $UNKNOWN_ERROR
+}
+
 # Get and show rooms from given range
 # '$1' range
 fetch_room_range () {
@@ -717,7 +729,7 @@ fetch_room_range () {
         while room="$(jq -Mre ".rooms[$index].username" "$LASTROOMS_FILE")"; do
             index+=1
             [[ $index -lt 10 ]] && preffix="0$index" || preffix="$index"
-            save_preview "$room" "$ROOMS_DIR" "$preffix" && echo "$room fetched" &
+            frr_helper "$room" "$preffix" &
             [[ $((index%FETCH_STEPS)) -ne 0 ]] || break
         done
         wait
