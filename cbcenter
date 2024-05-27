@@ -574,7 +574,7 @@ open_favorites_dir () {
 
 assert_public_room () {
     is_public "$1" && return $OK_CODE
-    ! is_online && send_exit_error $OFFLINE_ROOM
+    ! is_online "$1" && send_exit_error $OFFLINE_ROOM
     send_exit_error $NOT_PUBLIC_ROOM
 }
 
