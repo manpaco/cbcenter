@@ -402,15 +402,15 @@ get_data () {
 # '$2' store extracted playlist
 extract_playlist () {
     declare -n ep_out="$2"
-    local _cburl
-    _cburl="$(wrap_username "$1")"
-    local _page
-    if ! _page="$(wget -4 -qS -O - "$_cburl" 2>&1)"; then
-        [[ "$_page" =~ $HTTP_NOT_FOUND_TEXT ]] && send_exit_error $HTTP_NOT_FOUND_ERROR
-        [[ "$_page" =~ $HTTP_TOO_MANY_REQUESTS_TEXT ]] && send_exit_error $HTTP_TOO_MANY_REQUESTS_ERROR
+    local ep_cburl
+    ep_cburl="$(wrap_username "$1")"
+    local ep_page
+    if ! ep_page="$(wget -4 -qS -O - "$ep_cburl" 2>&1)"; then
+        [[ "$ep_page" =~ $HTTP_NOT_FOUND_TEXT ]] && send_exit_error $HTTP_NOT_FOUND_ERROR
+        [[ "$ep_page" =~ $HTTP_TOO_MANY_REQUESTS_TEXT ]] && send_exit_error $HTTP_TOO_MANY_REQUESTS_ERROR
     fi
-    _page="$(echo -e "$_page")"
-    [[ "$_page" =~ $COMPLETE_CAM_REGEX ]] || send_exit_error $PLAYLIST_NOT_FOUND
+    ep_page="$(echo -e "$ep_page")"
+    [[ "$ep_page" =~ $COMPLETE_CAM_REGEX ]] || send_exit_error $PLAYLIST_NOT_FOUND
     ep_out="${BASH_REMATCH[0]}"
     [[ -z $ep_out ]] && send_exit_error $UNKNOWN_ERROR
     return $OK_CODE
