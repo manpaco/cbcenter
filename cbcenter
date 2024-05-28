@@ -125,9 +125,11 @@ check_dependencies () {
     echo "Use one of the following image viewers:"
     # If found exact match on the first "word"
     # (continuous characters without spaces) of viewer variable, then show 'using'
-    echo -n "  "; [[ "${VIEWER%% *}" =~ ^imv$ ]] && echo -en "${LIGHT_BLUE_FG}using${CLEAR_FG} --> "; which_check imv
-    echo -n "  "; [[ "${VIEWER%% *}" =~ ^imv-x11$ ]] && echo -en "${LIGHT_BLUE_FG}using${CLEAR_FG} --> "; which_check imv-x11
-    echo -n "  "; [[ "${VIEWER%% *}" =~ ^imv-wayland$ ]] && echo -en "${LIGHT_BLUE_FG}using${CLEAR_FG} --> "; which_check imv-wayland
+    local cd_viewer
+    cd_viewer="$(trim_string "$VIEWER")"
+    echo -n "  "; [[ "${cd_viewer%% *}" =~ ^(imv)$ ]] && echo -en "${LIGHT_BLUE_FG}using${CLEAR_FG} --> "; which_check imv
+    echo -n "  "; [[ "${cd_viewer%% *}" =~ ^(imv-x11)$ ]] && echo -en "${LIGHT_BLUE_FG}using${CLEAR_FG} --> "; which_check imv-x11
+    echo -n "  "; [[ "${cd_viewer%% *}" =~ ^(imv-wayland)$ ]] && echo -en "${LIGHT_BLUE_FG}using${CLEAR_FG} --> "; which_check imv-wayland
     echo "... or use what you want. Execute '$mybasename __set_viewer command'."
 }
 
