@@ -485,7 +485,7 @@ rem_favorite_line () {
 
 favorite_choice () {
     declare -n fc_out="$1"
-    [[ $2 == "hide_list" ]] || favorites_list
+    [[ $2 == "hide_list" ]] || list_favorites
     read -rp "Type your choice (i.e. the beginning number before the ':'), or (Q)uit: " fc_out
     [[ $fc_out == [qQ] || -z "$fc_out" ]] && exit $OK_CODE
     valid_id "$fc_out" || send_exit_error $BAD_CHOICE
@@ -497,6 +497,29 @@ favorite_room_choice () {
     favorite_choice frc_choice "$2"
     fuc_out="$(get_favorite_line "$frc_choice")"
     [[ -z $fuc_out ]] && send_exit_error $UNKNOWN_ERROR
+}
+
+get_other_index () {
+    jq -Mre ".rooms[${1:?}].username" "$OTHERS_FILE"
+}
+
+list_others () {
+    num_rooms="$(jq -e '.rooms | length' "$OTHERS_FILE")" || send_exit_error $JQ_ERROR
+    [[ $num_rooms -eq 0 ]] && send_exit_error $EMPTY_ROOM_LIST
+    for ((i = 0 ; i < num_rooms ; i++)); do
+        echo "$i:$(get_other_index "$i")"
+    done
+}
+
+other_room_choice () {
+    declare -n orc_out="$1"
+    local orc_choice
+    [[ $2 == "hide_list" ]] || list_others
+    read -rp "Type your choice (i.e. the beginning number before the ':'), or (Q)uit: " orc_choice
+    [[ $orc_choice == [qQ] || -z "$orc_choice" ]] && exit $OK_CODE
+    valid_id "$orc_choice" || send_exit_error $BAD_CHOICE
+    orc_out="$(get_other_index "$orc_choice")"
+    [[ -z $orc_out ]] && send_exit_error $UNKNOWN_ERROR
 }
 
 # Add new room to favorites
@@ -715,11 +738,11 @@ global_status () {
 }
 
 # Show favorites on stdout
-favorites_list () {
+list_favorites () {
     declare -i line=1
     while IFS="" read -r room || [ -n "$room" ]
     do
-        echo "$line: $room"
+        echo "$line:$room"
         line+=1
     done < "$FAVORITES_FILE"
 }
@@ -933,7 +956,7 @@ case "$command" in
         remove_room "$param"
         ;;
     list)
-        favorites_list
+        list_favorites
         ;;
     status)
         global_status
@@ -959,6 +982,9 @@ case "$command" in
         ;;
     view-others)
         open_others_dir
+        ;;
+    list-others)
+        list_others
         ;;
     fetch-favorites)
         fetch_favorites
