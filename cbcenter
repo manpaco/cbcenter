@@ -487,16 +487,16 @@ rem_favorite_line () {
 
 favorite_choice () {
     declare -n fc_out="$1"
-    favorites_list
-    read -rp "Type your choice (i.e. the beginning number before the ':'), or (q)uit: " fc_out
-    [[ $fc_out == q ]] && exit $OK_CODE
+    [[ $2 == "hide_list" ]] || favorites_list
+    read -rp "Type your choice (i.e. the beginning number before the ':'), or (Q)uit: " fc_out
+    [[ $fc_out == [qQ] || -z "$fc_out" ]] && exit $OK_CODE
     valid_id "$fc_out" || send_exit_error $BAD_CHOICE
 }
 
 favorite_room_choice () {
     declare -n fuc_out="$1"
     local choice
-    favorite_choice choice
+    favorite_choice choice "$2"
     fuc_out="$(get_favorite_line "$choice")"
     [[ -z $fuc_out ]] && send_exit_error $UNKNOWN_ERROR
 }
@@ -529,9 +529,8 @@ remove_room () {
         [[ -z $match ]] && send_exit_error $ROOM_DOESNT_EXIST
         echo "No exact match found!"
         echo "$match"
-        read -rp "Type your choice to remove it (i.e. the beginning number before the ':'), or (q)uit: " line
-        [[ $line == q ]] && exit $OK_CODE
-        valid_id "$line" || send_exit_error $BAD_CHOICE
+        line=""
+        favorite_choice line hide_list
         # Validate choice
         if echo "$match" | grep -q -E "^($line:)" -; then
             rem_favorite_line "$line"
