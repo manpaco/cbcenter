@@ -383,14 +383,12 @@ valid_room_range () {
 # '$1' playlist data
 get_programs () {
     declare -n gp_data="$1"
-    local _progs
-    declare -i _current=0
+    declare -i gp_current=0
     while [[ $gp_data =~ $PROG_REGEX ]]; do
-        _progs="$_progs\t${YELLOW_FG}PROG_ID=\"$_current\"${CLEAR_FG} - ${BASH_REMATCH[0]}\n"
+        echo -e "\t${YELLOW_FG}PROG_ID=\"$gp_current\"${CLEAR_FG} - ${BASH_REMATCH[0]}"
         gp_data="${gp_data/${BASH_REMATCH[0]}/}"
-        _current+=1
+        gp_current+=1
     done
-    echo -e "$_progs"
 }
 
 # Get data from playlist and show on stdout
