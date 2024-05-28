@@ -556,8 +556,8 @@ fetch_favorites () {
     done < "$FAVORITES_FILE"
     wait
     # Ask to show fetched previews
-    read -rp "Open fetched previews? (Y/N): " save
-    [[ $save == [yY] || $save == [yY][eE][sS] ]] || return $OK_CODE
+    read -rp "Open previews? (Y/n): " ropen
+    [[ $ropen == [yY] || $ropen == [yY][eE][sS] || -z $ropen ]] || return $OK_CODE
     open_favorites_dir
 }
 
@@ -750,11 +750,12 @@ fetch_room_range () {
             [[ $((index%FETCH_STEPS)) -ne 0 ]] || break
         done
         wait
-        read -rp "Open previews of fetched rooms? (Y/N): " save
-        [[ $save == [yY] || $save == [yY][eE][sS] ]] && open_rooms_dir
+        read -rp "Open previews? (Y/n): " ropen
+        [[ $ropen == [yY] || $ropen == [yY][eE][sS] || -z $ropen ]] &&
+            open_rooms_dir
         [[ $index -eq $num_rooms ]] && break # There are no remaining rooms
-        read -rp "Continue fetching previews? $((num_rooms-index)) remaining (Y/N): " save
-        [[ $save == [yY] || $save == [yY][eE][sS] ]] || break
+        read -rp "Continue fetching? $((num_rooms-index)) remaining (Y/n): " rcont
+        [[ $rcont == [yY] || $rcont == [yY][eE][sS] || -z $rcont ]] || break
     done
 }
 
@@ -857,8 +858,8 @@ set_viewer () {
     # Verify if it is on PATH
     if ! which_check "${1%% *}"; then
         echo "... but not found on PATH"
-        read -rp "Set anyway? (Y/N): " choice
-        [[ $choice == [yY] || $choice == [yY][eE][sS] ]] || return $UNKNOWN_ERROR
+        read -rp "Set anyway? (Y/n): " choice
+        [[ $choice == [yY] || $choice == [yY][eE][sS] || -z $choice ]] || return $UNKNOWN_ERROR
     fi
     # Escape slashes with backslashes: ${1//\//\\\/} (the first two slashes means 'replace all')
     sed -i --follow-symlinks "s/VIEWER=\".*\"/VIEWER=\"${1//\//\\\/}\"/" "$0"
