@@ -538,6 +538,7 @@ add_room () {
 remove_room () {
     if [[ -z "$1" ]]; then
         local rr_choice
+        echo "Which room do you want to delete?"
         favorite_choice rr_choice
         rem_favorite_line "$rr_choice"
         return $OK_CODE
@@ -552,6 +553,7 @@ remove_room () {
         echo "No exact match found!"
         echo "$match"
         local rr_choice
+        echo "Which room do you want to delete?"
         favorite_choice rr_choice hide_list
         # Validate choice
         if echo "$match" | grep -q -E "^($rr_choice:)" -; then
@@ -625,6 +627,7 @@ fetch_favorites () {
     [[ $ropen == [yY] || $ropen == [yY][eE][sS] || -z $ropen ]] || return $OK_CODE
     open_favorites_dir
     local ff_choice=""
+    echo "Which room do you want to play?"
     favorite_room_choice ff_choice hide_list
     play_room "$ff_choice"
 }
@@ -640,6 +643,7 @@ quick_thumb () {
 open_favorites_dir () {
     $VIEWER "$FAVORITES_DIR"
     local ofd_choice=""
+    echo "Which room do you want to play?"
     favorite_room_choice ofd_choice
     play_room "$ofd_choice"
 }
@@ -752,6 +756,7 @@ list_favorites () {
 open_others_dir () {
     $VIEWER "$OTHERS_DIR"
     local ood_choice
+    echo "Which room do you want to play?"
     other_room_choice ood_choice
     play_room "$ood_choice"
 }
@@ -821,6 +826,7 @@ fetch_others_range () {
         [[ $rcont == [yY] || $rcont == [yY][eE][sS] || -z $rcont ]] || break
     done
     local for_choice
+    echo "Which room do you want to play?"
     other_room_choice for_choice hide_list
     play_room "$for_choice"
 }
