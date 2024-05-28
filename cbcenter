@@ -636,9 +636,9 @@ assert_public_room () {
 play_room () {
     valid_username "$1" || send_exit_error $INVALID_USERNAME
     assert_public_room "$1"
-    local room_link
-    extract_playlist "$1" room_link
-    ffplay -i "$room_link"
+    local pr_link
+    extract_playlist "$1" pr_link
+    ffplay -i "$pr_link"
 }
 
 # Save room stream
@@ -646,16 +646,15 @@ play_room () {
 save_room () {
     valid_username "$1" || send_exit_error $INVALID_USERNAME
     assert_public_room "$1"
-    local room_link
-    direct_link "$1" room_link
-    local output
+    local sr_link
+    direct_link "$1" sr_link
     output="${STREAMS_DIR}/$(formated_date)-$1.$VIDEO_FORMAT"
-    ffmpeg -i "$room_link" -codec copy "$output"
+    ffmpeg -i "$sr_link" -codec copy "$output"
 
     # Another way (slower ffmpeg startup)
-    #extract_playlist "$1" room_link
+    #extract_playlist "$1" pr_link
     #room_prog=99
-    #ffmpeg -i "$room_link" -map v:p:$room_prog -map a:p:$room_prog -codec copy "$output"
+    #ffmpeg -i "$pr_link" -map v:p:$room_prog -map a:p:$room_prog -codec copy "$output"
 }
 
 # Save room screenshot
@@ -663,11 +662,10 @@ save_room () {
 save_capture () {
     valid_username "$1" || send_exit_error $INVALID_USERNAME
     assert_public_room "$1"
-    local room_link
-    direct_link "$1" room_link 99
-    local output
+    local sc_link
+    direct_link "$1" sc_link 99
     output="${CAPTURES_DIR}/$(formated_date)-$1.$IMG_FORMAT"
-    ffmpeg -i "$room_link" -frames:v 1 -update true "$output"
+    ffmpeg -i "$sc_link" -frames:v 1 -update true "$output"
 }
 
 # Show room programs
@@ -675,10 +673,9 @@ save_capture () {
 room_programs () {
     valid_username "$1" || send_exit_error $INVALID_USERNAME
     assert_public_room "$1"
-    local room_link
-    extract_playlist "$1" room_link
-    local room_data
-    room_data="$(get_data "$room_link")"
+    local rp_link
+    extract_playlist "$1" rp_link
+    room_data="$(get_data "$rp_link")"
     [[ -z $room_data ]] && send_exit_error $EMPTY_DATA
     get_programs room_data
 }
@@ -894,9 +891,9 @@ set_viewer () {
 # Show room status (public/private/hidden/offline)
 intern_status () {
     valid_username "$1" || send_exit_error $INVALID_USERNAME
-    local is=""
-    room_status "$1" is
-    echo "$is"
+    local is_status
+    room_status "$1" is_status
+    echo "$is_status"
 }
 
 # Discard invalid usernames from FAVORITES_FILE
