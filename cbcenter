@@ -504,9 +504,9 @@ favorite_room_choice () {
 add_room () {
     valid_username "$1" || send_exit_error $INVALID_USERNAME
     room_exists "$1" && send_exit_error $ROOM_ALREADY_EXIST
-    local ar_aux
-    room_status "$1" ar_aux
-    echo "$1" >> "$FAVORITES_FILE" && echo "Favorite added! The room is $ar_aux"
+    local ar_status
+    room_status "$1" ar_status
+    echo "$1" >> "$FAVORITES_FILE" && echo "Favorite added! The room is $ar_status"
 }
 
 # Remove room from favorites
