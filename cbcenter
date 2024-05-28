@@ -822,7 +822,7 @@ room_bio () {
 }
 
 valid_gender () {
-    [[ "$gender" =~ ^($GENDER_REGEX)$ ]]
+    [[ "$1" =~ ^($GENDER_REGEX)$ ]]
 }
 
 # Show random preview using a custom range ('$1':RANDOM:1 or RANDOM:RANDOM:1 if '$1' is empty)
