@@ -612,7 +612,7 @@ save_room () {
 
 # Save room screenshot
 # '$1' room
-room_capture () {
+save_capture () {
     valid_username "$1" || send_exit_error $INVALID_USERNAME
     assert_public_room "$1"
     local room_link
@@ -933,7 +933,7 @@ case "$1" in
         quick_thumb "$param"
         ;;
     save-capture)
-        room_capture "$param"
+        save_capture "$param"
         ;;
     view-captures)
         open_captures_dir
