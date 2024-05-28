@@ -156,7 +156,6 @@ show_help () {
                              provided, only fetch rooms with this 'gender'.\n\
   thumbnail      username  - Show preview of given room.\n\
   save-capture   username  - Save a screenshot (high resolution).\n\
-  view-captures            - Open saved captures.\n\
   save-stream    username  - Save stream of given room.\n\
   play-stream    username  - Play stream of given room.\n\
   keyword-search  keyword  - Search a keyword on the website.\n\
@@ -802,11 +801,6 @@ quick_rand () {
     echo "Fetched $room room ($gender). Enjoy!"
 }
 
-# Open captures directory
-open_captures_dir () {
-    $VIEWER "$CAPTURES_DIR"
-}
-
 # Remove leading and trailing spaces
 # '$1' string var
 trim_string() {
@@ -914,9 +908,6 @@ case "$1" in
         ;;
     save-capture)
         save_capture "$param"
-        ;;
-    view-captures)
-        open_captures_dir
         ;;
     save-stream)
         save_room "$param"
