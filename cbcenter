@@ -145,8 +145,10 @@ show_help () {
   $mybasename COMMAND OPTION\n\nCommands and options:\n\n\
   add              username  - Add new room to favorites.\n\
   remove         [username]  - Remove room from favorites.\n\
-  list                       - List of favorite rooms.\n\
-  status                     - Same as 'list' command, plus online or offline.
+  fetch-favorites            - Fetch previews of favorite rooms.\n\
+  view-favorites             - Open fetched previews (favorites).\n\
+  list-favorites             - List of favorite rooms.\n\
+  favorites-status           - Same as 'list-favorites', plus online or offline.
   room-status    [username]  - Show room status, i.e. public, private, hidden,\n\
                                or offline.
   room-programs  [username]  - Show available programs of given room.\n\
@@ -156,15 +158,14 @@ show_help () {
                              - Fetch previews of other rooms.\n\
                                See 'Fetch ranges' section.\n\
   view-others                - Open fetched previews (others).\n\
-  fetch-favorites            - Fetch previews of favorite rooms.\n\
-  view-favorites             - Open fetched previews (favorites).\n\
-  random           [gender]  - Show preview of random room. If 'gender' is\n\
-                               provided, only fetch rooms with this 'gender'.\n\
-  thumbnail      [username]  - Show preview of given room.\n\
+  list-others                - List of other rooms.\n\
   save-capture   [username]  - Save a screenshot (high resolution).\n\
   save-stream    [username]  - Save stream of given room.\n\
   play-stream    [username]  - Play stream of given room.\n\
   keyword-search    keyword  - Search a keyword on the website.\n\
+  random           [gender]  - Show preview of random room. If 'gender' is\n\
+                               provided, only fetch rooms with this 'gender'.\n\
+  thumbnail      [username]  - Show preview of given room.\n\
   __clear_favorites          - Clear (remove files) the 'favorites' directory.\n\
   __clear_captures           - Clear (remove files) the 'captures' directory.\n\
   __clear_streams            - Clear (remove files) the 'streams' directory.\n\
@@ -955,10 +956,16 @@ case "$command" in
     remove)
         remove_room "$param"
         ;;
-    list)
+    fetch-favorites)
+        fetch_favorites
+        ;;
+    view-favorites)
+        open_favorites_dir
+        ;;
+    list-favorites)
         list_favorites
         ;;
-    status)
+    favorites-status)
         global_status
         ;;
     room-status)
@@ -986,19 +993,6 @@ case "$command" in
     list-others)
         list_others
         ;;
-    fetch-favorites)
-        fetch_favorites
-        ;;
-    view-favorites)
-        open_favorites_dir
-        ;;
-    random)
-        quick_rand "$param"
-        ;;
-    thumbnail)
-        [[ -z $param ]] && favorite_room_choice param
-        quick_thumb "$param"
-        ;;
     save-capture)
         [[ -z $param ]] && favorite_room_choice param
         save_capture "$param"
@@ -1013,6 +1007,13 @@ case "$command" in
         ;;
     keyword-search)
         keyword_search "$param"
+        ;;
+    random)
+        quick_rand "$param"
+        ;;
+    thumbnail)
+        [[ -z $param ]] && favorite_room_choice param
+        quick_thumb "$param"
         ;;
     __extract_playlist) # debug proposes
         [[ -z $param ]] && favorite_room_choice param
