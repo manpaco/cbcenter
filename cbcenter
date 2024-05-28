@@ -143,36 +143,37 @@ without the user's consent.${CLEAR_FG}\n"
 show_help () {
     echo -e "$PROJECT usage:\nManage your favorite rooms from $CB_ROOT_URL.\n\n\
   $mybasename COMMAND OPTION\n\nCommands and options:\n\n\
-  add              username  - Add new room to favorites.\n\
-  remove         [username]  - Remove room from favorites.\n\
-  fetch-favorites            - Fetch previews of favorite rooms.\n\
-  view-favorites             - Open fetched previews (favorites).\n\
-  list-favorites             - List of favorite rooms.\n\
-  favorites-status           - Same as 'list-favorites', plus online or offline.
-  room-status    [username]  - Show room status, i.e. public, private, hidden,\n\
-                               or offline.
-  room-programs  [username]  - Show available programs of given room.\n\
-  room-info      [username]  - Show basic info.\n\
-  room-bio       [username]  - Show biocontext.\n\
-  fetch-others   gender:[offset]:limit\n\
-                             - Fetch previews of other rooms.\n\
-                               See 'Fetch ranges' section.\n\
-  view-others                - Open fetched previews (others).\n\
-  list-others                - List of other rooms.\n\
-  save-capture   [username]  - Save a screenshot (high resolution).\n\
-  save-stream    [username]  - Save stream of given room.\n\
-  play-stream    [username]  - Play stream of given room.\n\
-  keyword-search    keyword  - Search a keyword on the website.\n\
-  random           [gender]  - Show preview of random room. If 'gender' is\n\
-                               provided, only fetch rooms with this 'gender'.\n\
-  thumbnail      [username]  - Show preview of given room.\n\
-  __clear_favorites          - Clear (remove files) the 'favorites' directory.\n\
-  __clear_captures           - Clear (remove files) the 'captures' directory.\n\
-  __clear_streams            - Clear (remove files) the 'streams' directory.\n\
-  __clear_others             - Clear (remove files) the 'others' directory.\n\
+  a, add               username  - Add new room to favorites.\n\
+  r, remove          [username]  - Remove room from favorites.\n\
+  ff, fetch-favorites            - Fetch previews of favorite rooms.\n\
+  vf, view-favorites             - Open fetched previews (favorites).\n\
+  ls, list-favorites             - List of favorite rooms.\n\
+  fs, favorites-status           - Same as 'list-favorites', plus online or\n\
+                                   offline.\n\
+  rs, room-status    [username]  - Show room status, i.e. public, private,\n\
+                                   hidden, or offline.\n\
+  rp, room-programs  [username]  - Show available programs of given room.\n\
+  ri, room-info      [username]  - Show basic info.\n\
+  rb, room-bio       [username]  - Show biocontext.\n\
+  fo, fetch-others   gender:[offset]:limit\n\
+                                 - Fetch previews of other rooms.\n\
+                                   See 'Fetch ranges' section.\n\
+  vo, view-others                - Open fetched previews (others).\n\
+  lo, list-others                - List of other rooms.\n\
+  sc, save-capture   [username]  - Save a screenshot (high resolution).\n\
+  ss, save-stream    [username]  - Save stream of given room.\n\
+  ps, play-stream    [username]  - Play stream of given room.\n\
+  ks, keyword-search    keyword  - Search a keyword on the website.\n\
+  ra, random           [gender]  - Show preview of random room. If 'gender' is\n\
+                                   provided, only fetch 'gender' rooms.\n\
+  tn, thumbnail      [username]  - Show preview of given room.\n\
+  __clear_favorites              - Clear the 'favorites' directory.\n\
+  __clear_captures               - Clear the 'captures' directory.\n\
+  __clear_streams                - Clear the 'streams' directory.\n\
+  __clear_others                 - Clear the 'others' directory.\n\
   __clear_all\n\
-  __set_viewer      command  - Set the 'command' as viewer.\n\
-  __check_deps               - Check program dependencies.\n\n\
+  __set_viewer      command      - Set the 'command' as viewer.\n\
+  __check_deps                   - Check program dependencies.\n\n\
 TIP: If [username] is not provided, you will be asked to choose an option\n\
      from your favorites.\n\nFetch ranges:\n\n\
   gender: Gender of room users.\n\
@@ -962,68 +963,68 @@ param="$2"
 
 # Main switch
 case "$command" in
-    add)
+    a|add)
         add_room "$param"
         ;;
-    remove)
+    r|remove)
         remove_room "$param"
         ;;
-    fetch-favorites)
+    ff|fetch-favorites)
         fetch_favorites
         ;;
-    view-favorites)
+    vf|view-favorites)
         open_favorites_dir
         ;;
-    list-favorites)
+    lf|list-favorites)
         list_favorites
         ;;
-    favorites-status)
+    fs|favorites-status)
         global_status
         ;;
-    room-status)
+    rs|room-status)
         [[ -z $param ]] && favorite_room_choice param
         intern_status "$param"
         ;;
-    room-programs)
+    rp|room-programs)
         [[ -z $param ]] && favorite_room_choice param
         room_programs "$param"
         ;;
-    room-info)
+    ri|room-info)
         [[ -z $param ]] && favorite_room_choice param
         room_info "$param"
         ;;
-    room-bio)
+    rb|room-bio)
         [[ -z $param ]] && favorite_room_choice param
         room_bio "$param"
         ;;
-    fetch-others)
+    fo|fetch-others)
         fetch_others_range "$param"
         ;;
-    view-others)
+    vo|view-others)
         open_others_dir
         ;;
-    list-others)
+    lo|list-others)
         list_others
         ;;
-    save-capture)
+    sc|save-capture)
         [[ -z $param ]] && favorite_room_choice param
         save_capture "$param"
         ;;
-    save-stream)
+    ss|save-stream)
         [[ -z $param ]] && favorite_room_choice param
         save_room "$param"
         ;;
-    play-stream)
+    ps|play-stream)
         [[ -z $param ]] && favorite_room_choice param
         play_room "$param"
         ;;
-    keyword-search)
+    ks|keyword-search)
         keyword_search "$param"
         ;;
-    random)
+    ra|random)
         quick_rand "$param"
         ;;
-    thumbnail)
+    tn|thumbnail)
         [[ -z $param ]] && favorite_room_choice param
         quick_thumb "$param"
         ;;
