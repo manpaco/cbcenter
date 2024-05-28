@@ -821,11 +821,15 @@ room_bio () {
     jq . "$BIOCONTEXT_FILE" 2>/dev/null || send_exit_error $ROOM_NOT_FOUND
 }
 
+valid_gender () {
+    [[ "$gender" =~ ^($GENDER_REGEX)$ ]]
+}
+
 # Show random preview using a custom range ('$1':RANDOM:1 or RANDOM:RANDOM:1 if '$1' is empty)
 # '$1' gender
 quick_rand () {
     local gender="$1"
-    if [[ -n "$gender" ]] && ! [[ "$gender" =~ ^($GENDER_REGEX)$ ]]; then
+    if [[ -n "$gender" ]] && ! valid_gender "$gender"; then
         echo "Invalid gender" 2>&1
         exit $UNKNOWN_ERROR
     fi
