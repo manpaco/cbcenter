@@ -6,7 +6,7 @@ PROJECT="cbcenter"
 # ---------- FILES AND DIRECTORIES -----------
 MYPATH="${HOME}/.local/$PROJECT"
 DOWNLOADS_DIR="${MYPATH}/downloads"
-FAVORITES_FILE="${MYPATH}/favorites"
+FAVORITES_FILE="${MYPATH}/favorites.cb"
 STREAMS_DIR="${DOWNLOADS_DIR}/streams"
 CAPTURES_DIR="${DOWNLOADS_DIR}/captures"
 
@@ -23,17 +23,17 @@ TEMP_DIR="/tmp/$PROJECT"
 FAVORITES_DIR="${TEMP_DIR}/favorites"
 PREVIEW_URL="https://thumb.live.mmcdn.com/riw"
 SEARCH_URL="https://chaturbate.com/ax/search/?keywords="
-LASTSEARCH_FILE="${TEMP_DIR}/lastsearch"
-ROOMS_DIR="${TEMP_DIR}/rooms"
-ROOMS_URL="https://chaturbate.com/api/ts/roomlist/room-list"
-LASTROOMS_FILE="${TEMP_DIR}/lastrooms"
+SEARCH_FILE="${TEMP_DIR}/search.cb"
+OTHERS_DIR="${TEMP_DIR}/others"
+OTHERS_URL="https://chaturbate.com/api/ts/roomlist/room-list"
+OTHERS_FILE="${TEMP_DIR}/others.cb"
 FEMALE_ROOM="f"
 MALE_ROOM="m"
 COUPLE_ROOM="c"
 TRANS_ROOM="t"
 FETCH_STEPS=10
 BIOCONTEXT_URL="https://chaturbate.com/api/biocontext"
-BIOCONTEXT_FILE="${TEMP_DIR}/biocontext"
+BIOCONTEXT_FILE="${TEMP_DIR}/biocontext.cb"
 
 # ------------ REGULAR EXPRESSIONS -------------
 ID_REGEX="^[0-9]+$"
@@ -152,12 +152,12 @@ show_help () {
   room-programs  [username]  - Show available programs of given room.\n\
   room-info      [username]  - Show basic info.\n\
   room-bio       [username]  - Show biocontext.\n\
-  fetch-rooms    gender:[offset]:limit\n\
-                             - Fetch previews of public rooms.\n\
+  fetch-others   gender:[offset]:limit\n\
+                             - Fetch previews of other rooms.\n\
                                See 'Fetch ranges' section.\n\
-  view-rooms                 - Open fetched rooms.\n\
+  view-others                - Open fetched previews (others).\n\
   fetch-favorites            - Fetch previews of favorite rooms.\n\
-  view-favorites             - Open fetched favorites.\n\
+  view-favorites             - Open fetched previews (favorites).\n\
   random           [gender]  - Show preview of random room. If 'gender' is\n\
                                provided, only fetch rooms with this 'gender'.\n\
   thumbnail      [username]  - Show preview of given room.\n\
@@ -186,9 +186,9 @@ TIP: If [username] is not provided, you will be asked to choose an option\n\
   FAVORITES:     $FAVORITES_FILE\n\
   TEMPORAL DIR:  $TEMP_DIR/\n\
   FAVORITES DIR: $FAVORITES_DIR/\n\
-  ROOMS DIR:     $ROOMS_DIR/\n\
-  LAST SEARCH:   $LASTSEARCH_FILE\n\
-  LAST ROOMS:    $LASTROOMS_FILE\n\
+  OTHERS DIR:    $OTHERS_DIR/\n\
+  LAST SEARCH:   $SEARCH_FILE\n\
+  LAST OTHERS:   $OTHERS_FILE\n\
   BIOCONTEXT:    $BIOCONTEXT_FILE\n\nExit codes:\n\n\
   exit code $HTTP_TOO_MANY_REQUESTS_ERROR)\n\
     You are probably being blocked by rate limiting.\n\
@@ -555,7 +555,7 @@ clear_streams_dir () {
 
 # Clear rooms directory
 clear_rooms_dir () {
-    rm -f "${ROOMS_DIR:?}"/*
+    rm -f "${OTHERS_DIR:?}"/*
 }
 
 # Get preview and save it in given file
@@ -684,13 +684,13 @@ room_programs () {
 # '$1' keyword
 keyword_search () {
     valid_username "$1" || send_exit_error $INVALID_KEYWORD
-    curl_search "$1" > "$LASTSEARCH_FILE" || send_exit_error $CURL_ERROR
+    curl_search "$1" > "$SEARCH_FILE" || send_exit_error $CURL_ERROR
     echo "Online rooms:"
-    jq "$JQ_ONLINE" "$LASTSEARCH_FILE"
+    jq "$JQ_ONLINE" "$SEARCH_FILE"
     echo "Recently online rooms:"
-    jq -M "$JQ_OFFLINE" "$LASTSEARCH_FILE"
+    jq -M "$JQ_OFFLINE" "$SEARCH_FILE"
     echo "Hashtags:"
-    jq -M "$JQ_HASGTAGS" "$LASTSEARCH_FILE"
+    jq -M "$JQ_HASGTAGS" "$SEARCH_FILE"
 }
 
 # Show status of given room
@@ -725,8 +725,8 @@ favorites_list () {
 }
 
 # Open rooms directory
-open_rooms_dir () {
-    $VIEWER "$ROOMS_DIR"
+open_others_dir () {
+    $VIEWER "$OTHERS_DIR"
 }
 
 # Save rooms list from given range
@@ -734,18 +734,18 @@ open_rooms_dir () {
 # '$2' offset
 # '$3' limit
 save_room_list () {
-    curl -sL --compressed -H "$XRW_HEADER" "$ROOMS_URL/?genders=$1&offset=$2&limit=$3&enable_recommendations=false" -o "$LASTROOMS_FILE"
+    curl -sL --compressed -H "$XRW_HEADER" "$OTHERS_URL/?genders=$1&offset=$2&limit=$3&enable_recommendations=false" -o "$OTHERS_FILE"
 }
 
-frr_helper () {
-    save_preview "$1" "$ROOMS_DIR" "$2" && echo "$1 fetched" && return $OK_CODE
+for_helper () {
+    save_preview "$1" "$OTHERS_DIR" "$2" && echo "$1 fetched" && return $OK_CODE
     echo -e "$1 ${RED_FG}error${CLEAR_FG}"
     return $UNKNOWN_ERROR
 }
 
 # Get and show rooms from given range
 # '$1' range
-fetch_room_range () {
+fetch_others_range () {
     valid_room_range "$1" || send_exit_error $INVALID_ROOM_RANGE
     local gender
     # Extract gender
@@ -767,7 +767,7 @@ fetch_room_range () {
 
     save_room_list "$gender" "$offset" "$limit" || send_exit_error $ROOM_LIST_ERROR
     declare -i num_rooms
-    num_rooms="$(jq -e '.rooms | length' "$LASTROOMS_FILE")" || send_exit_error $JQ_ERROR
+    num_rooms="$(jq -e '.rooms | length' "$OTHERS_FILE")" || send_exit_error $JQ_ERROR
     [[ $num_rooms -eq 0 ]] && send_exit_error $EMPTY_ROOM_LIST
     echo -e "${GREEN_FG}TIP:${CLEAR_FG} Go back in the image viewer to see the most recent ones."
     # In some cases promoted rooms are found
@@ -779,16 +779,16 @@ fetch_room_range () {
     local room
     while true; do
         # Fetch room previews by 'FETCH_STEPS' at time
-        while room="$(jq -Mre ".rooms[$index].username" "$LASTROOMS_FILE")"; do
+        while room="$(jq -Mre ".rooms[$index].username" "$OTHERS_FILE")"; do
             index+=1
             [[ $index -lt 10 ]] && preffix="0$index" || preffix="$index"
-            frr_helper "$room" "$preffix" &
+            for_helper "$room" "$preffix" &
             [[ $((index%FETCH_STEPS)) -ne 0 ]] || break
         done
         wait
         read -rp "Open previews? (Y/n): " ropen
         [[ $ropen == [yY] || $ropen == [yY][eE][sS] || -z $ropen ]] &&
-            open_rooms_dir
+            open_others_dir
         [[ $index -eq $num_rooms ]] && break # There are no remaining rooms
         read -rp "Continue fetching? $((num_rooms-index)) remaining (Y/n): " rcont
         [[ $rcont == [yY] || $rcont == [yY][eE][sS] || -z $rcont ]] || break
@@ -850,7 +850,7 @@ quick_rand () {
             ;;
     esac
     save_room_list "$gender" $((RANDOM%100)) 1 || send_exit_error $ROOM_LIST_ERROR
-    room="$(jq -Mre ".rooms[0].username" "$LASTROOMS_FILE")" || send_exit_error $JQ_ERROR
+    room="$(jq -Mre ".rooms[0].username" "$OTHERS_FILE")" || send_exit_error $JQ_ERROR
     show_preview "$room"
     echo "Fetched $room room ($gender). Enjoy!"
 }
@@ -910,7 +910,7 @@ mkdir -p "$DOWNLOADS_DIR"
 mkdir -p "$STREAMS_DIR"
 mkdir -p "$CAPTURES_DIR"
 mkdir -p "$FAVORITES_DIR"
-mkdir -p "$ROOMS_DIR"
+mkdir -p "$OTHERS_DIR"
 touch "$FAVORITES_FILE"
 
 show_dist_warning
@@ -954,11 +954,11 @@ case "$command" in
         [[ -z $param ]] && favorite_room_choice param
         room_bio "$param"
         ;;
-    fetch-rooms)
-        fetch_room_range "$param"
+    fetch-others)
+        fetch_others_range "$param"
         ;;
-    view-rooms)
-        open_rooms_dir
+    view-others)
+        open_others_dir
         ;;
     fetch-favorites)
         fetch_favorites
