@@ -942,13 +942,13 @@ check_favorites () {
 }
 
 # Make directories
-mkdir -p "$MYPATH"
-mkdir -p "$DOWNLOADS_DIR"
-mkdir -p "$STREAMS_DIR"
-mkdir -p "$CAPTURES_DIR"
-mkdir -p "$FAVORITES_DIR"
-mkdir -p "$OTHERS_DIR"
-touch "$FAVORITES_FILE"
+#[[ -d "$MYPATH" ]] || mkdir -p "$MYPATH"
+[[ -d "$DOWNLOADS_DIR" ]] || mkdir -p "$DOWNLOADS_DIR"
+[[ -d "$STREAMS_DIR" ]] || mkdir -p "$STREAMS_DIR"
+[[ -d "$CAPTURES_DIR" ]] || mkdir -p "$CAPTURES_DIR"
+[[ -d "$FAVORITES_DIR" ]] || mkdir -p "$FAVORITES_DIR"
+[[ -d "$OTHERS_DIR" ]] || mkdir -p "$OTHERS_DIR"
+[[ -e "$FAVORITES_FILE" ]] || touch "$FAVORITES_FILE"
 
 show_dist_warning
 check_favorites
