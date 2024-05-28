@@ -590,6 +590,7 @@ assert_public_room_alt () {
     local apra_status
     is_public_alt "$1" apra_status && return $OK_CODE
     [[ "$apra_status" == "offline" ]] && send_exit_error $OFFLINE_ROOM
+    [[ "$apra_status" == "null" ]] && send_exit_error $NOT_PUBLIC_ROOM banned
     send_exit_error $NOT_PUBLIC_ROOM "$apra_status"
 }
 
