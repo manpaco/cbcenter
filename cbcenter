@@ -92,6 +92,7 @@ JQ_ERROR=19
 NOT_PUBLIC_ROOM=20
 ROOM_NOT_FOUND=21
 CURL_ERROR=22
+BANNED_ROOM=23
 
 # ------------ COLORS -------------
 RED_FG="\033[0;31m"
@@ -316,6 +317,10 @@ send_exit_error () {
             echo -e "An error occurred while fetching resource !" 1>&2
             exit $CURL_ERROR
             ;;
+        "$BANNED_ROOM")
+            echo -e "The room is banned from the site !" 1>&2
+            exit $BANNED_ROOM
+            ;;
         *)
             echo "UNKNOWN_ERROR" 1>&2
             exit $UNKNOWN_ERROR
@@ -348,17 +353,7 @@ room_status () {
     get_bio "$1"
     rs_out="$(jq -Mr '.room_status' "$BIOCONTEXT_FILE" 2>/dev/null)" ||
         send_exit_error $ROOM_NOT_FOUND
-}
-
-# return 0 if room is public, else 1 (private/hidden/offline)
-# not use in parallel jobs (using '&' at the end of function call)
-# Alternative implementation (store status on the second param)
-# '$1' room
-# '$2' status (out)
-is_public_alt () {
-    declare -n ipa_out="$2"
-    room_status "$1" ipa_out
-    [[ "$ipa_out" == "public" ]]
+    [[ "$rs_out" == "null" ]] && send_exit_error $BANNED_ROOM
 }
 
 # return 0 if room is public, else 1 (private/hidden/offline)
@@ -483,7 +478,9 @@ room_exists () {
 add_room () {
     valid_username "$1" || send_exit_error $INVALID_USERNAME
     room_exists "$1" && send_exit_error $ROOM_ALREADY_EXIST
-    echo "$1" >> "$FAVORITES_FILE" && echo "Favorite added!"
+    local ar_aux
+    room_status "$1" ar_aux
+    echo "$1" >> "$FAVORITES_FILE" && echo "Favorite added! The room is $ar_aux"
 }
 
 # Remove room from favorites
@@ -590,9 +587,10 @@ open_favorites_dir () {
 # '$1' room
 assert_public_room_alt () {
     local apra_status
-    is_public_alt "$1" apra_status && return $OK_CODE
+    room_status "$1" apra_status
+    [[ "$apra_status" == "public" ]] && return $OK_CODE
     [[ "$apra_status" == "offline" ]] && send_exit_error $OFFLINE_ROOM
-    [[ "$apra_status" == "null" ]] && send_exit_error $NOT_PUBLIC_ROOM banned
+    #[[ "$apra_status" == "null" ]] && send_exit_error $NOT_PUBLIC_ROOM banned
     send_exit_error $NOT_PUBLIC_ROOM "$apra_status"
 }
 
