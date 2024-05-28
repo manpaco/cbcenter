@@ -495,9 +495,9 @@ favorite_choice () {
 
 favorite_room_choice () {
     declare -n fuc_out="$1"
-    local choice
-    favorite_choice choice "$2"
-    fuc_out="$(get_favorite_line "$choice")"
+    local frc_choice
+    favorite_choice frc_choice "$2"
+    fuc_out="$(get_favorite_line "$frc_choice")"
     [[ -z $fuc_out ]] && send_exit_error $UNKNOWN_ERROR
 }
 
@@ -515,7 +515,7 @@ add_room () {
 # '$1' room
 remove_room () {
     if [[ -z "$1" ]]; then
-        rr_choice=""
+        local rr_choice
         favorite_choice rr_choice
         rem_favorite_line "$rr_choice"
         return $OK_CODE
@@ -529,11 +529,11 @@ remove_room () {
         [[ -z $match ]] && send_exit_error $ROOM_DOESNT_EXIST
         echo "No exact match found!"
         echo "$match"
-        line=""
-        favorite_choice line hide_list
+        local rr_choice
+        favorite_choice rr_choice hide_list
         # Validate choice
-        if echo "$match" | grep -q -E "^($line:)" -; then
-            rem_favorite_line "$line"
+        if echo "$match" | grep -q -E "^($rr_choice:)" -; then
+            rem_favorite_line "$rr_choice"
         else
             send_exit_error $BAD_CHOICE
         fi
@@ -602,6 +602,9 @@ fetch_favorites () {
     read -rp "Open previews? (Y/n): " ropen
     [[ $ropen == [yY] || $ropen == [yY][eE][sS] || -z $ropen ]] || return $OK_CODE
     open_favorites_dir
+    local ff_choice=""
+    favorite_room_choice ff_choice hide_list
+    play_room "$ff_choice"
 }
 
 # Get and show preview of given room
@@ -614,6 +617,9 @@ quick_thumb () {
 # Open favorites directory
 open_favorites_dir () {
     $VIEWER "$FAVORITES_DIR"
+    local ofd_choice=""
+    favorite_room_choice ofd_choice
+    play_room "$ofd_choice"
 }
 
 # Make sure the room is public, else exit program with an error
