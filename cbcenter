@@ -93,6 +93,7 @@ ROOM_NOT_FOUND=21
 CURL_ERROR=22
 BANNED_ROOM=23
 INVALID_VIEWER=24
+INVALID_GENDER=25
 
 # ------------ COLORS -------------
 RED_FG="\033[0;31m"
@@ -327,6 +328,10 @@ send_exit_error () {
 Run '$mybasename __set_viewer command' to set a valid viewer." 1>&2
             exit $INVALID_VIEWER
             ;;
+        "$INVALID_GENDER")
+            echo -e "Invalid gender !" 1>&2
+            exit $INVALID_GENDER
+            ;;
         *)
             echo "UNKNOWN_ERROR" 1>&2
             exit $UNKNOWN_ERROR
@@ -409,6 +414,7 @@ extract_playlist () {
     _page="$(echo -e "$_page")"
     [[ "$_page" =~ $COMPLETE_CAM_REGEX ]] || send_exit_error $PLAYLIST_NOT_FOUND
     ep_out="${BASH_REMATCH[0]}"
+    [[ -z $ep_out ]] && send_exit_error $UNKNOWN_ERROR
     return $OK_CODE
 }
 
@@ -450,6 +456,7 @@ direct_link () {
         _root_locat="${_link%/*}"
     fi
     dl_out="${_root_locat}/${_chunk}"
+    [[ -z $dl_out ]] && send_exit_error $UNKNOWN_ERROR
     return $OK_CODE
 }
 
@@ -491,7 +498,7 @@ favorite_room_choice () {
     local choice
     favorite_choice choice
     fuc_out="$(get_favorite_line "$choice")"
-    [[ -z $fuc_out ]] && exit $UNKNOWN_ERROR
+    [[ -z $fuc_out ]] && send_exit_error $UNKNOWN_ERROR
 }
 
 # Add new room to favorites
@@ -829,10 +836,7 @@ valid_gender () {
 # '$1' gender
 quick_rand () {
     local gender="$1"
-    if [[ -n "$gender" ]] && ! valid_gender "$gender"; then
-        echo "Invalid gender" 2>&1
-        exit $UNKNOWN_ERROR
-    fi
+    [[ -n "$gender" ]] && ! valid_gender "$gender" && send_exit_error $INVALID_GENDER
     [[ -z "$gender" ]] && case $((RANDOM%4)) in
         0) gender=f
             ;;
@@ -875,7 +879,7 @@ set_viewer () {
     if ! which_check "${1%% *}"; then
         echo "... but not found on PATH"
         read -rp "Set anyway? (Y/n): " choice
-        [[ $choice == [yY] || $choice == [yY][eE][sS] || -z $choice ]] || return $UNKNOWN_ERROR
+        [[ $choice == [yY] || $choice == [yY][eE][sS] || -z $choice ]] || return $OK_CODE
     fi
     # Escape slashes with backslashes: ${1//\//\\\/} (the first two slashes means 'replace all')
     sed -i --follow-symlinks "s/VIEWER=\".*\"/VIEWER=\"${1//\//\\\/}\"/" "$0"
