@@ -143,9 +143,8 @@ show_help () {
   add            username    - Add new room to favorites.\n\
   remove         username    - Remove room from favorites.\n\
   list                       - List of favorite rooms.\n\
-  global-status  [username]  - Same as 'list' command, plus global\n\
-                               status (online/offline). If 'username' is\n\
-                               provided, only show that.\n\
+  status                     - Same as 'list' command, plus global\n\
+                               status (online/offline).
   room-status    username    - Show room status (public/private/hidden/offline).
   room-programs  username    - Show available programs of given room.\n\
   room-info      username    - Get biocontext and show basic info.\n\
@@ -659,25 +658,15 @@ show_online_offline () {
     fi
 }
 
-# Show status of favorites
-status_all () {
+# If '$1' is not empty, show room status. Else show status of favorites
+# Only show online or offline (not the same as 'room_status' function)
+# '$1' room (optional)
+global_status () {
     while IFS="" read -r room || [ -n "$room" ]
     do
         valid_username "$room" && show_online_offline "$room" &
     done < "$FAVORITES_FILE"
     wait
-}
-
-# If '$1' is not empty, show room status. Else show status of favorites
-# Only show online or offline (not the same as 'room_status' function)
-# '$1' room (optional)
-global_status () {
-    if [[ -z $1 ]]; then
-        status_all
-    else
-        valid_username "$1" || send_exit_error $INVALID_USERNAME
-        show_online_offline "$1"
-    fi
 }
 
 # Show favorites on stdout
@@ -907,8 +896,8 @@ case "$1" in
     list)
         favorites_list
         ;;
-    global-status)
-        global_status "$param"
+    status)
+        global_status
         ;;
     room-status)
         intern_status "$param"
