@@ -543,22 +543,22 @@ remove_room () {
 
 # Clear favorites directory
 clear_favorites_dir () {
-    rm -f ${FAVORITES_DIR:?}/*
+    rm -f "${FAVORITES_DIR:?}"/*
 }
 
 # Clear captures directory
 clear_captures_dir () {
-    rm -f ${CAPTURES_DIR:?}/*
+    rm -f "${CAPTURES_DIR:?}"/*
 }
 
 # Clear streams directory
 clear_streams_dir () {
-    rm -f ${STREAMS_DIR:?}/*
+    rm -f "${STREAMS_DIR:?}"/*
 }
 
 # Clear rooms directory
 clear_rooms_dir () {
-    rm -f ${ROOMS_DIR:?}/*
+    rm -f "${ROOMS_DIR:?}"/*
 }
 
 # Get preview and save it in given file
