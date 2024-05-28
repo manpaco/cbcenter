@@ -13,7 +13,7 @@
     from_age=                    int: greater (or equal) than 18
     ages=                        int-int: <from>-<to>
     to_age=                      int
-    enable_recommendations=false bool
+    enable_recommendations=      bool
   example:
     https://chaturbate.com/api/ts/roomlist/room-list/?genders=f&offset=12&limit=4&hashtags=tall&regions=SA,ER&from_age=20&ages=20-25&to_age=25&enable_recommendations=false
 - Media: https://chaturbate.com/photo_videos/api/pvcontext/<user>
@@ -25,3 +25,4 @@
   https://chaturbate.com/api/ts/hashtags/top_tags/
     ?
     count=      int
+- More: https://chaturbate.com/api/more_like/<user>
