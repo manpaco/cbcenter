@@ -751,6 +751,9 @@ list_favorites () {
 # Open rooms directory
 open_others_dir () {
     $VIEWER "$OTHERS_DIR"
+    local ood_choice
+    other_room_choice ood_choice
+    play_room "$ood_choice"
 }
 
 # Save rooms list from given range
@@ -817,6 +820,9 @@ fetch_others_range () {
         read -rp "Continue fetching? $((num_rooms-index)) remaining (Y/n): " rcont
         [[ $rcont == [yY] || $rcont == [yY][eE][sS] || -z $rcont ]] || break
     done
+    local for_choice
+    other_room_choice for_choice hide_list
+    play_room "$for_choice"
 }
 
 # Save biocontext of given room
