@@ -552,9 +552,11 @@ show_preview () {
 }
 
 ff_helper () {
-    valid_username "$1" && is_online "$1" && save_preview "$1" "$FAVORITES_DIR" && echo "$1 fetched" && return $OK_CODE
-    echo -e "$1 ${RED_FG}error${CLEAR_FG}"
-    return $UNKNOWN_ERROR
+    if valid_username "$1" && is_online "$1"; then
+        save_preview "$1" "$FAVORITES_DIR" && echo "$1 fetched" && return $OK_CODE
+        echo -e "$1 ${RED_FG}error${CLEAR_FG}"
+        return $UNKNOWN_ERROR
+    fi
 }
 
 # Get previews of favorites (online only)
@@ -562,7 +564,7 @@ fetch_favorites () {
     clear_favorites_dir
     while IFS="" read -r room || [ -n "$room" ]
     do
-        ff_heler "$room" &
+        ff_helper "$room" &
     done < "$FAVORITES_FILE"
     wait
     # Ask to show fetched previews
