@@ -466,6 +466,30 @@ room_exists () {
     grep -qx "$1" "$FAVORITES_FILE"
 }
 
+get_favorite_line () {
+    sed "${1}q;d" "$FAVORITES_FILE"
+}
+
+rem_favorite_line () {
+    sed -i "${1:?Empty parameter !}d" "$FAVORITES_FILE" && echo "Favorite removed!"
+}
+
+favorite_choice () {
+    declare -n fc_out="$1"
+    favorites_list
+    read -rp "Type your choice (i.e. the beginning number before the ':'), or (q)uit: " fc_out
+    [[ $fc_out == q ]] && exit $OK_CODE
+    valid_id "$fc_out" || send_exit_error $BAD_CHOICE
+}
+
+favorite_room_choice () {
+    declare -n fuc_out="$1"
+    local choice
+    favorite_choice choice
+    fuc_out="$(get_favorite_line "$choice")"
+    [[ -z $fuc_out ]] && exit $UNKNOWN_ERROR
+}
+
 # Add new room to favorites
 # '$1' room
 add_room () {
@@ -479,10 +503,15 @@ add_room () {
 # Remove room from favorites
 # '$1' room
 remove_room () {
+    if [[ -z "$1" ]]; then
+        rr_choice=""
+        favorite_choice rr_choice
+        rem_favorite_line "$rr_choice"
+        return $OK_CODE
+    fi
     valid_username "$1" || send_exit_error $INVALID_USERNAME
     if match="$(grep -xn "$1" "$FAVORITES_FILE")"; then # Exact match
-        sed -i "${match%%:*}d" "$FAVORITES_FILE" && echo "Favorite removed!"
-        echo "devel"
+        rem_favorite_line "${match%%:*}"
     else # Search partial matches
         # Use '-n' option on grep to use line numbers as choices if partial matches found
         match="$(grep -n "$1" "$FAVORITES_FILE")"
@@ -490,11 +519,11 @@ remove_room () {
         echo "No exact match found!"
         echo "$match"
         read -rp "Type your choice to remove it (i.e. the beginning number before the ':'), or (q)uit: " line
-        [[ $line == q ]] && return $OK_CODE
+        [[ $line == q ]] && exit $OK_CODE
         valid_id "$line" || send_exit_error $BAD_CHOICE
         # Validate choice
         if echo "$match" | grep -q -E "^($line:)" -; then
-            sed -i "${line}d" "$FAVORITES_FILE" && echo "Favorite removed!"
+            rem_favorite_line "$line"
         else
             send_exit_error $BAD_CHOICE
         fi
@@ -674,9 +703,11 @@ global_status () {
 
 # Show favorites on stdout
 favorites_list () {
+    declare -i line=1
     while IFS="" read -r room || [ -n "$room" ]
     do
-        echo "$room"
+        echo "$line: $room"
+        line+=1
     done < "$FAVORITES_FILE"
 }
 
@@ -894,15 +925,19 @@ case "$command" in
         global_status
         ;;
     room-status)
+        [[ -z $param ]] && favorite_room_choice param
         intern_status "$param"
         ;;
     room-programs)
+        [[ -z $param ]] && favorite_room_choice param
         room_programs "$param"
         ;;
     room-info)
+        [[ -z $param ]] && favorite_room_choice param
         room_info "$param"
         ;;
     room-bio)
+        [[ -z $param ]] && favorite_room_choice param
         room_bio "$param"
         ;;
     fetch-rooms)
@@ -921,21 +956,26 @@ case "$command" in
         quick_rand "$param"
         ;;
     thumbnail)
+        [[ -z $param ]] && favorite_room_choice param
         quick_thumb "$param"
         ;;
     save-capture)
+        [[ -z $param ]] && favorite_room_choice param
         save_capture "$param"
         ;;
     save-stream)
+        [[ -z $param ]] && favorite_room_choice param
         save_room "$param"
         ;;
     play-stream)
+        [[ -z $param ]] && favorite_room_choice param
         play_room "$param"
         ;;
     keyword-search)
         keyword_search "$param"
         ;;
     __extract_playlist) # debug proposes
+        [[ -z $param ]] && favorite_room_choice param
         valid_username "$param" || send_exit_error $INVALID_USERNAME
         __ep=""
         extract_playlist "$param" __ep
