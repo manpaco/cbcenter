@@ -873,6 +873,13 @@ intern_status () {
     echo "$is"
 }
 
+check_favorites () {
+    while IFS='' read -r rline; do
+        valid_username "$rline" && echo "$rline"
+    done < "$FAVORITES_FILE" > "${FAVORITES_FILE}.checked"
+    mv "${FAVORITES_FILE}.checked" "$FAVORITES_FILE"
+}
+
 # Make directories
 mkdir -p "$MYPATH"
 mkdir -p "$DOWNLOADS_DIR"
@@ -883,6 +890,7 @@ mkdir -p "$ROOMS_DIR"
 touch "$FAVORITES_FILE"
 
 show_dist_warning
+check_favorites
 
 [[ -n "$2" ]] && param="$(trim_string "$2")"
 
