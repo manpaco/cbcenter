@@ -860,7 +860,8 @@ touch "$FAVORITES_FILE"
 show_dist_warning
 check_favorites
 
-[[ -n "$2" ]] && param="$(trim_string "$2")"
+param="$2"
+[[ -n "$param" ]] && param="$(trim_string "$2")"
 
 # Main switch
 case "$1" in
