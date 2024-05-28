@@ -420,40 +420,40 @@ extract_playlist () {
 # '$1' username
 # '$2' store extracted link
 direct_link () {
-    local _link
-    extract_playlist "$1" _link
+    local dl_link
+    extract_playlist "$1" dl_link
     declare -n dl_out="$2"
-    local _prog="$3"
-    local _data
-    _data="$(get_data "$_link")"
-    [[ -z $_data ]] && send_exit_error $EMPTY_DATA
-    if [[ -z $_prog ]]; then
-        get_programs _data
-        read -rp "Select a program ID: " _prog
-        valid_id "$_prog" || send_exit_error $INVALID_PROG_ID
+    local dl_prog="$3"
+    local dl_data
+    dl_data="$(get_data "$dl_link")"
+    [[ -z $dl_data ]] && send_exit_error $EMPTY_DATA
+    if [[ -z $dl_prog ]]; then
+        get_programs dl_data
+        read -rp "Select a program ID: " dl_prog
+        valid_id "$dl_prog" || send_exit_error $INVALID_PROG_ID
     fi
-    local _chunk
-    declare -i _current=0
+    local dl_chunk
+    declare -i dl_current=0
     # Extract chunk from data (chunks are .m3u8 files for specific stream quality)
     # If user choice prog id 0, then first chunk is extracted (low quality stream)
     # For high quality stream, pass high prog id (e.g. 99)
-    while [[ $_data =~ $CHUNK_REGEX ]] && [[ $_current -le $_prog ]]; do
-        _chunk="${BASH_REMATCH[0]}"
+    while [[ $dl_data =~ $CHUNK_REGEX ]] && [[ $dl_current -le $dl_prog ]]; do
+        dl_chunk="${BASH_REMATCH[0]}"
         # Remove match from data
-        _data="${_data/${BASH_REMATCH[0]}/}"
-        _current+=1
+        dl_data="${dl_data/${BASH_REMATCH[0]}/}"
+        dl_current+=1
     done
-    [[ -z $_chunk ]] && send_exit_error $CHUNK_NOT_FOUND
-    local _root_locat
+    [[ -z $dl_chunk ]] && send_exit_error $CHUNK_NOT_FOUND
+    local dl_root_locat
     # In some cases stream is located in another place than main playlist (_link)
-    if [[ $_data =~ $LOCATION_REGEX ]]; then
+    if [[ $dl_data =~ $LOCATION_REGEX ]]; then
         # If new location is found, replace it
-        _root_locat="${_link%%"${LIVE_PREFIX}"*}${BASH_REMATCH[0]}"
+        dl_root_locat="${dl_link%%"${LIVE_PREFIX}"*}${BASH_REMATCH[0]}"
     else
         # Else keep location and only remove '/playlist.m3u8' from '_link'
-        _root_locat="${_link%/*}"
+        dl_root_locat="${dl_link%/*}"
     fi
-    dl_out="${_root_locat}/${_chunk}"
+    dl_out="${dl_root_locat}/${dl_chunk}"
     [[ -z $dl_out ]] && send_exit_error $UNKNOWN_ERROR
     return $OK_CODE
 }
