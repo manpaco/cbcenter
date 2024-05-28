@@ -92,6 +92,7 @@ NOT_PUBLIC_ROOM=20
 ROOM_NOT_FOUND=21
 CURL_ERROR=22
 BANNED_ROOM=23
+INVALID_VIEWER=24
 
 # ------------ COLORS -------------
 RED_FG="\033[0;31m"
@@ -313,6 +314,12 @@ send_exit_error () {
         "$BANNED_ROOM")
             echo -e "The room is banned from the site !" 1>&2
             exit $BANNED_ROOM
+            ;;
+        "$INVALID_VIEWER")
+            echo -e "Invalid viewer command !" 1>&2
+            [[ -n "$2" ]] && echo -e "VIEWER variable contains: '${VIEWER}'\n\
+Run '$mybasename __set_viewer command' to set a valid viewer." 1>&2
+            exit $INVALID_VIEWER
             ;;
         *)
             echo "UNKNOWN_ERROR" 1>&2
@@ -812,14 +819,16 @@ trim_string() {
     echo "$var"
 }
 
+# Verify that '$1' only contains letters, numbers, spaces, and '/' '.' '_' '-' symbols
+# '$1' command string
+valid_command_string () {
+    [[ "$1" =~ ^[a-zA-Z0-9\ \/\._-]+$ ]]
+}
+
 # Set the image viewer command
 # '$1' image viewer
 set_viewer () {
-    # Verify that only contains letters, numbers, spaces, and '/' '.' '_' '-' symbols
-    if ! [[ "$1" =~ ^[a-zA-Z0-9\ \/\._-]+$ ]]; then
-        echo "Invalid image viewer" 2>&1
-        return $UNKNOWN_ERROR
-    fi
+    valid_command_string "$1" || send_exit_error $INVALID_VIEWER
     echo "Setting image viewer ..."
     # Verify if it is on PATH
     if ! which_check "${1%% *}"; then
@@ -860,11 +869,16 @@ touch "$FAVORITES_FILE"
 show_dist_warning
 check_favorites
 
+command="$1"
+[[ -n "$command" ]] && command="$(trim_string "$command")"
+if ! [[ "$command" == "help" ]]; then
+    valid_command_string "$VIEWER" || send_exit_error $INVALID_VIEWER "$VIEWER"
+fi
 param="$2"
-[[ -n "$param" ]] && param="$(trim_string "$2")"
+[[ -n "$param" ]] && param="$(trim_string "$param")"
 
 # Main switch
-case "$1" in
+case "$command" in
     add)
         add_room "$param"
         ;;
