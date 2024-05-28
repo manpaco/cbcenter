@@ -873,6 +873,7 @@ intern_status () {
     echo "$is"
 }
 
+# Discard invalid usernames from FAVORITES_FILE
 check_favorites () {
     while IFS='' read -r rline; do
         valid_username "$rline" && echo "$rline"
