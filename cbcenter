@@ -32,12 +32,16 @@ MORE_PDIR="${TMP_PDIR}/more"
 MORE_FILE="${MORE_PDIR}.cb"
 RANDOM_FILE="${TMP_PDIR}/random.cb"
 
+#
+# When using url variables remember to add a trailing slash (only when necessary).
+# For that reason, PURL stands for (P)artial (URL).
+#
 # ------------ URLS -------------
-PREVIEW_URL="https://thumb.live.mmcdn.com/riw"
-SEARCH_URL="https://chaturbate.com/ax/search/?keywords="
-OTHERS_URL="https://chaturbate.com/api/ts/roomlist/room-list"
-BIOCONTEXT_URL="https://chaturbate.com/api/biocontext"
-MORE_URL="https://chaturbate.com/api/more_like"
+PREVIEW_PURL="https://thumb.live.mmcdn.com/riw"
+SEARCH_PURL="https://chaturbate.com/ax/search/?keywords="
+OTHERS_PURL="https://chaturbate.com/api/ts/roomlist/room-list"
+BIOCONTEXT_PURL="https://chaturbate.com/api/biocontext"
+MORE_PURL="https://chaturbate.com/api/more_like"
 
 # ------------ REGULAR EXPRESSIONS -------------
 FEMALE_ROOM="f"
@@ -45,7 +49,7 @@ MALE_ROOM="m"
 COUPLE_ROOM="c"
 TRANS_ROOM="t"
 ID_REGEX="^[0-9]+$"
-CB_ROOT_URL="https://www.chaturbate.com"
+CB_ROOT_PURL="https://www.chaturbate.com"
 CAM_ROOT_REGEX="https:\/\/edge[0-9]+-[a-z]+\.live\.mmcdn\.com"
 LIVE_PREFIX="live-"
 LIVE_REGEX="${LIVE_PREFIX}(hls|edge)"
@@ -150,7 +154,7 @@ without the user's consent.${CLEAR_FG}\n"
 
 # Show help block
 show_help () {
-    echo -e "$PROJECT usage:\nManage your favorite rooms from $CB_ROOT_URL.\n\n\
+    echo -e "$PROJECT usage:\nManage your favorite rooms from $CB_ROOT_PURL.\n\n\
   $mybasename COMMAND OPTION\n\nCommands and options:\n\n\
   a, add               username  - Add new room to favorites.\n\
   r, remove          [username]  - Remove room from favorites.\n\
@@ -359,16 +363,16 @@ Run '$mybasename __set_viewer command' to set a valid viewer." 1>&2
     esac
 }
 
-# Wrap username using CB_ROOT_URL
+# Wrap username using CB_ROOT_PURL
 # '$1' username
 wrap_username () {
-    echo "${CB_ROOT_URL}/$1/"
+    echo "${CB_ROOT_PURL}/$1/"
 }
 
 # Show search response on stdout
 # '$1' keyword
 curl_search () {
-    curl -sL --compressed -H "$XRW_HEADER" "${SEARCH_URL}$1"
+    curl -sL --compressed -H "$XRW_HEADER" "${SEARCH_PURL}$1"
 }
 
 # return 0 if online/private/hidden, else 1 (offline)
@@ -629,7 +633,7 @@ clear_others_dir () {
 # '$1' username
 # '$2' file
 save_preview_in () {
-    curl -sL --compressed -H "$XRW_HEADER" --connect-timeout "$CONNECT_TIMEOUT" "${PREVIEW_URL}/$1.$IMG_FORMAT" -o "$2"
+    curl -sL --compressed -H "$XRW_HEADER" --connect-timeout "$CONNECT_TIMEOUT" "${PREVIEW_PURL}/$1.$IMG_FORMAT" -o "$2"
 }
 
 # Get preview and save it in given directory with predefined preffix (custom preffix is optional)
@@ -637,12 +641,12 @@ save_preview_in () {
 # '$2' directory
 # '$3' custom preffix (optional)
 save_preview () {
-    curl -sL --compressed -H "$XRW_HEADER" --connect-timeout "$CONNECT_TIMEOUT" "${PREVIEW_URL}/$1.$IMG_FORMAT" -o "${2}/$3$(formated_date)-$1.$IMG_FORMAT"
+    curl -sL --compressed -H "$XRW_HEADER" --connect-timeout "$CONNECT_TIMEOUT" "${PREVIEW_PURL}/$1.$IMG_FORMAT" -o "${2}/$3$(formated_date)-$1.$IMG_FORMAT"
 }
 
 # Get preview and show it using image viewer (not save file)
 show_preview () {
-    curl -sL --compressed -H "$XRW_HEADER" --connect-timeout "$CONNECT_TIMEOUT" "${PREVIEW_URL}/$1.$IMG_FORMAT" | $VIEWER -
+    curl -sL --compressed -H "$XRW_HEADER" --connect-timeout "$CONNECT_TIMEOUT" "${PREVIEW_PURL}/$1.$IMG_FORMAT" | $VIEWER -
 }
 
 # fetch_favorites helper
@@ -798,7 +802,7 @@ open_others_dir () {
 # '$2' offset
 # '$3' limit
 fetch_rooms_file () {
-    curl -sL --compressed -H "$XRW_HEADER" "$OTHERS_URL/?genders=$1&offset=$2&limit=$3&enable_recommendations=false" -o "$4"
+    curl -sL --compressed -H "$XRW_HEADER" "$OTHERS_PURL/?genders=$1&offset=$2&limit=$3&enable_recommendations=false" -o "$4"
 }
 
 # fetch_rooms_helper helper
@@ -889,7 +893,7 @@ that more than $limit rooms will be obtained."
 # Save biocontext of given room
 # '$1' room
 fetch_bio () {
-    curl -sL --compressed -H "$XRW_HEADER" "${BIOCONTEXT_URL}/$1" -o "$BIOCONTEXT_FILE" || send_exit_error $BIOCONTEXT_ERROR
+    curl -sL --compressed -H "$XRW_HEADER" "${BIOCONTEXT_PURL}/$1" -o "$BIOCONTEXT_FILE" || send_exit_error $BIOCONTEXT_ERROR
 }
 
 # Show basic info using biocontext
@@ -1009,7 +1013,7 @@ clear_more_dir () {
 # Fetch rooms list similar to '$1' and save on $MORE_FILE
 # '$1' room
 fetch_more_file () {
-    curl -sL --compressed -H "$XRW_HEADER" "${MORE_URL}/$1" -o "$MORE_FILE"
+    curl -sL --compressed -H "$XRW_HEADER" "${MORE_PURL}/$1" -o "$MORE_FILE"
 }
 
 # Fetch and show rooms similar to '$1'
