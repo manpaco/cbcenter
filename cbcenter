@@ -957,13 +957,13 @@ clear_more_dir () {
 }
 
 fetch_more_file () {
-    curl -sL --compressed -H "$XRW_HEADER" "${MORE_URL}/$1" -o "$MORE_FILE" || send_exit_error $MORE_ERROR
+    curl -sL --compressed -H "$XRW_HEADER" "${MORE_URL}/$1" -o "$MORE_FILE"
 }
 
 fetch_more_rooms () {
     valid_username "$1" || send_exit_error $INVALID_USERNAME
     assert_active_room "$1"
-    fetch_more_file "$1"
+    fetch_more_file "$1" || send_exit_error $ROOM_LIST_ERROR
     fetch_rooms_helper "$MORE_DIR" "room" clear_more_dir open_more_dir
 }
 
