@@ -34,6 +34,9 @@ TRANS_ROOM="t"
 FETCH_STEPS=10
 BIOCONTEXT_URL="https://chaturbate.com/api/biocontext"
 BIOCONTEXT_FILE="${TEMP_DIR}/biocontext.cb"
+MORE_DIR="${TEMP_DIR}/more"
+MORE_FILE="${TEMP_DIR}/more.cb"
+MORE_URL="https://chaturbate.com/api/more_like"
 
 # ------------ REGULAR EXPRESSIONS -------------
 ID_REGEX="^[0-9]+$"
@@ -759,11 +762,50 @@ save_room_list () {
     curl -sL --compressed -H "$XRW_HEADER" "$OTHERS_URL/?genders=$1&offset=$2&limit=$3&enable_recommendations=false" -o "$OTHERS_FILE"
 }
 
-for_helper () {
+frh_helper () {
     [[ $2 -lt 10 ]] && preffix="0$2" || preffix="$2"
-    save_preview "$1" "$OTHERS_DIR" "$preffix" && echo "$2:$1 fetched" && return $OK_CODE
+    save_preview "$1" "$3" "$preffix" && echo "$2:$1 fetched" && return $OK_CODE
     echo -e "$2: $1 ${RED_FG}error${CLEAR_FG}"
     return $UNKNOWN_ERROR
+}
+
+fetch_rooms_helper () {
+    local frh_dir="$1"
+    local frh_field="$2"
+    local frh_clear="$3"
+    local frh_open="$4"
+    declare -i num_rooms
+    num_rooms="$(jq -e '.rooms | length' "${frh_dir}.cb")" || send_exit_error $JQ_ERROR
+    [[ $num_rooms -eq 0 ]] && send_exit_error $EMPTY_ROOM_LIST
+    echo -e "${GREEN_FG}TIP:${CLEAR_FG} Go back in the image viewer to see the most recent ones."
+    $frh_clear
+
+    # Implementation to go crazy (without stops)
+    # for ((i = 0 ; i < num_rooms ; i++)); do
+    #     room="$(jq -Mr ".rooms[$i].$frh_field" "$frh_file")"
+    #     frh_helper "$room" "$i" &
+    # done
+    # wait
+    # read -rp "Open previews? (Y/n): " ropen
+    # [[ $ropen == [yY] || $ropen == [yY][eE][sS] || -z $ropen ]] && $frh_open
+
+    # Implementation with stops (FETCH_STEPS at a time)
+    declare -i index=0
+    local room
+    while true; do
+        # Fetch room previews by 'FETCH_STEPS' at time
+        while room="$(jq -Mre ".rooms[$index].$frh_field" "${frh_dir}.cb")"; do
+            frh_helper "$room" "$index" "$frh_dir" &
+            index+=1
+            [[ $((index%FETCH_STEPS)) -ne 0 ]] || break
+        done
+        wait
+        read -rp "Open previews? (Y/n): " ropen
+        [[ $ropen == [yY] || $ropen == [yY][eE][sS] || -z $ropen ]] && $frh_open
+        [[ $index -eq $num_rooms ]] && break # There are no remaining rooms
+        read -rp "Continue fetching? $((num_rooms-index)) remaining (Y/n): " rcont
+        [[ $rcont == [yY] || $rcont == [yY][eE][sS] || -z $rcont ]] || break
+    done
 }
 
 # Get and show rooms from given range
@@ -789,41 +831,7 @@ fetch_others_range () {
     echo "Fetching $gender rooms from $offset to $((offset+limit-1)) ..."
 
     save_room_list "$gender" "$offset" "$limit" || send_exit_error $ROOM_LIST_ERROR
-    declare -i num_rooms
-    num_rooms="$(jq -e '.rooms | length' "$OTHERS_FILE")" || send_exit_error $JQ_ERROR
-    [[ $num_rooms -eq 0 ]] && send_exit_error $EMPTY_ROOM_LIST
-    echo -e "${GREEN_FG}TIP:${CLEAR_FG} Go back in the image viewer to see the most recent ones."
-    # In some cases promoted rooms are found
-    [[ $limit -lt $num_rooms ]] && echo -e "$GREEN_FG$((num_rooms-limit)) promoted room(s) found !$CLEAR_FG"
-    clear_others_dir
-
-    # Implementation to go crazy (without stops)
-    # for ((i = 0 ; i < num_rooms ; i++)); do
-    #     room="$(jq -Mr ".rooms[$i].username" "$OTHERS_FILE")"
-    #     for_helper "$room" "$i" &
-    # done
-    # wait
-    # read -rp "Open previews? (Y/n): " ropen
-    # [[ $ropen == [yY] || $ropen == [yY][eE][sS] || -z $ropen ]] && open_others_dir
-
-    # Implementation with stops (FETCH_STEPS at a time)
-    declare -i index=0
-    local room
-    while true; do
-        # Fetch room previews by 'FETCH_STEPS' at time
-        while room="$(jq -Mre ".rooms[$index].username" "$OTHERS_FILE")"; do
-            for_helper "$room" "$index" &
-            index+=1
-            [[ $((index%FETCH_STEPS)) -ne 0 ]] || break
-        done
-        wait
-        read -rp "Open previews? (Y/n): " ropen
-        [[ $ropen == [yY] || $ropen == [yY][eE][sS] || -z $ropen ]] &&
-            open_others_dir
-        [[ $index -eq $num_rooms ]] && break # There are no remaining rooms
-        read -rp "Continue fetching? $((num_rooms-index)) remaining (Y/n): " rcont
-        [[ $rcont == [yY] || $rcont == [yY][eE][sS] || -z $rcont ]] || break
-    done
+    fetch_rooms_helper "$OTHERS_DIR" "username" clear_others_dir open_others_dir
 }
 
 # Save biocontext of given room
@@ -935,6 +943,26 @@ check_favorites () {
     mv "${FAVORITES_FILE}.checked" "$FAVORITES_FILE"
 }
 
+open_more_dir () {
+    $VIEWER "$MORE_DIR"
+}
+
+clear_more_dir () {
+    rm -f "${MORE_DIR:?}"/*
+}
+
+fetch_more_file () {
+    curl -sL --compressed -H "$XRW_HEADER" "${MORE_URL}/$1" -o "$MORE_FILE" || send_exit_error $MORE_ERROR
+}
+
+fetch_more_rooms () {
+    valid_username "$1" || send_exit_error $INVALID_USERNAME
+    local fmr_status
+    room_status "$1" fmr_status
+    fetch_more_file "$1"
+    fetch_rooms_helper "$MORE_DIR" "room" clear_more_dir open_more_dir
+}
+
 show_dist_warning
 
 command="$1"
@@ -951,6 +979,7 @@ fi
 [[ -d "$CAPTURES_DIR" ]] || mkdir -p "$CAPTURES_DIR"
 [[ -d "$FAVORITES_DIR" ]] || mkdir -p "$FAVORITES_DIR"
 [[ -d "$OTHERS_DIR" ]] || mkdir -p "$OTHERS_DIR"
+[[ -d "$MORE_DIR" ]] || mkdir -p "$MORE_DIR"
 [[ -e "$FAVORITES_FILE" ]] || touch "$FAVORITES_FILE"
 
 check_favorites
@@ -1072,6 +1101,9 @@ case "$command" in
         ;;
     __check_deps)
         check_dependencies
+        ;;
+    more-test)
+        fetch_more_rooms "$param"
         ;;
     *)
         send_exit_error $INVALID_COMMAND
