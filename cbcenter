@@ -14,7 +14,8 @@ PROJECT="cbcenter"
 # ---------- FILES AND DIRECTORIES -----------
 MYPATH="${HOME}/.local/$PROJECT"
 DOWNLOADS_PDIR="${MYPATH}/downloads"
-FAVORITES_FILE="${MYPATH}/favorites.cb"
+FAVORITES_PDIR="${MYPATH}/favorites"
+FAVORITES_FILE="${FAVORITES_PDIR}.cb"
 STREAMS_PDIR="${DOWNLOADS_PDIR}/streams"
 CAPTURES_PDIR="${DOWNLOADS_PDIR}/captures"
 # ----------- FORMATS ---------------
@@ -23,7 +24,6 @@ IMG_FORMAT="jpg"
 CODEC="h264"
 # ----------- TEMP FILES AND DIRECTORIES -------------
 TMP_PDIR="/tmp/$PROJECT"
-FAVORITES_PDIR="${TMP_PDIR}/favorites"
 PREVIEW_URL="https://thumb.live.mmcdn.com/riw"
 SEARCH_URL="https://chaturbate.com/ax/search/?keywords="
 SEARCH_FILE="${TMP_PDIR}/search.cb"
