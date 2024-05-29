@@ -39,7 +39,7 @@ RANDOM_FILE="${TMP_PDIR}/random.cb"
 # ------------ URLS -------------
 PREVIEW_PURL="https://thumb.live.mmcdn.com/riw"
 SEARCH_PURL="https://chaturbate.com/ax/search/?keywords=" # not necessary trailing slash
-OTHERS_PURL="https://chaturbate.com/api/ts/roomlist/room-list"
+ROOMLIST_PURL="https://chaturbate.com/api/ts/roomlist/room-list"
 BIOCONTEXT_PURL="https://chaturbate.com/api/biocontext"
 MORE_PURL="https://chaturbate.com/api/more_like"
 
@@ -797,12 +797,13 @@ open_others_dir () {
     $VIEWER "$OTHERS_PDIR"
 }
 
-# Save rooms list from given range on OTHERS_FILE
+# Save rooms list from given range on '$4' file.
 # '$1' gender
 # '$2' offset
 # '$3' limit
-fetch_rooms_file () {
-    curl -sL --compressed -H "$XRW_HEADER" "$OTHERS_PURL/?genders=$1&offset=$2&limit=$3&enable_recommendations=false" -o "$4"
+# '$4' output
+fetch_roomlist_file () {
+    curl -sL --compressed -H "$XRW_HEADER" "$ROOMLIST_PURL/?genders=$1&offset=$2&limit=$3&enable_recommendations=false" -o "$4"
 }
 
 # fetch_rooms_helper helper
@@ -886,7 +887,7 @@ fetch_other_rooms () {
     echo -e "${GREEN_FG}INFO:${CLEAR_FG} Sometimes promoted rooms appear. For this reason, it is possible\n\
 that more than $limit rooms will be obtained."
 
-    fetch_rooms_file "$gender" "$offset" "$limit" "$OTHERS_FILE" || send_exit_error $ROOM_LIST_ERROR
+    fetch_roomlist_file "$gender" "$offset" "$limit" "$OTHERS_FILE" || send_exit_error $ROOM_LIST_ERROR
     fetch_rooms_helper "$OTHERS_FILE" "username" clear_others_dir open_others_dir
 }
 
@@ -945,7 +946,7 @@ quick_rand () {
         3) gender=t
             ;;
     esac
-    fetch_rooms_file "$gender" $((RANDOM%100)) 1 "$RANDOM_FILE" || send_exit_error $ROOM_LIST_ERROR
+    fetch_roomlist_file "$gender" $((RANDOM%100)) 1 "$RANDOM_FILE" || send_exit_error $ROOM_LIST_ERROR
     room="$(jq -Mre ".rooms[0].username" "$RANDOM_FILE")" || send_exit_error $JQ_ERROR
     show_preview "$room"
     echo "Fetched $room room ($gender). Enjoy!"
