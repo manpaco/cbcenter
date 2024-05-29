@@ -32,7 +32,7 @@ You can use cbcenter as a basic (one user) notifier, using the `cbcenter __is_on
 
     #!/bin/bash
     #
-    # cb-notifier
+    # cbnoti
     #
 
     # Environment variables used by notify-send
@@ -83,7 +83,7 @@ Also the service:
     Description=Check CB favorites
     
     [Service]
-    ExecStart=/absolute/path/to/cbnoti
+    ExecStart=/absolute/path/to/your/script
 
 Finally run `systemctl --user enable --now cbnoti.timer`.
 
