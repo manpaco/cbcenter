@@ -65,7 +65,8 @@ Of course you can also make a multi-user notifier (storing online user in `verif
     # -------------------------------------------
     verifile="/tmp/notified.cb"
     [[ -e $verifile ]] || touch $verifile
-    users="$HOME/.local/cbcenter/favorites.cb" # your favorites file
+    users="$(cbcenter __favorites_file)" # your favorites file
+    [[ -e $users ]] || exit 1
     
     store_user () {
         echo "$1" >> "$verifile"
