@@ -608,7 +608,7 @@ show_preview () {
 
 ff_helper () {
     if valid_username "$1" && is_online "$1"; then
-        save_preview "$1" "$FAVORITES_DIR" && echo "$2: $1 fetched" && return $OK_CODE
+        save_preview "$1" "$FAVORITES_DIR" && echo "$2:$1 fetched" && return $OK_CODE
         echo -e "$1 ${RED_FG}error${CLEAR_FG}"
         return $UNKNOWN_ERROR
     fi
