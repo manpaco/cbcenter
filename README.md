@@ -83,7 +83,7 @@ Also the service:
     Description=Check CB favorites
     
     [Service]
-    ExecStart=/home/gacuilan/.local/bin/cbnoti
+    ExecStart=/absolute/path/to/cbnoti
 
 Finally run `systemctl --user enable --now cbnoti.timer`.
 
