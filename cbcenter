@@ -72,9 +72,14 @@ GENDER_REGEX="${FEMALE_ROOM}|${MALE_ROOM}|${COUPLE_ROOM}|${TRANS_ROOM}"
 ROOM_RANGE_REGEX="^(($GENDER_REGEX):[0-9]{0,2}:[0-9]{1,2})$"
 
 # ----------- TOOLS ------------
-JQ_ONLINE=".online"
-JQ_OFFLINE=".offline"
-JQ_HASGTAGS=".hashtags"
+JQ_ONLINE="online"
+JQ_OFFLINE="offline"
+JQ_HASGTAGS="hashtags"
+JQ_RLIST_MAIN="rooms"
+JQ_MLIST_MAIN="${JQ_RLIST_MAIN}"
+JQ_RLIST_USER="username"
+JQ_MLIST_USER="room"
+JQ_BIO_RSTATUS="room_status"
 XRW_HEADER="X-Requested-With: XMLHttpRequest"
 HTTP_NOT_FOUND_TEXT="404 Not Found"
 HTTP_TOO_MANY_REQUESTS_TEXT="429 Too Many Requests"
@@ -386,7 +391,7 @@ curl_search () {
 # return 0 if online/private/hidden, else 1 (offline)
 # '$1' username
 is_online () {
-    curl_search "$1" | jq -Mc $JQ_ONLINE | grep -q "\"$1\""
+    curl_search "$1" | jq -Mc ".${JQ_ONLINE}" | grep -q "\"$1\""
 }
 
 # Store room_status field on '$2' from biocontext file (JSON)
@@ -396,7 +401,7 @@ is_online () {
 assert_active_room () {
     [[ -n "$2" ]] && declare -n rs_out="$2"
     fetch_bio "$1"
-    rs_out="$(jq -Mr '.room_status' "$BIOCONTEXT_FILE" 2>/dev/null)" ||
+    rs_out="$(jq -Mr ".${JQ_BIO_RSTATUS}" "$BIOCONTEXT_FILE" 2>/dev/null)" ||
         send_exit_error $ROOM_NOT_FOUND
     [[ "$rs_out" == "null" ]] && send_exit_error $BANNED_ROOM
 }
@@ -548,18 +553,18 @@ favorite_room_choice () {
 # Get the username from OTHERS_FILE using an index
 # '$1' index
 get_other_by_index () {
-    jq -Mre ".rooms[${1:?}].username" "$OTHERS_FILE"
+    jq -Mre ".${JQ_RLIST_MAIN}[${1:?}].${JQ_RLIST_USER}" "$OTHERS_FILE"
 }
 
 # Get the username from MORE_FILE using an index
 # '$1' index
 get_more_by_index () {
-    jq -Mre ".rooms[${1:?}].room" "$MORE_FILE"
+    jq -Mre ".${JQ_MLIST_MAIN}[${1:?}].${JQ_MLIST_USER}" "$MORE_FILE"
 }
 
 # Show list of other rooms with line number
 list_others () {
-    num_rooms="$(jq -e '.rooms | length' "$OTHERS_FILE")" || send_exit_error $JQ_ERROR
+    num_rooms="$(jq -e ".${JQ_RLIST_MAIN} | length" "$OTHERS_FILE")" || send_exit_error $JQ_ERROR
     [[ $num_rooms -eq 0 ]] && send_exit_error $EMPTY_ROOM_LIST
     for ((i = 0 ; i < num_rooms ; i++)); do
         echo "$i:$(get_other_by_index "$i")"
@@ -568,7 +573,7 @@ list_others () {
 
 # Show list of more rooms with line number
 list_more () {
-    num_rooms="$(jq -e '.rooms | length' "$MORE_FILE")" || send_exit_error $JQ_ERROR
+    num_rooms="$(jq -e ".${JQ_MLIST_MAIN} | length" "$MORE_FILE")" || send_exit_error $JQ_ERROR
     [[ $num_rooms -eq 0 ]] && send_exit_error $EMPTY_ROOM_LIST
     for ((i = 0 ; i < num_rooms ; i++)); do
         echo "$i:$(get_more_by_index "$i")"
@@ -801,11 +806,11 @@ keyword_search () {
     valid_username "$1" || send_exit_error $INVALID_KEYWORD
     curl_search "$1" > "$SEARCH_FILE" || send_exit_error $CURL_ERROR
     echo "Online rooms:"
-    jq "$JQ_ONLINE" "$SEARCH_FILE"
+    jq ".${JQ_ONLINE}" "$SEARCH_FILE"
     echo "Recently online rooms:"
-    jq -M "$JQ_OFFLINE" "$SEARCH_FILE"
+    jq -M ".${JQ_OFFLINE}" "$SEARCH_FILE"
     echo "Hashtags:"
-    jq -M "$JQ_HASGTAGS" "$SEARCH_FILE"
+    jq -M ".${JQ_HASGTAGS}" "$SEARCH_FILE"
 }
 
 # Show status of given room
@@ -883,15 +888,16 @@ fetch_rooms_helper () {
     local frh_field="$2"
     local frh_clear="$3"
     local frh_open="$4"
+    local frh_main="$JQ_RLIST_MAIN" # Change in the future if needed
     declare -i num_rooms
-    num_rooms="$(jq -e '.rooms | length' "$frh_file")" || send_exit_error $JQ_ERROR
+    num_rooms="$(jq -e ".$frh_main | length" "$frh_file")" || send_exit_error $JQ_ERROR
     [[ $num_rooms -eq 0 ]] && send_exit_error $EMPTY_ROOM_LIST
     echo -e "${YELLOW_FG}TIP:${CLEAR_FG} Go back in the image viewer to see the most recent ones."
     $frh_clear
 
     # Implementation to go crazy (without stops)
     # for ((i = 0 ; i < num_rooms ; i++)); do
-    #     room="$(jq -Mr ".rooms[$i].$frh_field" "$frh_file")"
+    #     room="$(jq -Mr ".${frh_main}[$i].$frh_field" "$frh_file")"
     #     frh_helper "$room" "$i" "${frh_file%.*}" &
     # done
     # wait
@@ -903,7 +909,7 @@ fetch_rooms_helper () {
     local room
     while true; do
         # Fetch room previews by 'FETCH_STEPS' at time
-        while room="$(jq -Mre ".rooms[$index].$frh_field" "$frh_file")"; do
+        while room="$(jq -Mre ".${frh_main}[$index].$frh_field" "$frh_file")"; do
             frh_helper "$room" "$index" "${frh_file%.*}" &
             index+=1
             [[ $((index%FETCH_STEPS)) -ne 0 ]] || break
@@ -967,7 +973,7 @@ room_info () {
     echo -n "Languages: "
     jq -M '.languages' "$BIOCONTEXT_FILE"
     echo -n "Room status: "
-    jq -M '.room_status' "$BIOCONTEXT_FILE"
+    jq -M ".${JQ_BIO_RSTATUS}" "$BIOCONTEXT_FILE"
     echo -n "Last stream: "
     jq -M '.time_since_last_broadcast' "$BIOCONTEXT_FILE"
 }
@@ -1001,7 +1007,7 @@ quick_rand () {
             ;;
     esac
     fetch_roomlist_file "$gender" $((RANDOM%100)) 1 "$RANDOM_FILE" || send_exit_error $ROOM_LIST_ERROR
-    room="$(jq -Mre ".rooms[0].username" "$RANDOM_FILE")" || send_exit_error $JQ_ERROR
+    room="$(jq -Mre ".${JQ_RLIST_MAIN}[0].${JQ_RLIST_USER}" "$RANDOM_FILE")" || send_exit_error $JQ_ERROR
     show_preview "$room"
     echo "Fetched $room room ($gender). Enjoy!"
     ask_to_play "$room"
