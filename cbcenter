@@ -351,7 +351,7 @@ Run '$mybasename __set_viewer command' to set a valid viewer." 1>&2
     esac
 }
 
-# Wrap username using cb url
+# Wrap username using CB_ROOT_URL
 # '$1' username
 wrap_username () {
     echo "${CB_ROOT_URL}/$1/"
@@ -369,8 +369,10 @@ is_online () {
     curl_search "$1" | jq -Mc $JQ_ONLINE | grep -q "\"$1\""
 }
 
-# Print room_status field from biocontext file (JSON)
+# Store room_status field on '$2' from biocontext file (JSON)
+# Also send exit error if the room: doesnt exist or is banned.
 # '$1' room
+# '$2' store room_status
 assert_active_room () {
     [[ -n "$2" ]] && declare -n rs_out="$2"
     get_bio "$1"
@@ -487,14 +489,22 @@ room_exists () {
     grep -qx "$1" "$FAVORITES_FILE"
 }
 
+# Get favorite room from FAVORITES_FILE using line number
+# '$1' line number
 get_favorite_line () {
     sed "${1}q;d" "$FAVORITES_FILE"
 }
 
+# Remove line from FAVORITES_FILE
+# '$1' line number
 rem_favorite_line () {
     sed -i "${1:?Empty parameter !}d" "$FAVORITES_FILE" && echo "Favorite removed!"
 }
 
+# Ask the user for a choice, and store the choice on '$1'. If '$2' is other
+# than 'hide_list', then show favorites list (with line numbers).
+# '$1' store choice
+# '$2' hide_list (optional)
 favorite_choice () {
     declare -n fc_out="$1"
     [[ $2 == "hide_list" ]] || list_favorites
@@ -503,6 +513,10 @@ favorite_choice () {
     valid_id "$fc_out" || send_exit_error $BAD_CHOICE
 }
 
+# Uses FAVORITES_FILE
+# The same as 'favorite_choice' but store username on '$1'.
+# '$1' store username
+# '$2' hide_list (optional)
 favorite_room_choice () {
     declare -n fuc_out="$1"
     local frc_choice
@@ -511,10 +525,13 @@ favorite_room_choice () {
     [[ -z $fuc_out ]] && send_exit_error $UNKNOWN_ERROR
 }
 
+# Get the username from OTHERS_FILE using an index
+# '$1' index
 get_other_index () {
     jq -Mre ".rooms[${1:?}].username" "$OTHERS_FILE"
 }
 
+# Show list of other rooms with line number
 list_others () {
     num_rooms="$(jq -e '.rooms | length' "$OTHERS_FILE")" || send_exit_error $JQ_ERROR
     [[ $num_rooms -eq 0 ]] && send_exit_error $EMPTY_ROOM_LIST
@@ -523,6 +540,11 @@ list_others () {
     done
 }
 
+# Uses OTHERS_FILE
+# Ask the user for a choice, and store the username on '$1'. If '$2' is other
+# than 'hide_list', then show favorites list (with line numbers).
+# '$1' store username
+# '$2' hide_list (optional)
 other_room_choice () {
     declare -n orc_out="$1"
     local orc_choice
@@ -615,10 +637,14 @@ show_preview () {
     curl -sL --compressed -H "$XRW_HEADER" --connect-timeout "$CONNECT_TIMEOUT" "${PREVIEW_URL}/$1.$IMG_FORMAT" | $VIEWER -
 }
 
+# fetch_favorites helper
+# save preview of '$1' on FAVORITES_DIR: if success print 'fetched', else 'error'
+# '$1' username
+# '$2' line preffix
 ff_helper () {
     if valid_username "$1" && is_online "$1"; then
         save_preview "$1" "$FAVORITES_DIR" && echo "$2:$1 fetched" && return $OK_CODE
-        echo -e "$1 ${RED_FG}error${CLEAR_FG}"
+        echo -e "$2:$1 ${RED_FG}error${CLEAR_FG}"
         return $UNKNOWN_ERROR
     fi
 }
@@ -683,9 +709,9 @@ save_room () {
     ffmpeg -i "$sr_link" -codec copy "$output"
 
     # Another way (slower ffmpeg startup)
-    #extract_playlist "$1" pr_link
-    #room_prog=99
-    #ffmpeg -i "$pr_link" -map v:p:$room_prog -map a:p:$room_prog -codec copy "$output"
+    #local sr_link
+    #extract_playlist "$1" sr_link
+    #ffmpeg -i "$sr_link" -map v:p:$room_prog -map a:p:$room_prog -codec copy "$output"
 }
 
 # Save room screenshot
@@ -734,9 +760,8 @@ show_online_offline () {
     fi
 }
 
-# If '$1' is not empty, show room status. Else show status of favorites
-# Only show online or offline (not the same as 'room_status' function)
-# '$1' room (optional)
+# Show favorites status
+# Only show online or offline (not the same as 'intern_status' function)
 global_status () {
     while IFS="" read -r room || [ -n "$room" ]
     do
@@ -755,12 +780,12 @@ list_favorites () {
     done < "$FAVORITES_FILE"
 }
 
-# Open rooms directory
+# Open others directory
 open_others_dir () {
     $VIEWER "$OTHERS_DIR"
 }
 
-# Save rooms list from given range
+# Save rooms list from given range on OTHERS_FILE
 # '$1' gender
 # '$2' offset
 # '$3' limit
@@ -768,6 +793,11 @@ fetch_others_file () {
     curl -sL --compressed -H "$XRW_HEADER" "$OTHERS_URL/?genders=$1&offset=$2&limit=$3&enable_recommendations=false" -o "$OTHERS_FILE"
 }
 
+# fetch_rooms_helper helper
+# save preview of '$1' on '$3': if success print 'fetched', else 'error'
+# '$1' username
+# '$2' file and line preffix
+# '$3' dest dir
 frh_helper () {
     [[ $2 -lt 10 ]] && preffix="0$2" || preffix="$2"
     save_preview "$1" "$3" "$preffix" && echo "$2:$1 fetched" && return $OK_CODE
@@ -775,6 +805,12 @@ frh_helper () {
     return $UNKNOWN_ERROR
 }
 
+# Takes a rooms list '${1}.cb' and fetch all.
+# '$1' partial name of rooms list (same as storage dir).
+#      e.g. OTHERS_FILE="${OTHERS_DIR}.cb"
+# '$2' json field inside main array 'rooms' (it could be username or room)
+# '$3' function name to clear dir
+# '$4' function name to open dir
 fetch_rooms_helper () {
     local frh_dir="$1"
     local frh_field="$2"
@@ -877,10 +913,15 @@ room_bio () {
     jq . "$BIOCONTEXT_FILE" 2>/dev/null || send_exit_error $ROOM_NOT_FOUND
 }
 
+# 0 if '$1' is a valid 'gender' on the site, else 1
 valid_gender () {
     [[ "$1" =~ ^($GENDER_REGEX)$ ]]
 }
 
+# Save rooms list from given range on RANDOM_FILE
+# '$1' gender
+# '$2' offset
+# '$3' limit
 fetch_random_file () {
     curl -sL --compressed -H "$XRW_HEADER" "$OTHERS_URL/?genders=$1&offset=$2&limit=$3&enable_recommendations=false" -o "$RANDOM_FILE"
 }
@@ -955,18 +996,24 @@ check_favorites () {
     mv "${FAVORITES_FILE}.checked" "$FAVORITES_FILE"
 }
 
+# Open previews on MORE_DIR
 open_more_dir () {
     $VIEWER "$MORE_DIR"
 }
 
+# Remove previews on MORE_DIR
 clear_more_dir () {
     rm -f "${MORE_DIR:?}"/*
 }
 
+# Fetch rooms list similar to '$1' and save on $MORE_FILE
+# '$1' room
 fetch_more_file () {
     curl -sL --compressed -H "$XRW_HEADER" "${MORE_URL}/$1" -o "$MORE_FILE"
 }
 
+# Fetch and show rooms similar to '$1'
+# '$1' username
 fetch_more_rooms () {
     valid_username "$1" || send_exit_error $INVALID_USERNAME
     assert_active_room "$1"
