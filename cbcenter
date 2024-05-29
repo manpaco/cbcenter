@@ -1109,11 +1109,6 @@ if [[ "$command" == "__is_online" ]]; then
     exit
 fi
 
-if [[ "$command" == "lf" || "$command" == "list-favorites" ]] && ! [[ "$param" == "-s" ]]; then
-    list_favorites "$param"
-    exit
-fi
-
 show_dist_warning
 valid_command_string "$VIEWER" || send_exit_error $INVALID_VIEWER "$VIEWER"
 
