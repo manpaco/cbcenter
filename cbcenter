@@ -365,8 +365,8 @@ is_online () {
 
 # Print room_status field from biocontext file (JSON)
 # '$1' room
-room_status () {
-    declare -n rs_out="$2"
+assert_active_room () {
+    [[ -n "$2" ]] && declare -n rs_out="$2"
     get_bio "$1"
     rs_out="$(jq -Mr '.room_status' "$BIOCONTEXT_FILE" 2>/dev/null)" ||
         send_exit_error $ROOM_NOT_FOUND
@@ -534,7 +534,7 @@ add_room () {
     valid_username "$1" || send_exit_error $INVALID_USERNAME
     room_exists "$1" && send_exit_error $ROOM_ALREADY_EXIST
     local ar_status
-    room_status "$1" ar_status
+    assert_active_room "$1" ar_status
     echo "$1" >> "$FAVORITES_FILE" && echo "Favorite added! The room is $ar_status"
 }
 
@@ -649,7 +649,7 @@ open_favorites_dir () {
 # '$1' room
 assert_public_room () {
     local apra_status
-    room_status "$1" apra_status
+    assert_active_room "$1" apra_status
     [[ "$apra_status" == "public" ]] && return $OK_CODE
     [[ "$apra_status" == "offline" ]] && send_exit_error $OFFLINE_ROOM
     #[[ "$apra_status" == "null" ]] && send_exit_error $NOT_PUBLIC_ROOM banned
@@ -931,7 +931,7 @@ set_viewer () {
 intern_status () {
     valid_username "$1" || send_exit_error $INVALID_USERNAME
     local is_status
-    room_status "$1" is_status
+    assert_active_room "$1" is_status
     echo "$is_status"
 }
 
@@ -957,8 +957,7 @@ fetch_more_file () {
 
 fetch_more_rooms () {
     valid_username "$1" || send_exit_error $INVALID_USERNAME
-    local fmr_status
-    room_status "$1" fmr_status
+    assert_active_room "$1"
     fetch_more_file "$1"
     fetch_rooms_helper "$MORE_DIR" "room" clear_more_dir open_more_dir
 }
