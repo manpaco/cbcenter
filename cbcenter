@@ -161,7 +161,7 @@ without the user's consent.${CLEAR_FG}\n"
 
 # Show help block
 show_help () {
-    echo -e "$PROJECT usage:\nManage your favorite rooms from $CB_ROOT_PURL.\n\n\
+    echo -e "Manage your favorite rooms from $CB_ROOT_PURL.\n\nUsage:\n\n\
   $mybasename COMMAND OPTION\n\nCommands and options:\n\n\
   a, add               username  - Add new room to favorites.\n\
   r, remove          [username]  - Remove room from favorites.\n\
