@@ -677,11 +677,18 @@ fetch_favorites () {
     open_favorites_dir
 }
 
+ask_to_play () {
+    read -rp "Do you want to play '$1' stream? (Y/n): " ropen
+    [[ $ropen == [yY] || $ropen == [yY][eE][sS] || -z $ropen ]] || return $OK_CODE
+    play_room "$1"
+}
+
 # Get and show preview of given room
 # '$1' username
 quick_thumb () {
     valid_username "$1" || send_exit_error $INVALID_USERNAME
     show_preview "$1"
+    ask_to_play "$1"
 }
 
 # Open favorites directory
@@ -958,6 +965,7 @@ quick_rand () {
     room="$(jq -Mre ".rooms[0].username" "$RANDOM_FILE")" || send_exit_error $JQ_ERROR
     show_preview "$room"
     echo "Fetched $room room ($gender). Enjoy!"
+    ask_to_play "$room"
 }
 
 # Remove leading and trailing spaces
