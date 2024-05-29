@@ -24,23 +24,25 @@ IMG_FORMAT="jpg"
 CODEC="h264"
 # ----------- TEMP FILES AND DIRECTORIES -------------
 TMP_PDIR="/tmp/$PROJECT"
-PREVIEW_URL="https://thumb.live.mmcdn.com/riw"
-SEARCH_URL="https://chaturbate.com/ax/search/?keywords="
 SEARCH_FILE="${TMP_PDIR}/search.cb"
 OTHERS_PDIR="${TMP_PDIR}/others"
-OTHERS_URL="https://chaturbate.com/api/ts/roomlist/room-list"
 OTHERS_FILE="${OTHERS_PDIR}.cb"
 FEMALE_ROOM="f"
 MALE_ROOM="m"
 COUPLE_ROOM="c"
 TRANS_ROOM="t"
 FETCH_STEPS=10
-BIOCONTEXT_URL="https://chaturbate.com/api/biocontext"
 BIOCONTEXT_FILE="${TMP_PDIR}/biocontext.cb"
 MORE_PDIR="${TMP_PDIR}/more"
 MORE_FILE="${MORE_PDIR}.cb"
-MORE_URL="https://chaturbate.com/api/more_like"
 RANDOM_FILE="${TMP_PDIR}/random.cb"
+
+# ------------ URLS -------------
+PREVIEW_URL="https://thumb.live.mmcdn.com/riw"
+SEARCH_URL="https://chaturbate.com/ax/search/?keywords="
+OTHERS_URL="https://chaturbate.com/api/ts/roomlist/room-list"
+BIOCONTEXT_URL="https://chaturbate.com/api/biocontext"
+MORE_URL="https://chaturbate.com/api/more_like"
 
 # ------------ REGULAR EXPRESSIONS -------------
 ID_REGEX="^[0-9]+$"
