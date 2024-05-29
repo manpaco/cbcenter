@@ -1,23 +1,25 @@
 #!/bin/bash
 
+# ----------- VIEWER ------------
+VIEWER="imv -fd" # <<== I'm here!
+
 # ---------- NAMES -----------
 mybasename="$(basename "$0")"
 PROJECT="cbcenter"
+
+#
+# When using directory variables remember to add a trailing slash.
+#
 # ---------- FILES AND DIRECTORIES -----------
 MYPATH="${HOME}/.local/$PROJECT"
 DOWNLOADS_DIR="${MYPATH}/downloads"
 FAVORITES_FILE="${MYPATH}/favorites.cb"
 STREAMS_DIR="${DOWNLOADS_DIR}/streams"
 CAPTURES_DIR="${DOWNLOADS_DIR}/captures"
-
-# ----------- VIEWER ------------
-VIEWER="imv -fd" # <<== I'm here!
-
 # ----------- FORMATS ---------------
 VIDEO_FORMAT="mp4"
 IMG_FORMAT="jpg"
 CODEC="h264"
-
 # ----------- TEMP FILES AND DIRECTORIES -------------
 TEMP_DIR="/tmp/$PROJECT"
 FAVORITES_DIR="${TEMP_DIR}/favorites"
