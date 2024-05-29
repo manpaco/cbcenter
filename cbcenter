@@ -395,7 +395,7 @@ valid_room_range () {
 
 # Extract programs from playlist data and show on stdout
 # '$1' playlist data
-get_programs () {
+extract_programs () {
     declare -n gp_data="$1"
     declare -i gp_current=0
     while [[ $gp_data =~ $PROG_REGEX ]]; do
@@ -407,7 +407,7 @@ get_programs () {
 
 # Get data from playlist and show on stdout
 # '$1' room playlist
-get_data () {
+fetch_data () {
     curl -siL --compressed --connect-timeout "$CONNECT_TIMEOUT" "$1"
 }
 
@@ -433,16 +433,16 @@ extract_playlist () {
 # Extract direct link from playlist. Useful for speedup fetch process of save/capture streams.
 # '$1' username
 # '$2' store extracted link
-direct_link () {
+extract_direct_link () {
     local dl_link
     extract_playlist "$1" dl_link
     declare -n dl_out="$2"
     local dl_prog="$3"
     local dl_data
-    dl_data="$(get_data "$dl_link")"
+    dl_data="$(fetch_data "$dl_link")"
     [[ -z $dl_data ]] && send_exit_error $EMPTY_DATA
     if [[ -z $dl_prog ]]; then
-        get_programs dl_data
+        extract_programs dl_data
         read -rp "Select a program ID: " dl_prog
         valid_id "$dl_prog" || send_exit_error $INVALID_PROG_ID
     fi
@@ -704,7 +704,7 @@ save_room () {
     valid_username "$1" || send_exit_error $INVALID_USERNAME
     assert_public_room "$1"
     local sr_link
-    direct_link "$1" sr_link
+    extract_direct_link "$1" sr_link
     output="${STREAMS_DIR}/$(formated_date)-$1.$VIDEO_FORMAT"
     ffmpeg -i "$sr_link" -codec copy "$output"
 
@@ -720,7 +720,7 @@ save_capture () {
     valid_username "$1" || send_exit_error $INVALID_USERNAME
     assert_public_room "$1"
     local sc_link
-    direct_link "$1" sc_link 99
+    extract_direct_link "$1" sc_link 99
     output="${CAPTURES_DIR}/$(formated_date)-$1.$IMG_FORMAT"
     ffmpeg -i "$sc_link" -frames:v 1 -update true "$output"
 }
@@ -732,9 +732,9 @@ room_programs () {
     assert_public_room "$1"
     local rp_link
     extract_playlist "$1" rp_link
-    room_data="$(get_data "$rp_link")"
+    room_data="$(fetch_data "$rp_link")"
     [[ -z $room_data ]] && send_exit_error $EMPTY_DATA
-    get_programs room_data
+    extract_programs room_data
 }
 
 # Search given keyword
