@@ -60,6 +60,8 @@ Execute `crontab -e` (as normal user) and add the following line:
 
     0 * * * * /path/to/your/script
 
+That line indicates that the script will be executed every time the clock marks 0 in the minutes (that is, when an hour is completed).
+
 ### Systemd timer
 
 Put the following file on `$HOME/.config/systemd/user` directory:
@@ -86,8 +88,6 @@ Also the service:
     ExecStart=/path/to/your/script
 
 Finally run `systemctl --user enable --now cbnoti.timer`.
-
-That line indicates that the script will be executed every time the clock marks 0 in the minutes (that is, when an hour is completed).
 
 Of course you can also make a multi-user notifier (storing online user in `verifile`, and removing it when it goes offline). Something like that:
 
