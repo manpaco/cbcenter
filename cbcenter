@@ -163,7 +163,10 @@ show_help () {
                                  - Fetch previews of other rooms.\n\
                                    See 'Fetch ranges' section.\n\
   vo, view-others                - Open fetched previews (others).\n\
-  lo, list-others                - List of other rooms.\n\
+  lo, list-others                - List of fetched rooms (others).\n\
+  fm, fetch-more     [username]  - Fetch previews of rooms like 'username'.\n\
+  vm, view-more                  - Open fetched previews (more).\n\
+  lm, list-more                  - List of fetched rooms (more).\n\
   sc, save-capture   [username]  - Save a screenshot (high resolution).\n\
   ss, save-stream    [username]  - Save stream of given room.\n\
   ps, play-stream    [username]  - Play stream of given room.\n\
