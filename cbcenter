@@ -546,13 +546,13 @@ favorite_room_choice () {
 
 # Get the username from OTHERS_FILE using an index
 # '$1' index
-get_other_index () {
+get_other_by_index () {
     jq -Mre ".rooms[${1:?}].username" "$OTHERS_FILE"
 }
 
 # Get the username from MORE_FILE using an index
 # '$1' index
-get_more_index () {
+get_more_by_index () {
     jq -Mre ".rooms[${1:?}].room" "$MORE_FILE"
 }
 
@@ -561,7 +561,7 @@ list_others () {
     num_rooms="$(jq -e '.rooms | length' "$OTHERS_FILE")" || send_exit_error $JQ_ERROR
     [[ $num_rooms -eq 0 ]] && send_exit_error $EMPTY_ROOM_LIST
     for ((i = 0 ; i < num_rooms ; i++)); do
-        echo "$i:$(get_other_index "$i")"
+        echo "$i:$(get_other_by_index "$i")"
     done
 }
 
@@ -570,7 +570,7 @@ list_more () {
     num_rooms="$(jq -e '.rooms | length' "$MORE_FILE")" || send_exit_error $JQ_ERROR
     [[ $num_rooms -eq 0 ]] && send_exit_error $EMPTY_ROOM_LIST
     for ((i = 0 ; i < num_rooms ; i++)); do
-        echo "$i:$(get_more_index "$i")"
+        echo "$i:$(get_more_by_index "$i")"
     done
 }
 
@@ -586,7 +586,7 @@ other_room_choice () {
     read -rp "Type your choice (i.e. the beginning number before the ':'), or (Q)uit: " orc_choice
     [[ $orc_choice == [qQ] || -z "$orc_choice" ]] && exit $OK_CODE
     valid_id "$orc_choice" || send_exit_error $BAD_CHOICE
-    orc_out="$(get_other_index "$orc_choice")"
+    orc_out="$(get_other_by_index "$orc_choice")"
     [[ -z $orc_out ]] && send_exit_error $UNKNOWN_ERROR
 }
 
@@ -602,7 +602,7 @@ more_room_choice () {
     read -rp "Type your choice (i.e. the beginning number before the ':'), or (Q)uit: " mrc_choice
     [[ $mrc_choice == [qQ] || -z "$mrc_choice" ]] && exit $OK_CODE
     valid_id "$mrc_choice" || send_exit_error $BAD_CHOICE
-    mrc_out="$(get_more_index "$mrc_choice")"
+    mrc_out="$(get_more_by_index "$mrc_choice")"
     [[ -z $mrc_out ]] && send_exit_error $UNKNOWN_ERROR
 }
 
