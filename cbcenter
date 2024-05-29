@@ -1100,6 +1100,11 @@ if [[ "$command" == "h" || "$command" == "help" ]]; then
     exit $OK_CODE
 fi
 
+if [[ "$command" == "__favorites_file" ]]; then
+    echo "$FAVORITES_FILE"
+    exit
+fi
+
 param="$2"
 [[ -n "$param" ]] && param="$(trim_string "$param")"
 
