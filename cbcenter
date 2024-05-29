@@ -1053,6 +1053,15 @@ case "$command" in
     lo|list-others)
         list_others
         ;;
+    fm|fetch-more)
+        fetch_more_rooms "$param"
+        ;;
+    vm|view-more)
+        open_more_dir
+        ;;
+    lm|list-more)
+        list_more
+        ;;
     sc|save-capture)
         [[ -z $param ]] && favorite_room_choice param
         save_capture "$param"
@@ -1105,9 +1114,6 @@ case "$command" in
         ;;
     __check_deps)
         check_dependencies
-        ;;
-    more-test)
-        fetch_more_rooms "$param"
         ;;
     *)
         send_exit_error $INVALID_COMMAND
