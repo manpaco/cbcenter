@@ -37,6 +37,7 @@ BIOCONTEXT_FILE="${TEMP_DIR}/biocontext.cb"
 MORE_DIR="${TEMP_DIR}/more"
 MORE_FILE="${TEMP_DIR}/more.cb"
 MORE_URL="https://chaturbate.com/api/more_like"
+RANDOM_FILE="${TEMP_DIR}/random.cb"
 
 # ------------ REGULAR EXPRESSIONS -------------
 ID_REGEX="^[0-9]+$"
@@ -758,7 +759,7 @@ open_others_dir () {
 # '$1' gender
 # '$2' offset
 # '$3' limit
-save_room_list () {
+fetch_others_file () {
     curl -sL --compressed -H "$XRW_HEADER" "$OTHERS_URL/?genders=$1&offset=$2&limit=$3&enable_recommendations=false" -o "$OTHERS_FILE"
 }
 
@@ -810,7 +811,7 @@ fetch_rooms_helper () {
 
 # Get and show rooms from given range
 # '$1' range
-fetch_others_range () {
+fetch_other_rooms () {
     valid_room_range "$1" || send_exit_error $INVALID_ROOM_RANGE
     local gender
     # Extract gender
@@ -830,7 +831,7 @@ fetch_others_range () {
 
     echo "Fetching $gender rooms from $offset to $((offset+limit-1)) ..."
 
-    save_room_list "$gender" "$offset" "$limit" || send_exit_error $ROOM_LIST_ERROR
+    fetch_others_file "$gender" "$offset" "$limit" || send_exit_error $ROOM_LIST_ERROR
     fetch_rooms_helper "$OTHERS_DIR" "username" clear_others_dir open_others_dir
 }
 
@@ -873,6 +874,10 @@ valid_gender () {
     [[ "$1" =~ ^($GENDER_REGEX)$ ]]
 }
 
+fetch_random_file () {
+    curl -sL --compressed -H "$XRW_HEADER" "$OTHERS_URL/?genders=$1&offset=$2&limit=$3&enable_recommendations=false" -o "$RANDOM_FILE"
+}
+
 # Show random preview using a custom range ('$1':RANDOM:1 or RANDOM:RANDOM:1 if '$1' is empty)
 # '$1' gender
 quick_rand () {
@@ -888,8 +893,8 @@ quick_rand () {
         3) gender=t
             ;;
     esac
-    save_room_list "$gender" $((RANDOM%100)) 1 || send_exit_error $ROOM_LIST_ERROR
-    room="$(jq -Mre ".rooms[0].username" "$OTHERS_FILE")" || send_exit_error $JQ_ERROR
+    fetch_random_file "$gender" $((RANDOM%100)) 1 || send_exit_error $ROOM_LIST_ERROR
+    room="$(jq -Mre ".rooms[0].username" "$RANDOM_FILE")" || send_exit_error $JQ_ERROR
     show_preview "$room"
     echo "Fetched $room room ($gender). Enjoy!"
 }
@@ -1032,7 +1037,7 @@ case "$command" in
         room_bio "$param"
         ;;
     fo|fetch-others)
-        fetch_others_range "$param"
+        fetch_other_rooms "$param"
         for_choice=""
         echo "Which room do you want to play?"
         other_room_choice for_choice hide_list
