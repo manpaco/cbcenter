@@ -781,7 +781,7 @@ fetch_rooms_helper () {
     declare -i num_rooms
     num_rooms="$(jq -e '.rooms | length' "${frh_dir}.cb")" || send_exit_error $JQ_ERROR
     [[ $num_rooms -eq 0 ]] && send_exit_error $EMPTY_ROOM_LIST
-    echo -e "${GREEN_FG}TIP:${CLEAR_FG} Go back in the image viewer to see the most recent ones."
+    echo -e "${YELLOW_FG}TIP:${CLEAR_FG} Go back in the image viewer to see the most recent ones."
     $frh_clear
 
     # Implementation to go crazy (without stops)
@@ -833,6 +833,8 @@ fetch_other_rooms () {
     [[ $limit -eq 0 ]] && send_exit_error $INVALID_ROOM_RANGE
 
     echo "Fetching $gender rooms from $offset to $((offset+limit-1)) ..."
+    echo -e "${GREEN_FG}INFO:${CLEAR_FG} Sometimes promoted rooms appear. For this reason, it is possible\n\
+that more than $limit rooms will be obtained."
 
     fetch_others_file "$gender" "$offset" "$limit" || send_exit_error $ROOM_LIST_ERROR
     fetch_rooms_helper "$OTHERS_DIR" "username" clear_others_dir open_others_dir
