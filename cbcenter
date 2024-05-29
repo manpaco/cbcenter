@@ -1062,6 +1062,7 @@ case "$command" in
         open_more_dir
         ;;
     lm|list-more)
+        [[ -e "${MORE_FILE}.who" ]] && cat "${MORE_FILE}.who"
         list_more
         ;;
     sc|save-capture)
