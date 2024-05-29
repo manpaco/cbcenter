@@ -52,7 +52,7 @@ You can use cbcenter as a basic (one user) notifier, using the `cbcenter __is_on
 
     exit 0
 
-Then we must execute that script using cron or systemd services.
+Edit `user` variable according to your needs. Then we must execute that script using cron or systemd services.
 
 ### Cron
 
@@ -123,4 +123,4 @@ Of course you can also make a multi-user notifier (storing online user in `verif
 
     exit 0
 
-If you prefer you can add sound, but as a demonstration it's fine.
+If you prefer you can define `users` as an array of hardcoded usernames instead of use favorites file. Also you can add notification sounds, but as a demonstration it's fine.
