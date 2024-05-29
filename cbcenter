@@ -38,7 +38,7 @@ RANDOM_FILE="${TMP_PDIR}/random.cb"
 #
 # ------------ URLS -------------
 PREVIEW_PURL="https://thumb.live.mmcdn.com/riw"
-SEARCH_PURL="https://chaturbate.com/ax/search/?keywords="
+SEARCH_PURL="https://chaturbate.com/ax/search/?keywords=" # not necessary trailing slash
 OTHERS_PURL="https://chaturbate.com/api/ts/roomlist/room-list"
 BIOCONTEXT_PURL="https://chaturbate.com/api/biocontext"
 MORE_PURL="https://chaturbate.com/api/more_like"
