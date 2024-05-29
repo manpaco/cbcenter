@@ -108,6 +108,7 @@ CURL_ERROR=22
 BANNED_ROOM=23
 INVALID_VIEWER=24
 INVALID_GENDER=25
+MOREWHO_ERROR=26
 
 # ------------ COLORS -------------
 RED_FG="\033[0;31m"
@@ -356,6 +357,11 @@ Run '$mybasename __set_viewer command' to set a valid viewer." 1>&2
         "$INVALID_GENDER")
             echo -e "Invalid gender !" 1>&2
             exit $INVALID_GENDER
+            ;;
+        "$MOREWHO_ERROR")
+            echo -e "File '$MOREWHO_FILE' was not found !\n\
+Re-run '$mybasename fetch-more username'." 1>&2
+            exit $MOREWHO_ERROR
             ;;
         *)
             echo "UNKNOWN_ERROR" 1>&2
@@ -1045,7 +1051,7 @@ fetch_more_rooms () {
 }
 
 assert_more_who () {
-    [[ -e "$MOREWHO_FILE" ]] || send_exit_error $UNKNOWN_ERROR
+    [[ -e "$MOREWHO_FILE" ]] || send_exit_error $MOREWHO_ERROR
 }
 
 show_dist_warning
