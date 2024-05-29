@@ -83,7 +83,7 @@ Also the service:
     Description=Check CB favorites
     
     [Service]
-    ExecStart=/absolute/path/to/your/script
+    ExecStart=/path/to/your/script
 
 Finally run `systemctl --user enable --now cbnoti.timer`.
 
