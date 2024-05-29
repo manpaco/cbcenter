@@ -809,7 +809,7 @@ fetch_roomlist_file () {
 # fetch_rooms_helper helper
 # save preview of '$1' on '$3': if success print 'fetched', else 'error'
 # '$1' username
-# '$2' file and line preffix
+# '$2' index preffix
 # '$3' dest dir
 frh_helper () {
     [[ $2 -lt 10 ]] && preffix="0$2" || preffix="$2"
