@@ -27,11 +27,6 @@ TMP_PDIR="/tmp/$PROJECT"
 SEARCH_FILE="${TMP_PDIR}/search.cb"
 OTHERS_PDIR="${TMP_PDIR}/others"
 OTHERS_FILE="${OTHERS_PDIR}.cb"
-FEMALE_ROOM="f"
-MALE_ROOM="m"
-COUPLE_ROOM="c"
-TRANS_ROOM="t"
-FETCH_STEPS=10
 BIOCONTEXT_FILE="${TMP_PDIR}/biocontext.cb"
 MORE_PDIR="${TMP_PDIR}/more"
 MORE_FILE="${MORE_PDIR}.cb"
@@ -45,6 +40,10 @@ BIOCONTEXT_URL="https://chaturbate.com/api/biocontext"
 MORE_URL="https://chaturbate.com/api/more_like"
 
 # ------------ REGULAR EXPRESSIONS -------------
+FEMALE_ROOM="f"
+MALE_ROOM="m"
+COUPLE_ROOM="c"
+TRANS_ROOM="t"
 ID_REGEX="^[0-9]+$"
 CB_ROOT_URL="https://www.chaturbate.com"
 CAM_ROOT_REGEX="https:\/\/edge[0-9]+-[a-z]+\.live\.mmcdn\.com"
@@ -75,6 +74,7 @@ XRW_HEADER="X-Requested-With: XMLHttpRequest"
 HTTP_NOT_FOUND_TEXT="404 Not Found"
 HTTP_TOO_MANY_REQUESTS_TEXT="429 Too Many Requests"
 CONNECT_TIMEOUT=10
+FETCH_STEPS=10
 
 # ----------- EXIT CODES -----------
 OK_CODE=0
