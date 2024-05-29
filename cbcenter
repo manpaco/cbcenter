@@ -846,7 +846,7 @@ fetch_rooms_helper () {
     # Implementation to go crazy (without stops)
     # for ((i = 0 ; i < num_rooms ; i++)); do
     #     room="$(jq -Mr ".rooms[$i].$frh_field" "$frh_file")"
-    #     frh_helper "$room" "$i" &
+    #     frh_helper "$room" "$i" "${frh_file%.*}" &
     # done
     # wait
     # read -rp "Open previews? (Y/n): " ropen
