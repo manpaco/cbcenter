@@ -170,7 +170,7 @@ show_help () {
   lf, list-favorites       [-s]  - List of favorite rooms.\n\
                                    If '-s' is provided, show online or offline.\n\
   rs, room-status    [username]  - Show room status, i.e. public, private,\n\
-                                   hidden, or offline.\n\
+                                   hidden, away, or offline.\n\
   rp, room-programs  [username]  - Show available programs of given room.\n\
   ri, room-info      [username]  - Show basic info.\n\
   rb, room-bio       [username]  - Show biocontext.\n\
