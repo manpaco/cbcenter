@@ -553,9 +553,9 @@ remove_room () {
         match="$(grep -n "$1" "$FAVORITES_FILE")"
         [[ -z $match ]] && send_exit_error $ROOM_DOESNT_EXIST
         echo "No exact match found!"
+        echo "Which room do you want to delete?"
         echo "$match"
         local rr_choice
-        echo "Which room do you want to delete?"
         favorite_choice rr_choice hide_list
         # Validate choice
         if echo "$match" | grep -q -E "^($rr_choice:)" -; then
