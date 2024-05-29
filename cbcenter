@@ -375,7 +375,7 @@ is_online () {
 # '$2' store room_status
 assert_active_room () {
     [[ -n "$2" ]] && declare -n rs_out="$2"
-    get_bio "$1"
+    fetch_bio "$1"
     rs_out="$(jq -Mr '.room_status' "$BIOCONTEXT_FILE" 2>/dev/null)" ||
         send_exit_error $ROOM_NOT_FOUND
     [[ "$rs_out" == "null" ]] && send_exit_error $BANNED_ROOM
@@ -880,7 +880,7 @@ that more than $limit rooms will be obtained."
 
 # Save biocontext of given room
 # '$1' room
-get_bio () {
+fetch_bio () {
     curl -sL --compressed -H "$XRW_HEADER" "${BIOCONTEXT_URL}/$1" -o "$BIOCONTEXT_FILE" || send_exit_error $BIOCONTEXT_ERROR
 }
 
@@ -888,7 +888,7 @@ get_bio () {
 # '$1' room
 room_info () {
     valid_username "$1" || send_exit_error $INVALID_USERNAME
-    get_bio "$1"
+    assert_active_room "$1" # it calls fetch_bio
     echo -n "Real name: "
     jq -M '.real_name' "$BIOCONTEXT_FILE" 2>/dev/null || send_exit_error $ROOM_NOT_FOUND
     echo -n "Location: "
@@ -909,7 +909,7 @@ room_info () {
 # '$1' room
 room_bio () {
     valid_username "$1" || send_exit_error $INVALID_USERNAME
-    get_bio "$1"
+    assert_active_room "$1" # it calls fetch_bio
     jq . "$BIOCONTEXT_FILE" 2>/dev/null || send_exit_error $ROOM_NOT_FOUND
 }
 
