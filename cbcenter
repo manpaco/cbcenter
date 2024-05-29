@@ -167,9 +167,8 @@ show_help () {
   r, remove          [username]  - Remove room from favorites.\n\
   ff, fetch-favorites            - Fetch previews of favorite rooms.\n\
   vf, view-favorites             - Open fetched previews (favorites).\n\
-  ls, list-favorites             - List of favorite rooms.\n\
-  fs, favorites-status           - Same as 'list-favorites', plus online or\n\
-                                   offline.\n\
+  lf, list-favorites       [-s]  - List of favorite rooms.\n\
+                                   If '-s' is provided, show online or offline.
   rs, room-status    [username]  - Show room status, i.e. public, private,\n\
                                    hidden, or offline.\n\
   rp, room-programs  [username]  - Show available programs of given room.\n\
@@ -813,24 +812,14 @@ keyword_search () {
     jq -M ".${JQ_HASGTAGS}" "$SEARCH_FILE"
 }
 
-# Show status of given room
-# '$1' room
-show_online_offline () {
-    if is_online "$1"; then
-        echo -e "$1 is ${LIGHT_BLUE_FG}online${CLEAR_FG}"
-    else
-        echo "$1 is offline"
-    fi
-}
-
-# Show favorites status
-# Only show online or offline (not the same as 'intern_status' function)
+# Show room status
+# Only show online or offline (not the same as 'internal_status' function)
 global_status () {
-    while IFS="" read -r room || [ -n "$room" ]
-    do
-        valid_username "$room" && show_online_offline "$room" &
-    done < "$FAVORITES_FILE"
-    wait
+    if is_online "$1"; then
+        echo -e "$2:$1 is ${LIGHT_BLUE_FG}online${CLEAR_FG}"
+    else
+        echo "$2:$1 is offline"
+    fi
 }
 
 # Show favorites on stdout
@@ -838,9 +827,14 @@ list_favorites () {
     declare -i line=1
     while IFS="" read -r room || [ -n "$room" ]
     do
-        echo "$line:$room"
+        if [[ $1 == "-s" ]]; then
+            global_status "$room" "$line" &
+        else
+            echo "$line:$room"
+        fi
         line+=1
     done < "$FAVORITES_FILE"
+    wait
 }
 
 # Open others directory
@@ -1045,7 +1039,7 @@ set_viewer () {
 }
 
 # Show room status (public/private/hidden/offline)
-intern_status () {
+internal_status () {
     valid_username "$1" || send_exit_error $INVALID_USERNAME
     local is_status
     assert_active_room "$1" is_status
@@ -1138,14 +1132,11 @@ case "$command" in
         play_room "$ofd_choice"
         ;;
     lf|list-favorites)
-        list_favorites
-        ;;
-    fs|favorites-status)
-        global_status
+        list_favorites "$param"
         ;;
     rs|room-status)
         [[ -z $param ]] && favorite_room_choice param
-        intern_status "$param"
+        internal_status "$param"
         ;;
     rp|room-programs)
         [[ -z $param ]] && favorite_room_choice param
