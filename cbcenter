@@ -789,8 +789,8 @@ open_others_dir () {
 # '$1' gender
 # '$2' offset
 # '$3' limit
-fetch_others_file () {
-    curl -sL --compressed -H "$XRW_HEADER" "$OTHERS_URL/?genders=$1&offset=$2&limit=$3&enable_recommendations=false" -o "$OTHERS_FILE"
+fetch_rooms_file () {
+    curl -sL --compressed -H "$XRW_HEADER" "$OTHERS_URL/?genders=$1&offset=$2&limit=$3&enable_recommendations=false" -o "$4"
 }
 
 # fetch_rooms_helper helper
@@ -874,7 +874,7 @@ fetch_other_rooms () {
     echo -e "${GREEN_FG}INFO:${CLEAR_FG} Sometimes promoted rooms appear. For this reason, it is possible\n\
 that more than $limit rooms will be obtained."
 
-    fetch_others_file "$gender" "$offset" "$limit" || send_exit_error $ROOM_LIST_ERROR
+    fetch_rooms_file "$gender" "$offset" "$limit" "$OTHERS_FILE" || send_exit_error $ROOM_LIST_ERROR
     fetch_rooms_helper "$OTHERS_DIR" "username" clear_others_dir open_others_dir
 }
 
@@ -918,14 +918,6 @@ valid_gender () {
     [[ "$1" =~ ^($GENDER_REGEX)$ ]]
 }
 
-# Save rooms list from given range on RANDOM_FILE
-# '$1' gender
-# '$2' offset
-# '$3' limit
-fetch_random_file () {
-    curl -sL --compressed -H "$XRW_HEADER" "$OTHERS_URL/?genders=$1&offset=$2&limit=$3&enable_recommendations=false" -o "$RANDOM_FILE"
-}
-
 # Show random preview using a custom range ('$1':RANDOM:1 or RANDOM:RANDOM:1 if '$1' is empty)
 # '$1' gender
 quick_rand () {
@@ -941,7 +933,7 @@ quick_rand () {
         3) gender=t
             ;;
     esac
-    fetch_random_file "$gender" $((RANDOM%100)) 1 || send_exit_error $ROOM_LIST_ERROR
+    fetch_rooms_file "$gender" $((RANDOM%100)) 1 "$RANDOM_FILE" || send_exit_error $ROOM_LIST_ERROR
     room="$(jq -Mre ".rooms[0].username" "$RANDOM_FILE")" || send_exit_error $JQ_ERROR
     show_preview "$room"
     echo "Fetched $room room ($gender). Enjoy!"
