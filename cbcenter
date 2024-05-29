@@ -9,37 +9,38 @@ PROJECT="cbcenter"
 
 #
 # When using directory variables remember to add a trailing slash.
+# For that reason, PDIR stands for (P)artial (DIR)ectory.
 #
 # ---------- FILES AND DIRECTORIES -----------
 MYPATH="${HOME}/.local/$PROJECT"
-DOWNLOADS_DIR="${MYPATH}/downloads"
+DOWNLOADS_PDIR="${MYPATH}/downloads"
 FAVORITES_FILE="${MYPATH}/favorites.cb"
-STREAMS_DIR="${DOWNLOADS_DIR}/streams"
-CAPTURES_DIR="${DOWNLOADS_DIR}/captures"
+STREAMS_PDIR="${DOWNLOADS_PDIR}/streams"
+CAPTURES_PDIR="${DOWNLOADS_PDIR}/captures"
 # ----------- FORMATS ---------------
 VIDEO_FORMAT="mp4"
 IMG_FORMAT="jpg"
 CODEC="h264"
 # ----------- TEMP FILES AND DIRECTORIES -------------
-TEMP_DIR="/tmp/$PROJECT"
-FAVORITES_DIR="${TEMP_DIR}/favorites"
+TEMP_PDIR="/tmp/$PROJECT"
+FAVORITES_PDIR="${TEMP_PDIR}/favorites"
 PREVIEW_URL="https://thumb.live.mmcdn.com/riw"
 SEARCH_URL="https://chaturbate.com/ax/search/?keywords="
-SEARCH_FILE="${TEMP_DIR}/search.cb"
-OTHERS_DIR="${TEMP_DIR}/others"
+SEARCH_FILE="${TEMP_PDIR}/search.cb"
+OTHERS_PDIR="${TEMP_PDIR}/others"
 OTHERS_URL="https://chaturbate.com/api/ts/roomlist/room-list"
-OTHERS_FILE="${TEMP_DIR}/others.cb"
+OTHERS_FILE="${TEMP_PDIR}/others.cb"
 FEMALE_ROOM="f"
 MALE_ROOM="m"
 COUPLE_ROOM="c"
 TRANS_ROOM="t"
 FETCH_STEPS=10
 BIOCONTEXT_URL="https://chaturbate.com/api/biocontext"
-BIOCONTEXT_FILE="${TEMP_DIR}/biocontext.cb"
-MORE_DIR="${TEMP_DIR}/more"
-MORE_FILE="${TEMP_DIR}/more.cb"
+BIOCONTEXT_FILE="${TEMP_PDIR}/biocontext.cb"
+MORE_PDIR="${TEMP_PDIR}/more"
+MORE_FILE="${TEMP_PDIR}/more.cb"
 MORE_URL="https://chaturbate.com/api/more_like"
-RANDOM_FILE="${TEMP_DIR}/random.cb"
+RANDOM_FILE="${TEMP_PDIR}/random.cb"
 
 # ------------ REGULAR EXPRESSIONS -------------
 ID_REGEX="^[0-9]+$"
@@ -194,11 +195,11 @@ TIP: If [username] is not provided, you will be asked to choose an option\n\
   limit:  Number of rooms.\n\
           Two digits (max) integer from 1 (or 01) to 99.\n\nDirectories and files:\n\n\
   PROJECT DIR:   $MYPATH/\n\
-  DOWNLOADS DIR: $DOWNLOADS_DIR/\n\
+  DOWNLOADS DIR: $DOWNLOADS_PDIR/\n\
   FAVORITES:     $FAVORITES_FILE\n\
-  TEMPORAL DIR:  $TEMP_DIR/\n\
-  FAVORITES DIR: $FAVORITES_DIR/\n\
-  OTHERS DIR:    $OTHERS_DIR/\n\
+  TEMPORAL DIR:  $TEMP_PDIR/\n\
+  FAVORITES DIR: $FAVORITES_PDIR/\n\
+  OTHERS DIR:    $OTHERS_PDIR/\n\
   LAST SEARCH:   $SEARCH_FILE\n\
   LAST OTHERS:   $OTHERS_FILE\n\
   BIOCONTEXT:    $BIOCONTEXT_FILE\n\nExit codes:\n\n\
@@ -601,22 +602,22 @@ remove_room () {
 
 # Clear favorites directory
 clear_favorites_dir () {
-    rm -f "${FAVORITES_DIR:?}"/*
+    rm -f "${FAVORITES_PDIR:?}"/*
 }
 
 # Clear captures directory
 clear_captures_dir () {
-    rm -f "${CAPTURES_DIR:?}"/*
+    rm -f "${CAPTURES_PDIR:?}"/*
 }
 
 # Clear streams directory
 clear_streams_dir () {
-    rm -f "${STREAMS_DIR:?}"/*
+    rm -f "${STREAMS_PDIR:?}"/*
 }
 
 # Clear rooms directory
 clear_others_dir () {
-    rm -f "${OTHERS_DIR:?}"/*
+    rm -f "${OTHERS_PDIR:?}"/*
 }
 
 # Get preview and save it in given file
@@ -640,12 +641,12 @@ show_preview () {
 }
 
 # fetch_favorites helper
-# save preview of '$1' on FAVORITES_DIR: if success print 'fetched', else 'error'
+# save preview of '$1' on FAVORITES_PDIR: if success print 'fetched', else 'error'
 # '$1' username
 # '$2' line preffix
 ff_helper () {
     if valid_username "$1" && is_online "$1"; then
-        save_preview "$1" "$FAVORITES_DIR" && echo "$2:$1 fetched" && return $OK_CODE
+        save_preview "$1" "$FAVORITES_PDIR" && echo "$2:$1 fetched" && return $OK_CODE
         echo -e "$2:$1 ${RED_FG}error${CLEAR_FG}"
         return $UNKNOWN_ERROR
     fi
@@ -676,7 +677,7 @@ quick_thumb () {
 
 # Open favorites directory
 open_favorites_dir () {
-    $VIEWER "$FAVORITES_DIR"
+    $VIEWER "$FAVORITES_PDIR"
 }
 
 # Make sure the room is public, else exit program with an error
@@ -707,7 +708,7 @@ save_room () {
     assert_public_room "$1"
     local sr_link
     extract_direct_link "$1" sr_link
-    output="${STREAMS_DIR}/$(formated_date)-$1.$VIDEO_FORMAT"
+    output="${STREAMS_PDIR}/$(formated_date)-$1.$VIDEO_FORMAT"
     ffmpeg -i "$sr_link" -codec copy "$output"
 
     # Another way (slower ffmpeg startup)
@@ -723,7 +724,7 @@ save_capture () {
     assert_public_room "$1"
     local sc_link
     extract_direct_link "$1" sc_link 99
-    output="${CAPTURES_DIR}/$(formated_date)-$1.$IMG_FORMAT"
+    output="${CAPTURES_PDIR}/$(formated_date)-$1.$IMG_FORMAT"
     ffmpeg -i "$sc_link" -frames:v 1 -update true "$output"
 }
 
@@ -784,7 +785,7 @@ list_favorites () {
 
 # Open others directory
 open_others_dir () {
-    $VIEWER "$OTHERS_DIR"
+    $VIEWER "$OTHERS_PDIR"
 }
 
 # Save rooms list from given range on OTHERS_FILE
@@ -809,7 +810,7 @@ frh_helper () {
 
 # Takes a rooms list '${1}.cb' and fetch all.
 # '$1' partial name of rooms list (same as storage dir).
-#      e.g. OTHERS_FILE="${OTHERS_DIR}.cb"
+#      e.g. OTHERS_FILE="${OTHERS_PDIR}.cb"
 # '$2' json field inside main array 'rooms' (it could be username or room)
 # '$3' function name to clear dir
 # '$4' function name to open dir
@@ -877,7 +878,7 @@ fetch_other_rooms () {
 that more than $limit rooms will be obtained."
 
     fetch_rooms_file "$gender" "$offset" "$limit" "$OTHERS_FILE" || send_exit_error $ROOM_LIST_ERROR
-    fetch_rooms_helper "$OTHERS_DIR" "username" clear_others_dir open_others_dir
+    fetch_rooms_helper "$OTHERS_PDIR" "username" clear_others_dir open_others_dir
 }
 
 # Save biocontext of given room
@@ -990,14 +991,14 @@ check_favorites () {
     mv "${FAVORITES_FILE}.checked" "$FAVORITES_FILE"
 }
 
-# Open previews on MORE_DIR
+# Open previews on MORE_PDIR
 open_more_dir () {
-    $VIEWER "$MORE_DIR"
+    $VIEWER "$MORE_PDIR"
 }
 
-# Remove previews on MORE_DIR
+# Remove previews on MORE_PDIR
 clear_more_dir () {
-    rm -f "${MORE_DIR:?}"/*
+    rm -f "${MORE_PDIR:?}"/*
 }
 
 # Fetch rooms list similar to '$1' and save on $MORE_FILE
@@ -1013,7 +1014,7 @@ fetch_more_rooms () {
     assert_active_room "$1"
     fetch_more_file "$1" || send_exit_error $ROOM_LIST_ERROR
     echo "$1" > "${MORE_FILE}.who"
-    fetch_rooms_helper "$MORE_DIR" "room" clear_more_dir open_more_dir
+    fetch_rooms_helper "$MORE_PDIR" "room" clear_more_dir open_more_dir
 }
 
 assert_more_who () {
@@ -1031,12 +1032,12 @@ fi
 
 # Make directories
 #[[ -d "$MYPATH" ]] || mkdir -p "$MYPATH"
-[[ -d "$DOWNLOADS_DIR" ]] || mkdir -p "$DOWNLOADS_DIR"
-[[ -d "$STREAMS_DIR" ]] || mkdir -p "$STREAMS_DIR"
-[[ -d "$CAPTURES_DIR" ]] || mkdir -p "$CAPTURES_DIR"
-[[ -d "$FAVORITES_DIR" ]] || mkdir -p "$FAVORITES_DIR"
-[[ -d "$OTHERS_DIR" ]] || mkdir -p "$OTHERS_DIR"
-[[ -d "$MORE_DIR" ]] || mkdir -p "$MORE_DIR"
+[[ -d "$DOWNLOADS_PDIR" ]] || mkdir -p "$DOWNLOADS_PDIR"
+[[ -d "$STREAMS_PDIR" ]] || mkdir -p "$STREAMS_PDIR"
+[[ -d "$CAPTURES_PDIR" ]] || mkdir -p "$CAPTURES_PDIR"
+[[ -d "$FAVORITES_PDIR" ]] || mkdir -p "$FAVORITES_PDIR"
+[[ -d "$OTHERS_PDIR" ]] || mkdir -p "$OTHERS_PDIR"
+[[ -d "$MORE_PDIR" ]] || mkdir -p "$MORE_PDIR"
 [[ -e "$FAVORITES_FILE" ]] || touch "$FAVORITES_FILE"
 
 check_favorites
