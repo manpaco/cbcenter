@@ -628,10 +628,6 @@ fetch_favorites () {
     read -rp "Open previews? (Y/n): " ropen
     [[ $ropen == [yY] || $ropen == [yY][eE][sS] || -z $ropen ]] || return $OK_CODE
     open_favorites_dir
-    local ff_choice=""
-    echo "Which room do you want to play?"
-    favorite_room_choice ff_choice hide_list
-    play_room "$ff_choice"
 }
 
 # Get and show preview of given room
@@ -644,10 +640,6 @@ quick_thumb () {
 # Open favorites directory
 open_favorites_dir () {
     $VIEWER "$FAVORITES_DIR"
-    local ofd_choice=""
-    echo "Which room do you want to play?"
-    favorite_room_choice ofd_choice
-    play_room "$ofd_choice"
 }
 
 # Make sure the room is public, else exit program with an error
@@ -757,10 +749,6 @@ list_favorites () {
 # Open rooms directory
 open_others_dir () {
     $VIEWER "$OTHERS_DIR"
-    local ood_choice
-    echo "Which room do you want to play?"
-    other_room_choice ood_choice
-    play_room "$ood_choice"
 }
 
 # Save rooms list from given range
@@ -827,10 +815,6 @@ fetch_others_range () {
         read -rp "Continue fetching? $((num_rooms-index)) remaining (Y/n): " rcont
         [[ $rcont == [yY] || $rcont == [yY][eE][sS] || -z $rcont ]] || break
     done
-    local for_choice
-    echo "Which room do you want to play?"
-    other_room_choice for_choice hide_list
-    play_room "$for_choice"
 }
 
 # Save biocontext of given room
@@ -976,9 +960,17 @@ case "$command" in
         ;;
     ff|fetch-favorites)
         fetch_favorites
+        ff_choice=""
+        echo "Which room do you want to play?"
+        favorite_room_choice ff_choice hide_list
+        play_room "$ff_choice"
         ;;
     vf|view-favorites)
         open_favorites_dir
+        ofd_choice=""
+        echo "Which room do you want to play?"
+        favorite_room_choice ofd_choice
+        play_room "$ofd_choice"
         ;;
     lf|list-favorites)
         list_favorites
@@ -1004,9 +996,17 @@ case "$command" in
         ;;
     fo|fetch-others)
         fetch_others_range "$param"
+        for_choice=""
+        echo "Which room do you want to play?"
+        other_room_choice for_choice hide_list
+        play_room "$for_choice"
         ;;
     vo|view-others)
         open_others_dir
+        ood_choice=""
+        echo "Which room do you want to play?"
+        other_room_choice ood_choice
+        play_room "$ood_choice"
         ;;
     lo|list-others)
         list_others
