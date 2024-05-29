@@ -534,7 +534,7 @@ rem_favorite_line () {
 # '$2' hide_list (optional)
 favorite_choice () {
     declare -n fc_out="$1"
-    [[ $2 == "hide_list" ]] || list_favorites
+    [[ $2 == "hide_list" ]] || list_favorites -n
     read -rp "Type your choice (i.e. the beginning number before the ':'), or (Q)uit: " fc_out
     [[ $fc_out == [qQ] || -z "$fc_out" ]] && exit $OK_CODE
     valid_id "$fc_out" || send_exit_error $BAD_CHOICE
@@ -819,9 +819,9 @@ keyword_search () {
 # Only show online or offline (not the same as 'internal_status' function)
 global_status () {
     if is_online "$1"; then
-        echo -e "$2:$1 is ${LIGHT_BLUE_FG}online${CLEAR_FG}"
+        echo -e "${2:+$2:}$1 is ${LIGHT_BLUE_FG}online${CLEAR_FG}"
     else
-        echo "$2:$1 is offline"
+        echo "${2:+$2:}$1 is offline"
     fi
 }
 
@@ -830,10 +830,15 @@ list_favorites () {
     declare -i line=1
     while IFS="" read -r room || [ -n "$room" ]
     do
-        if [[ $1 == "-s" ]]; then
-            global_status "$room" "$line" &
+        if [[ $1 == "-n" || $2 == "-n" ]]; then
+            laux="$line"
         else
-            echo "$line:$room"
+            laux=""
+        fi
+        if [[ $1 == "-s" || $2 == "-s" ]]; then
+            global_status "$room" "$laux" &
+        else
+            echo "${laux:+$laux:}$room"
         fi
         line+=1
     done < "$FAVORITES_FILE"
@@ -1101,6 +1106,11 @@ param="$2"
 if [[ "$command" == "__is_online" ]]; then
     valid_username "$param" || send_exit_error $INVALID_USERNAME
     is_online "$param"
+    exit
+fi
+
+if [[ "$command" == "lf" || "$command" == "list-favorites" ]] && ! [[ "$param" == "-s" ]]; then
+    list_favorites "$param"
     exit
 fi
 
