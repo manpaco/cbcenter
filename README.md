@@ -124,3 +124,10 @@ Of course you can also make a multi-user notifier (storing online user in `verif
     exit 0
 
 If you prefer you can define `users` as an array of hardcoded usernames instead of use favorites file. Also you can add notification sounds, but as a demonstration it's fine.
+
+Harcoded usernames example:
+
+    users=( buglover bigkeys byte69 )
+    for current in "${users[@]}"; do
+        # ...
+    done
