@@ -817,19 +817,19 @@ frh_helper () {
     return $UNKNOWN_ERROR
 }
 
-# Takes a rooms list '${1}.cb' and fetch all.
-# '$1' partial name of rooms list (same as storage dir).
-#      e.g. OTHERS_FILE="${OTHERS_PDIR}.cb"
+# Takes a rooms list '${1}' and fetch all.
+# '$1' name of json file. Is used to extract PDIR taking into account
+#      that: e.g. OTHERS_FILE="${OTHERS_PDIR}.cb"
 # '$2' json field inside main array 'rooms' (it could be username or room)
 # '$3' function name to clear dir
 # '$4' function name to open dir
 fetch_rooms_helper () {
-    local frh_dir="$1"
+    local frh_file="$1"
     local frh_field="$2"
     local frh_clear="$3"
     local frh_open="$4"
     declare -i num_rooms
-    num_rooms="$(jq -e '.rooms | length' "${frh_dir}.cb")" || send_exit_error $JQ_ERROR
+    num_rooms="$(jq -e '.rooms | length' "$frh_file")" || send_exit_error $JQ_ERROR
     [[ $num_rooms -eq 0 ]] && send_exit_error $EMPTY_ROOM_LIST
     echo -e "${YELLOW_FG}TIP:${CLEAR_FG} Go back in the image viewer to see the most recent ones."
     $frh_clear
@@ -848,8 +848,8 @@ fetch_rooms_helper () {
     local room
     while true; do
         # Fetch room previews by 'FETCH_STEPS' at time
-        while room="$(jq -Mre ".rooms[$index].$frh_field" "${frh_dir}.cb")"; do
-            frh_helper "$room" "$index" "$frh_dir" &
+        while room="$(jq -Mre ".rooms[$index].$frh_field" "$frh_file")"; do
+            frh_helper "$room" "$index" "${frh_file%.*}" &
             index+=1
             [[ $((index%FETCH_STEPS)) -ne 0 ]] || break
         done
@@ -887,7 +887,7 @@ fetch_other_rooms () {
 that more than $limit rooms will be obtained."
 
     fetch_rooms_file "$gender" "$offset" "$limit" "$OTHERS_FILE" || send_exit_error $ROOM_LIST_ERROR
-    fetch_rooms_helper "$OTHERS_PDIR" "username" clear_others_dir open_others_dir
+    fetch_rooms_helper "$OTHERS_FILE" "username" clear_others_dir open_others_dir
 }
 
 # Save biocontext of given room
@@ -1023,7 +1023,7 @@ fetch_more_rooms () {
     assert_active_room "$1"
     fetch_more_file "$1" || send_exit_error $ROOM_LIST_ERROR
     echo "$1" > "${MORE_FILE}.who"
-    fetch_rooms_helper "$MORE_PDIR" "room" clear_more_dir open_more_dir
+    fetch_rooms_helper "$MORE_FILE" "room" clear_more_dir open_more_dir
 }
 
 assert_more_who () {
