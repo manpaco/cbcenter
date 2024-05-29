@@ -198,6 +198,7 @@ show_help () {
   __check_deps                   - Check program dependencies.\n\
   __is_online          username  - Return 0 if online, else 1. Does not check\n\
                                    if the room is active.\n\
+  __favorites_file               - Show favorites file (path and name).
   h, help                        - This text.\n\n\
 An active room is one that exists and is not banned.\n\
 TIP: If [username] is not provided, you will be asked to choose an option\n\
