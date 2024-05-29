@@ -167,8 +167,10 @@ show_help () {
   r, remove          [username]  - Remove room from favorites.\n\
   ff, fetch-favorites            - Fetch previews of favorite rooms.\n\
   vf, view-favorites             - Open fetched previews (favorites).\n\
-  lf, list-favorites       [-s]  - List of favorite rooms.\n\
+  lf, list-favorites  [-s] [-l]  - List of favorite rooms.\n\
                                    If '-s' is provided, show online or offline.\n\
+                                   If '-l' is provided, show line number from\n\
+                                   favorites file.\n\
   rs, room-status    [username]  - Show room status, i.e. public, private,\n\
                                    hidden, away, or offline.\n\
   rp, room-programs  [username]  - Show available programs of given room.\n\
@@ -535,7 +537,7 @@ rem_favorite_line () {
 # '$2' hide_list (optional)
 favorite_choice () {
     declare -n fc_out="$1"
-    [[ $2 == "hide_list" ]] || list_favorites -n
+    [[ $2 == "hide_list" ]] || list_favorites -l
     read -rp "Type your choice (i.e. the beginning number before the ':'), or (Q)uit: " fc_out
     [[ $fc_out == [qQ] || -z "$fc_out" ]] && exit $OK_CODE
     valid_id "$fc_out" || send_exit_error $BAD_CHOICE
@@ -827,16 +829,18 @@ global_status () {
 }
 
 # Show favorites on stdout
+# '$1' show global status (-s)
+# '$2' show line numbers (-l)
 list_favorites () {
     declare -i line=1
     while IFS="" read -r room || [ -n "$room" ]
     do
-        if [[ $1 == "-n" || $2 == "-n" ]]; then
+        if [[ $1 == "-l" || $2 == "-l" || "$1" == "-sl" || "$1" == "-ls" ]]; then
             laux="$line"
         else
             laux=""
         fi
-        if [[ $1 == "-s" || $2 == "-s" ]]; then
+        if [[ $1 == "-s" || $2 == "-s" || "$1" == "-sl" || "$1" == "-ls" ]]; then
             global_status "$room" "$laux" &
         else
             echo "${laux:+$laux:}$room"
@@ -1153,7 +1157,9 @@ case "$command" in
         play_room "$ofd_choice"
         ;;
     lf|list-favorites)
-        list_favorites "$param"
+        extra_param="$3"
+        [[ -n "$extra_param" ]] && extra_param="$(trim_string "$extra_param")"
+        list_favorites "$param" "$extra_param"
         ;;
     rs|room-status)
         [[ -z $param ]] && favorite_room_choice param
