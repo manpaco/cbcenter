@@ -85,4 +85,4 @@ Of course you can also make a multi-user notifier (storing online user in `verif
         fi
     done < "$users"
 
-Of course you can add sound, but as a demonstration it's fine.
+If you prefer you can add sound, but as a demonstration it's fine.
