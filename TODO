@@ -11,4 +11,4 @@
   modifiers/switches (-x).
 - Open the first file in a directory, instead of the entire directory:
   This way you can use a greater variety of image viewers.
-- Add 'fetch-more user' command, to fetch more rooms like 'user'.
++ Add 'fetch-more user' command, to fetch more rooms like 'user'.
