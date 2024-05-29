@@ -42,7 +42,7 @@ PREVIEW_PURL="https://thumb.live.mmcdn.com/riw"
 SEARCH_PURL="https://chaturbate.com/ax/search/?keywords=" # not necessary trailing slash
 ROOMLIST_PURL="https://chaturbate.com/api/ts/roomlist/room-list"
 BIOCONTEXT_PURL="https://chaturbate.com/api/biocontext"
-MORE_PURL="https://chaturbate.com/api/more_like"
+MORELIST_PURL="https://chaturbate.com/api/more_like"
 
 # ------------ REGULAR EXPRESSIONS -------------
 FEMALE_ROOM="f"
@@ -1068,7 +1068,7 @@ clear_more_dir () {
 # Fetch rooms list similar to '$1' and save on $MORE_FILE
 # '$1' room
 fetch_morelist_file () {
-    curl -sL --compressed -H "$XRW_HEADER" "${MORE_PURL}/$1" -o "$MORE_FILE"
+    curl -sL --compressed -H "$XRW_HEADER" "${MORELIST_PURL}/$1" -o "$MORE_FILE"
 }
 
 # Fetch and show rooms similar to '$1'
