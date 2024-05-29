@@ -22,25 +22,25 @@ VIDEO_FORMAT="mp4"
 IMG_FORMAT="jpg"
 CODEC="h264"
 # ----------- TEMP FILES AND DIRECTORIES -------------
-TEMP_PDIR="/tmp/$PROJECT"
-FAVORITES_PDIR="${TEMP_PDIR}/favorites"
+TMP_PDIR="/tmp/$PROJECT"
+FAVORITES_PDIR="${TMP_PDIR}/favorites"
 PREVIEW_URL="https://thumb.live.mmcdn.com/riw"
 SEARCH_URL="https://chaturbate.com/ax/search/?keywords="
-SEARCH_FILE="${TEMP_PDIR}/search.cb"
-OTHERS_PDIR="${TEMP_PDIR}/others"
+SEARCH_FILE="${TMP_PDIR}/search.cb"
+OTHERS_PDIR="${TMP_PDIR}/others"
 OTHERS_URL="https://chaturbate.com/api/ts/roomlist/room-list"
-OTHERS_FILE="${TEMP_PDIR}/others.cb"
+OTHERS_FILE="${TMP_PDIR}/others.cb"
 FEMALE_ROOM="f"
 MALE_ROOM="m"
 COUPLE_ROOM="c"
 TRANS_ROOM="t"
 FETCH_STEPS=10
 BIOCONTEXT_URL="https://chaturbate.com/api/biocontext"
-BIOCONTEXT_FILE="${TEMP_PDIR}/biocontext.cb"
-MORE_PDIR="${TEMP_PDIR}/more"
-MORE_FILE="${TEMP_PDIR}/more.cb"
+BIOCONTEXT_FILE="${TMP_PDIR}/biocontext.cb"
+MORE_PDIR="${TMP_PDIR}/more"
+MORE_FILE="${TMP_PDIR}/more.cb"
 MORE_URL="https://chaturbate.com/api/more_like"
-RANDOM_FILE="${TEMP_PDIR}/random.cb"
+RANDOM_FILE="${TMP_PDIR}/random.cb"
 
 # ------------ REGULAR EXPRESSIONS -------------
 ID_REGEX="^[0-9]+$"
@@ -197,7 +197,7 @@ TIP: If [username] is not provided, you will be asked to choose an option\n\
   PROJECT DIR:   $MYPATH/\n\
   DOWNLOADS DIR: $DOWNLOADS_PDIR/\n\
   FAVORITES:     $FAVORITES_FILE\n\
-  TEMPORAL DIR:  $TEMP_PDIR/\n\
+  TEMPORAL DIR:  $TMP_PDIR/\n\
   FAVORITES DIR: $FAVORITES_PDIR/\n\
   OTHERS DIR:    $OTHERS_PDIR/\n\
   LAST SEARCH:   $SEARCH_FILE\n\
