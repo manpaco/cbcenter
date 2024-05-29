@@ -818,10 +818,18 @@ frh_helper () {
     return $UNKNOWN_ERROR
 }
 
-# Takes a rooms list '${1}' and fetch all.
+# This abstract function avoids duplicate code.
+# But it is probably easier to understand by dividing this function for each
+# particular case (room-list and more-list).
+# 'room-list' is obtained with fetch_roomlist_file
+# 'more-list' is obtained with fetch_morelist_file
+# Takes a 'room-list' or 'more-list' from '${1}' file and fetch all.
+# Files of type 'room-list' and 'more-list' have a main array called 'rooms'.
+# If in the future this does not happen, you must add a parameter for
+# that attribute. i.e. '$x' for array
 # '$1' name of json file. Is used to extract PDIR taking into account
 #      that: e.g. OTHERS_FILE="${OTHERS_PDIR}.cb"
-# '$2' json field inside main array 'rooms' (it could be username or room)
+# '$2' json field inside main array 'rooms' (e.g. it could be username or room)
 # '$3' function name to clear dir
 # '$4' function name to open dir
 fetch_rooms_helper () {
@@ -1013,7 +1021,7 @@ clear_more_dir () {
 
 # Fetch rooms list similar to '$1' and save on $MORE_FILE
 # '$1' room
-fetch_more_file () {
+fetch_morelist_file () {
     curl -sL --compressed -H "$XRW_HEADER" "${MORE_PURL}/$1" -o "$MORE_FILE"
 }
 
@@ -1022,7 +1030,7 @@ fetch_more_file () {
 fetch_more_rooms () {
     valid_username "$1" || send_exit_error $INVALID_USERNAME
     assert_active_room "$1"
-    fetch_more_file "$1" || send_exit_error $ROOM_LIST_ERROR
+    fetch_morelist_file "$1" || send_exit_error $ROOM_LIST_ERROR
     echo "$1" > "${MORE_FILE}.who"
     fetch_rooms_helper "$MORE_FILE" "room" clear_more_dir open_more_dir
 }
