@@ -1101,6 +1101,7 @@ case "$command" in
         list_others
         ;;
     fm|fetch-more)
+        [[ -z $param ]] && favorite_room_choice param
         fetch_more_rooms "$param"
         ;;
     vm|view-more)
