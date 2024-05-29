@@ -760,8 +760,9 @@ save_room_list () {
 }
 
 for_helper () {
-    save_preview "$1" "$OTHERS_DIR" "$2" && echo "$1 fetched" && return $OK_CODE
-    echo -e "$1 ${RED_FG}error${CLEAR_FG}"
+    [[ $2 -lt 10 ]] && preffix="0$2" || preffix="$2"
+    save_preview "$1" "$OTHERS_DIR" "$preffix" && echo "$2:$1 fetched" && return $OK_CODE
+    echo -e "$2: $1 ${RED_FG}error${CLEAR_FG}"
     return $UNKNOWN_ERROR
 }
 
@@ -796,15 +797,23 @@ fetch_others_range () {
     [[ $limit -lt $num_rooms ]] && echo -e "$GREEN_FG$((num_rooms-limit)) promoted room(s) found !$CLEAR_FG"
     clear_others_dir
 
+    # Implementation to go crazy (without stops)
+    # for ((i = 0 ; i < num_rooms ; i++)); do
+    #     room="$(jq -Mr ".rooms[$i].username" "$OTHERS_FILE")"
+    #     for_helper "$room" "$i" &
+    # done
+    # wait
+    # read -rp "Open previews? (Y/n): " ropen
+    # [[ $ropen == [yY] || $ropen == [yY][eE][sS] || -z $ropen ]] && open_others_dir
+
+    # Implementation with stops (FETCH_STEPS at a time)
     declare -i index=0
-    local preffix
     local room
     while true; do
         # Fetch room previews by 'FETCH_STEPS' at time
         while room="$(jq -Mre ".rooms[$index].username" "$OTHERS_FILE")"; do
+            for_helper "$room" "$index" &
             index+=1
-            [[ $index -lt 10 ]] && preffix="0$index" || preffix="$index"
-            for_helper "$room" "$preffix" &
             [[ $((index%FETCH_STEPS)) -ne 0 ]] || break
         done
         wait
