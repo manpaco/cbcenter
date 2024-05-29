@@ -1146,10 +1146,12 @@ case "$command" in
         ;;
     vm|view-more)
         assert_more_who
+        echo "More rooms like '$(cat "$MOREWHO_FILE")'"
         open_more_dir
         ;;
     lm|list-more)
         assert_more_who
+        echo "More rooms like '$(cat "$MOREWHO_FILE")':"
         list_more
         ;;
     sc|save-capture)
