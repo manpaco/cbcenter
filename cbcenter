@@ -1014,6 +1014,10 @@ fetch_more_rooms () {
     fetch_rooms_helper "$MORE_DIR" "room" clear_more_dir open_more_dir
 }
 
+assert_more_who () {
+    [[ -e "${MORE_FILE}.who" ]] || send_exit_error $UNKNOWN_ERROR
+}
+
 show_dist_warning
 
 command="$1"
@@ -1105,11 +1109,11 @@ case "$command" in
         fetch_more_rooms "$param"
         ;;
     vm|view-more)
-        [[ -e "${MORE_FILE}.who" ]] && cat "${MORE_FILE}.who"
+        assert_more_who
         open_more_dir
         ;;
     lm|list-more)
-        [[ -e "${MORE_FILE}.who" ]] && cat "${MORE_FILE}.who"
+        assert_more_who
         list_more
         ;;
     sc|save-capture)
