@@ -26,7 +26,7 @@ You can use `cbcenter __check_deps` to check the list:
 
 ![Checking dependencies](/resources/check_deps_screenshot)
 
-## Notififications
+## Notifications
 
 You can use cbcenter as a basic (one user) notifier, using the `cbcenter __is_online user` command every 1 hour (or whatever you want). Something like that:
 
