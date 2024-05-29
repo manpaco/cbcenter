@@ -30,6 +30,7 @@ OTHERS_FILE="${OTHERS_PDIR}.cb"
 BIOCONTEXT_FILE="${TMP_PDIR}/biocontext.cb"
 MORE_PDIR="${TMP_PDIR}/more"
 MORE_FILE="${MORE_PDIR}.cb"
+MOREWHO_FILE="${MORE_FILE}.who"
 RANDOM_FILE="${TMP_PDIR}/random.cb"
 
 #
@@ -1039,12 +1040,12 @@ fetch_more_rooms () {
     valid_username "$1" || send_exit_error $INVALID_USERNAME
     assert_active_room "$1"
     fetch_morelist_file "$1" || send_exit_error $ROOM_LIST_ERROR
-    echo "$1" > "${MORE_FILE}.who"
+    echo "$1" > "$MOREWHO_FILE"
     fetch_rooms_helper "$MORE_FILE" "room" clear_more_dir open_more_dir
 }
 
 assert_more_who () {
-    [[ -e "${MORE_FILE}.who" ]] || send_exit_error $UNKNOWN_ERROR
+    [[ -e "$MOREWHO_FILE" ]] || send_exit_error $UNKNOWN_ERROR
 }
 
 show_dist_warning
