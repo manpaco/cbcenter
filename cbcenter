@@ -215,7 +215,7 @@ TIP: If [username] is not provided, you will be asked to choose an option\n\
   exit code $PLAYLIST_NOT_FOUND)
     If the room is online it could be private or hidden, otherwise it\n\
     is offline. You can use 'room-status' command to see room status, i.e.\n\
-    public/private/hidden/offline.\n\nFAQs:\n\n\
+    public, private, hidden, or offline.\n\nFAQs:\n\n\
   - What is a 'program ID'?\n\
       A 'program' represent the stream 'channel' or 'quality'. This channels\n\
       are identified by ID, from '0' (lowest quality) to 'n' (highest quality).\n\
