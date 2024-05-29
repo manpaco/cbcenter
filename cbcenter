@@ -196,13 +196,16 @@ TIP: If [username] is not provided, you will be asked to choose an option\n\
           Two digits (max) integer from 1 (or 01) to 99.\n\nDirectories and files:\n\n\
   PROJECT DIR:   $MYPATH/\n\
   DOWNLOADS DIR: $DOWNLOADS_PDIR/\n\
+  FAVORITES DIR: $FAVORITES_PDIR/\n\
   FAVORITES:     $FAVORITES_FILE\n\
   TEMPORAL DIR:  $TMP_PDIR/\n\
-  FAVORITES DIR: $FAVORITES_PDIR/\n\
+  MORE DIR:      $MORE_PDIR/\n\
   OTHERS DIR:    $OTHERS_PDIR/\n\
-  LAST SEARCH:   $SEARCH_FILE\n\
-  LAST OTHERS:   $OTHERS_FILE\n\
-  BIOCONTEXT:    $BIOCONTEXT_FILE\n\nExit codes:\n\n\
+  BIOCONTEXT:    $BIOCONTEXT_FILE\n\
+  MORE:          $MORE_FILE\n\
+  OTHERS:        $OTHERS_FILE\n\
+  RANDOM:        $RANDOM_FILE\n\
+  SEARCH:        $SEARCH_FILE\n\nExit codes:\n\n\
   exit code $HTTP_TOO_MANY_REQUESTS_ERROR)\n\
     You are probably being blocked by rate limiting.\n\
     A rate limiting solution measures the amount of time between each\n\
