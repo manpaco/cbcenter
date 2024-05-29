@@ -230,12 +230,14 @@ TIP: If [username] is not provided, you will be asked to choose an option\n\
   - Why are the rooms fetched in $FETCH_STEPS at a time?\n\
       To avoid error code $HTTP_TOO_MANY_REQUESTS_ERROR. See 'Exit codes' section.\n\nExamples:\n\n\
   - Fetch the first 10 female rooms:\n\
-      $mybasename fetch-rooms f::10\n\
+      $mybasename fetch-others f::10\n\
   - Fetch 30 (couples) rooms starting from 13th:\n\
-      $mybasename fetch-rooms c:13:30\n\
+      $mybasename fetch-others c:13:30\n\
   - Fetch a (random) trans room:\n\
       $mybasename random t\n\
-  - Set the image viewer:
+  - Fetch more rooms with a similar appearance and content:\n\
+      $mybasename fetch-more userhere\n\
+  - Set the image viewer:\n\
       $mybasename __set_viewer gpicview\n\
       $mybasename __set_viewer \"imv-wayland -fd\"\n"
 }
