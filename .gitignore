@@ -1,7 +1,3 @@
 downloads/
-cbusers
-cbrooms
-favorites
-*.lost
-*-example
+favorites/
 *.cb
