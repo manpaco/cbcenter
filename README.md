@@ -52,9 +52,40 @@ You can use cbcenter as a basic (one user) notifier, using the `cbcenter __is_on
 
     exit 0
 
-Then we must execute that script using cron or systemd services. Execute `crontab -e` (as normal user) and add the following line:
+Then we must execute that script using cron or systemd services.
+
+### Cron
+
+Execute `crontab -e` (as normal user) and add the following line:
 
     0 * * * * /path/to/your/script
+
+### Systemd timer
+
+Put the following file on `$HOME/.config/systemd/user` directory:
+
+    # cbnoti.timer
+    [Unit]
+    Description=Run CB check every 1 hour
+    
+    [Timer]
+    OnCalendar=*:00:00
+    # Every 30 minutes
+    #OnCalendar=*:0/30
+    
+    [Install]
+    WantedBy=default.target
+
+Also the service:
+
+    # cbnoti.service
+    [Unit]
+    Description=Check CB favorites
+    
+    [Service]
+    ExecStart=/home/gacuilan/.local/bin/cbnoti
+
+Finally run `systemctl --user enable --now cbnoti.timer`.
 
 That line indicates that the script will be executed every time the clock marks 0 in the minutes (that is, when an hour is completed).
 
