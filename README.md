@@ -50,6 +50,8 @@ You can use cbcenter as a basic (one user) notifier, using the `cbcenter __is_on
         ! cbcenter __is_online "$user" && rm "$verifile"
     fi
 
+    exit 0
+
 Then we must execute that script using cron or systemd services. Execute `crontab -e` (as normal user) and add the following line:
 
     0 * * * * /path/to/your/script
@@ -84,5 +86,7 @@ Of course you can also make a multi-user notifier (storing online user in `verif
             ! cbcenter __is_online "$current" && remove_user "$current"
         fi
     done < "$users"
+
+    exit 0
 
 If you prefer you can add sound, but as a demonstration it's fine.
