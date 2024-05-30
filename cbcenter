@@ -1101,7 +1101,7 @@ room_info () {
     valid_username "$1" || send_exit_error $INVALID_USERNAME
     assert_active_room "$1" # it calls fetch_bio
     echo -n "Real name: "
-    jq -M '.real_name' "$BIOCONTEXT_FILE" || send_exit_error $ROOM_NOT_FOUND
+    jq -M '.real_name' "$BIOCONTEXT_FILE"
     echo -n "Location: "
     jq -M '.location' "$BIOCONTEXT_FILE"
     echo -n "Sex: "
@@ -1121,7 +1121,7 @@ room_info () {
 room_bio () {
     valid_username "$1" || send_exit_error $INVALID_USERNAME
     assert_active_room "$1" # it calls fetch_bio
-    jq . "$BIOCONTEXT_FILE" || send_exit_error $ROOM_NOT_FOUND
+    jq . "$BIOCONTEXT_FILE"
 }
 
 # 0 if '$1' is a valid 'gender' on the site, else 1
