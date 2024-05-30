@@ -423,7 +423,7 @@ is_online () {
 assert_active_room () {
     [[ -n "$2" ]] && declare -n rs_out="$2"
     fetch_bio "$1"
-    rs_out="$(jq -Mr ".${JQ_BIO_RSTATUS}" "$BIOCONTEXT_FILE" 2>/dev/null)" ||
+    rs_out="$(jq -Mr ".${JQ_BIO_RSTATUS}" "$BIOCONTEXT_FILE")" ||
         send_exit_error $ROOM_NOT_FOUND
     [[ "$rs_out" == "null" ]] && send_exit_error $BANNED_ROOM
 }
@@ -588,7 +588,7 @@ get_more_by_index () {
 # Show list of other rooms with line number
 list_others () {
     declare -i num_rooms
-    num_rooms="$(jq -e ".${JQ_RLIST_MAIN} | length" "$OTHERS_FILE" 2>/dev/null)" || send_exit_error $JQ_ERROR
+    num_rooms="$(jq -e ".${JQ_RLIST_MAIN} | length" "$OTHERS_FILE")" || send_exit_error $JQ_ERROR
     [[ $num_rooms -eq 0 ]] && send_exit_error $EMPTY_ROOM_LIST
     for ((i = 0 ; i < num_rooms ; i++)); do
         echo "$i:$(get_other_by_index "$i")"
@@ -598,7 +598,7 @@ list_others () {
 # Show list of more rooms with line number
 list_more () {
     declare -i num_rooms
-    num_rooms="$(jq -e ".${JQ_MLIST_MAIN} | length" "$MORE_FILE" 2>/dev/null)" || send_exit_error $JQ_ERROR
+    num_rooms="$(jq -e ".${JQ_MLIST_MAIN} | length" "$MORE_FILE")" || send_exit_error $JQ_ERROR
     [[ $num_rooms -eq 0 ]] && send_exit_error $EMPTY_ROOM_LIST
     for ((i = 0 ; i < num_rooms ; i++)); do
         echo "$i:$(get_more_by_index "$i")"
@@ -1072,7 +1072,7 @@ room_info () {
     valid_username "$1" || send_exit_error $INVALID_USERNAME
     assert_active_room "$1" # it calls fetch_bio
     echo -n "Real name: "
-    jq -M '.real_name' "$BIOCONTEXT_FILE" 2>/dev/null || send_exit_error $ROOM_NOT_FOUND
+    jq -M '.real_name' "$BIOCONTEXT_FILE" || send_exit_error $ROOM_NOT_FOUND
     echo -n "Location: "
     jq -M '.location' "$BIOCONTEXT_FILE"
     echo -n "Sex: "
@@ -1092,7 +1092,7 @@ room_info () {
 room_bio () {
     valid_username "$1" || send_exit_error $INVALID_USERNAME
     assert_active_room "$1" # it calls fetch_bio
-    jq . "$BIOCONTEXT_FILE" 2>/dev/null || send_exit_error $ROOM_NOT_FOUND
+    jq . "$BIOCONTEXT_FILE" || send_exit_error $ROOM_NOT_FOUND
 }
 
 # 0 if '$1' is a valid 'gender' on the site, else 1
