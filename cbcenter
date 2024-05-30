@@ -1097,6 +1097,13 @@ assert_more_who () {
     [[ -e "$MOREWHO_FILE" ]] || send_exit_error $MOREWHO_ERROR
 }
 
+play_favorite_choice () {
+    local pfc_choice
+    echo "Which room do you want to play?"
+    favorite_room_choice pfc_choice "$1"
+    play_room "$pfc_choice"
+}
+
 command="$1"
 [[ -n "$command" ]] && command="$(trim_string "$command")"
 
@@ -1144,17 +1151,11 @@ case "$command" in
         ;;
     ff|fetch-favorites)
         fetch_favorites
-        ff_choice=""
-        echo "Which room do you want to play?"
-        favorite_room_choice ff_choice hide_list
-        play_room "$ff_choice"
+        play_favorite_choice hide_list
         ;;
     vf|view-favorites)
         open_favorites_dir
-        ofd_choice=""
-        echo "Which room do you want to play?"
-        favorite_room_choice ofd_choice
-        play_room "$ofd_choice"
+        play_favorite_choice
         ;;
     lf|list-favorites)
         extra_param="$3"
