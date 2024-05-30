@@ -567,7 +567,9 @@ favorite_choice () {
     [[ $2 == "hide_list" ]] || list_favorites -l
     read -rp "Type your choice (i.e. the beginning number before the ':'), or (Q)uit: " fc_out
     [[ $fc_out == [qQ] || -z "$fc_out" ]] && exit $OK_CODE
-    ! valid_id "$fc_out" || [[ "$fc_out" -gt "$(line_count "$FAVORITES_FILE")" ]] &&
+    valid_id "$fc_out" || send_exit_error $BAD_CHOICE
+    fc_out="$(remove_leading_zeros "$fc_out")"
+    [[ "$fc_out" -gt "$(line_count "$FAVORITES_FILE")" ]] &&
         send_exit_error $BAD_CHOICE
 }
 
@@ -631,6 +633,12 @@ list_more () {
     done
 }
 
+# Remove leading zeros from '$1' and print result
+# '$1' to check
+remove_leading_zeros () {
+    echo "${1#"${1%%[!0]*}"}"
+}
+
 # Uses OTHERS_FILE
 # Ask the user for a choice, and store the username on '$1'
 # '$1' store username
@@ -641,7 +649,9 @@ other_room_choice () {
     [[ $2 == "hide_list" ]] || list_others
     read -rp "Type your choice (i.e. the beginning number before the ':'), or (Q)uit: " orc_choice
     [[ $orc_choice == [qQ] || -z "$orc_choice" ]] && exit $OK_CODE
-    ! valid_id "$orc_choice" || [[ "$((orc_choice+1))" -gt "$(other_rooms_count)" ]] &&
+    valid_id "$orc_choice" || send_exit_error $BAD_CHOICE
+    orc_choice="$(remove_leading_zeros "$orc_choice")"
+    [[ "$((orc_choice+1))" -gt "$(other_rooms_count)" ]] &&
         send_exit_error $BAD_CHOICE
     orc_out="$(get_other_by_index "$orc_choice")"
     [[ -z $orc_out ]] && send_exit_error $UNKNOWN_ERROR
@@ -657,7 +667,9 @@ more_room_choice () {
     [[ $2 == "hide_list" ]] || list_more
     read -rp "Type your choice (i.e. the beginning number before the ':'), or (Q)uit: " mrc_choice
     [[ $mrc_choice == [qQ] || -z "$mrc_choice" ]] && exit $OK_CODE
-    ! valid_id "$mrc_choice" || [[ "$((mrc_choice+1))" -gt "$(more_rooms_count)" ]] &&
+    valid_id "$mrc_choice" || send_exit_error $BAD_CHOICE
+    mrc_choice="$(remove_leading_zeros "$mrc_choice")"
+    [[ "$((mrc_choice+1))" -gt "$(more_rooms_count)" ]] &&
         send_exit_error $BAD_CHOICE
     mrc_out="$(get_more_by_index "$mrc_choice")"
     [[ -z $mrc_out ]] && send_exit_error $UNKNOWN_ERROR
@@ -1073,13 +1085,11 @@ fetch_other_rooms () {
     offset="${1#*:}"
     offset="${offset%:*}"
     [[ -z $offset ]] && offset=0
-    # If offset contains 2 digits, remove 0 from beginning: e.g. 09 -> 9
-    [[ ${#offset} -ne 1 ]] && offset="${offset#0}"
+    offset="$(remove_leading_zeros "$offset")"
     local limit
     # Extract limit
     limit="${1##*:}"
-    # If limit contains 2 digits, remove 0 from beginning: e.g. 09 -> 9
-    [[ ${#limit} -ne 1 ]] && limit="${limit#0}"
+    limit="$(remove_leading_zeros "$limit")"
     [[ $limit -eq 0 ]] && send_exit_error $INVALID_ROOM_RANGE
 
     echo "Fetching $gender rooms from $offset to $((offset+limit-1)) ..."
