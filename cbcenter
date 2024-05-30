@@ -117,6 +117,7 @@ BANNED_ROOM=23
 INVALID_VIEWER=24
 INVALID_GENDER=25
 MOREWHO_ERROR=26
+EMPTY_DIR=27
 
 # ------------ COLORS -------------
 RED_FG="\033[0;31m"
@@ -385,6 +386,10 @@ Run '$mybasename __set_viewer command' to set a valid viewer." 1>&2
             echo -e "File '$MOREWHO_FILE' was not found !\n\
 Re-run '$mybasename fetch-more username'." 1>&2
             exit $MOREWHO_ERROR
+            ;;
+        "$EMPTY_DIR")
+            echo -e "The directory is empty !" 1>&2
+            exit $EMPTY_DIR
             ;;
         *)
             echo "UNKNOWN_ERROR" 1>&2
@@ -672,6 +677,10 @@ remove_room () {
     fi
 }
 
+empty_dir () {
+    [[ "$(file_count "$1")" -eq 0 ]]
+}
+
 # Clear favorites directory
 clear_favorites_dir () {
     rm -f "${FAVORITES_PDIR:?}"/* && echo "FAVORITES directory cleared!" ||
@@ -817,6 +826,7 @@ quick_thumb () {
 
 # Open favorites directory
 open_favorites_dir () {
+    empty_dir "${FAVORITES_PDIR}/" && send_exit_error $EMPTY_DIR
     $VIEWER "$FAVORITES_PDIR"
 }
 
@@ -932,6 +942,7 @@ list_favorites () {
 
 # Open others directory
 open_others_dir () {
+    empty_dir "${OTHERS_PDIR}/" && send_exit_error $EMPTY_DIR
     $VIEWER "$OTHERS_PDIR"
 }
 
@@ -1174,6 +1185,7 @@ check_favorites () {
 
 # Open previews on MORE_PDIR
 open_more_dir () {
+    empty_dir "${MORE_PDIR}/" && send_exit_error $EMPTY_DIR
     $VIEWER "$MORE_PDIR"
 }
 
