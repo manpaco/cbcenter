@@ -2,6 +2,8 @@
 
 # ----------- VIEWER ------------
 VIEWER="imv -fd" # <<== I'm here!
+
+# ----------- FETCH ------------
 FETCH_TYPE="steps" # 'steps' or 'crazy'
 FETCH_STEPS=10
 
