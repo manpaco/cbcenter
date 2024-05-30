@@ -1073,11 +1073,12 @@ fetch_other_rooms () {
     offset="${1#*:}"
     offset="${offset%:*}"
     [[ -z $offset ]] && offset=0
-    # If offset contains 2 digits, remove 0 from beginning if exist. (09 -> 9)
+    # If offset contains 2 digits, remove 0 from beginning: e.g. 09 -> 9
     [[ ${#offset} -ne 1 ]] && offset="${offset#0}"
     local limit
     # Extract limit
     limit="${1##*:}"
+    # If limit contains 2 digits, remove 0 from beginning: e.g. 09 -> 9
     [[ ${#limit} -ne 1 ]] && limit="${limit#0}"
     [[ $limit -eq 0 ]] && send_exit_error $INVALID_ROOM_RANGE
 
