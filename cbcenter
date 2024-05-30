@@ -927,7 +927,7 @@ keyword_search () {
     valid_username "$1" || send_exit_error $INVALID_KEYWORD
     curl_search "$1" > "$SEARCH_FILE" || send_exit_error $CURL_ERROR
     echo "Online rooms:"
-    jq ".${JQ_ONLINE}" "$SEARCH_FILE"
+    jq -e ".${JQ_ONLINE}" "$SEARCH_FILE" 2>/dev/null || send_exit_error $UNKNOWN_ERROR
     echo "Recently online rooms:"
     jq -M ".${JQ_OFFLINE}" "$SEARCH_FILE"
     echo "Hashtags:"
