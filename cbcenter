@@ -1051,7 +1051,7 @@ set_viewer () {
     echo "Now you are using '$1'"
 }
 
-# Show room status (public/private/hidden/offline)
+# Show room status: public, private, hidden, away, or offline
 internal_status () {
     valid_username "$1" || send_exit_error $INVALID_USERNAME
     local is_status
