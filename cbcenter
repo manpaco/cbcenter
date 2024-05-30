@@ -597,18 +597,24 @@ get_more_by_index () {
 
 # Print the number of 'other' rooms
 other_rooms_count () {
-    jq -e ".${JQ_RLIST_MAIN} | length" "$OTHERS_FILE"
+    local orc_count
+    orc_count="$(jq -e ".${JQ_RLIST_MAIN} | length" "$OTHERS_FILE" 2>/dev/null)"
+    [[ -z "$orc_count" ]] && echo 0
+    echo "$orc_count"
 }
 
 # Print the number of 'more' rooms
 more_rooms_count () {
-    jq -e ".${JQ_MLIST_MAIN} | length" "$MORE_FILE"
+    local mrc_count
+    mrc_count="$(jq -e ".${JQ_MLIST_MAIN} | length" "$MORE_FILE" 2>/dev/null)"
+    [[ -z "$mrc_count" ]] && echo 0
+    echo "$mrc_count"
 }
 
 # Show list of other rooms with line number
 list_others () {
     declare -i num_rooms
-    num_rooms="$(other_rooms_count)" || send_exit_error $JQ_ERROR
+    num_rooms="$(other_rooms_count)"
     [[ $num_rooms -eq 0 ]] && send_exit_error $EMPTY_ROOM_LIST
     for ((i = 0 ; i < num_rooms ; i++)); do
         echo "$i:$(get_other_by_index "$i")"
@@ -618,7 +624,7 @@ list_others () {
 # Show list of more rooms with line number
 list_more () {
     declare -i num_rooms
-    num_rooms="$(more_rooms_count)" || send_exit_error $JQ_ERROR
+    num_rooms="$(more_rooms_count)"
     [[ $num_rooms -eq 0 ]] && send_exit_error $EMPTY_ROOM_LIST
     for ((i = 0 ; i < num_rooms ; i++)); do
         echo "$i:$(get_more_by_index "$i")"
