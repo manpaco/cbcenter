@@ -635,7 +635,9 @@ other_room_choice () {
     [[ $2 == "hide_list" ]] || list_others
     read -rp "Type your choice (i.e. the beginning number before the ':'), or (Q)uit: " orc_choice
     [[ $orc_choice == [qQ] || -z "$orc_choice" ]] && exit $OK_CODE
-    ! valid_id "$orc_choice" || [[ "$((orc_choice+1))" -gt "$(other_rooms_count)" ]] &&
+    local orcount
+    orcount="$(other_rooms_count)" || send_exit_error $JQ_ERROR
+    ! valid_id "$orc_choice" || [[ "$((orc_choice+1))" -gt "$orcount" ]] &&
         send_exit_error $BAD_CHOICE
     orc_out="$(get_other_by_index "$orc_choice")"
     [[ -z $orc_out ]] && send_exit_error $UNKNOWN_ERROR
@@ -651,7 +653,9 @@ more_room_choice () {
     [[ $2 == "hide_list" ]] || list_more
     read -rp "Type your choice (i.e. the beginning number before the ':'), or (Q)uit: " mrc_choice
     [[ $mrc_choice == [qQ] || -z "$mrc_choice" ]] && exit $OK_CODE
-    ! valid_id "$mrc_choice" || [[ "$((mrc_choice+1))" -gt "$(more_rooms_count)" ]] &&
+    local mrcount
+    mrcount="$(more_rooms_count)" || send_exit_error $JQ_ERROR
+    ! valid_id "$mrc_choice" || [[ "$((mrc_choice+1))" -gt "$mrcount" ]] &&
         send_exit_error $BAD_CHOICE
     mrc_out="$(get_more_by_index "$mrc_choice")"
     [[ -z $mrc_out ]] && send_exit_error $UNKNOWN_ERROR
