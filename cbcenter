@@ -141,6 +141,7 @@ which_check () {
 
 # Check dependencies and show info on stdout
 check_dependencies () {
+    echo "Checking dependencies ..."
     which_check curl
     which_check wget
     which_check sed
@@ -283,112 +284,113 @@ TIP: If [username] is not provided, you will be asked to choose an option\n\
 # Send error messange and exit program
 # '$1' error code
 send_exit_error () {
+    echo -n "Error: " 1>&2
     case "$1" in
         "$INVALID_USERNAME")
-            echo "Invalid username !" 1>&2
+            echo "invalid username !" 1>&2
             exit $INVALID_USERNAME
             ;;
         "$OFFLINE_ROOM")
-            echo "The room is offline !" 1>&2
+            echo "the room is offline !" 1>&2
             exit $OFFLINE_ROOM
             ;;
         "$PLAYLIST_NOT_FOUND")
-            echo "An error occurred while processing the page ! (PLAYLIST_NOT_FOUND)" 1>&2
+            echo "occurred while processing the page ! (PLAYLIST_NOT_FOUND)" 1>&2
             exit $PLAYLIST_NOT_FOUND
             ;;
         "$CHUNK_NOT_FOUND")
-            echo "An error occurred while processing room data ! (CHUNK_NOT_FOUND)" 1>&2
+            echo "occurred while processing room data ! (CHUNK_NOT_FOUND)" 1>&2
             exit $CHUNK_NOT_FOUND
             ;;
         "$STORED_ROOM")
-            echo "The room already exists in the favorites list !" 1>&2
+            echo "the room already exists in the favorites list !" 1>&2
             exit $STORED_ROOM
             ;;
         "$UNSTORED_ROOM")
-            echo "The room does not exists in the favorites list !" 1>&2
+            echo "the room does not exists in the favorites list !" 1>&2
             exit $UNSTORED_ROOM
             ;;
         "$EMPTY_DATA")
-            echo "Error getting room data ! (EMPTY_DATA)" 1>&2
+            echo "getting room data ! (EMPTY_DATA)" 1>&2
             exit $EMPTY_DATA
             ;;
         "$INVALID_PROG_ID")
-            echo "Invalid program ID !" 1>&2
+            echo "invalid program ID !" 1>&2
             exit $INVALID_PROG_ID
             ;;
         "$INVALID_KEYWORD")
-            echo "Invalid keyword to search !" 1>&2
+            echo "invalid keyword to search !" 1>&2
             exit $INVALID_KEYWORD
             ;;
         "$INVALID_COMMAND")
-            echo "Error: invalid command. Use '$mybasename help' for more info." 1>&2
+            echo "invalid command. Use '$mybasename help' for more info." 1>&2
             exit $INVALID_COMMAND
             ;;
         "$HTTP_NOT_FOUND_ERROR")
-            echo "Server response: $HTTP_NOT_FOUND_TEXT" 1>&2
+            echo "server response $HTTP_NOT_FOUND_TEXT" 1>&2
             exit $HTTP_NOT_FOUND_ERROR
             ;;
         "$HTTP_TOO_MANY_REQUESTS_ERROR")
-            echo "Server response: $HTTP_TOO_MANY_REQUESTS_TEXT" 1>&2
+            echo "server response $HTTP_TOO_MANY_REQUESTS_TEXT" 1>&2
             exit $HTTP_TOO_MANY_REQUESTS_ERROR
             ;;
         "$INVALID_ROOM_RANGE")
-            echo -e "Invalid room range !" 1>&2
+            echo "invalid room range !" 1>&2
             exit $INVALID_ROOM_RANGE
             ;;
         "$BAD_CHOICE")
-            echo -e "Bad choice !" 1>&2
+            echo "bad choice !" 1>&2
             exit $BAD_CHOICE
             ;;
         "$ROOM_LIST_ERROR")
-            echo -e "Error gettig room list !" 1>&2
+            echo "gettig room list !" 1>&2
             exit $ROOM_LIST_ERROR
             ;;
         "$EMPTY_ROOM_LIST")
-            echo -e "Empty room list !" 1>&2
+            echo "empty room list !" 1>&2
             exit $EMPTY_ROOM_LIST
             ;;
         "$BIOCONTEXT_ERROR")
-            echo -e "Error getting biocontext" 1>&2
+            echo "getting biocontext" 1>&2
             exit $BIOCONTEXT_ERROR
             ;;
         "$JQ_ERROR")
-            echo -e "An error occurred while processing json data !" 1>&2
+            echo "occurred while processing json data !" 1>&2
             exit $JQ_ERROR
             ;;
         "$NOT_PUBLIC_ROOM")
-            echo -e "The room is not public (${2:-private/hidden}) !" 1>&2
+            echo "the room is not public (${2:-private/hidden}) !" 1>&2
             exit $NOT_PUBLIC_ROOM
             ;;
         "$ROOM_NOT_FOUND")
-            echo -e "Room not found !" 1>&2
+            echo "room not found !" 1>&2
             exit $ROOM_NOT_FOUND
             ;;
         "$CURL_ERROR")
-            echo -e "An error occurred while fetching resource !" 1>&2
+            echo "occurred while fetching resource !" 1>&2
             exit $CURL_ERROR
             ;;
         "$BANNED_ROOM")
-            echo -e "The room is banned from the site !" 1>&2
+            echo "the room is banned from the site !" 1>&2
             exit $BANNED_ROOM
             ;;
         "$INVALID_VIEWER")
-            echo -e "Invalid viewer command !" 1>&2
+            echo "invalid viewer command !" 1>&2
             [[ -n "$2" ]] && echo -e "VIEWER variable contains: '${VIEWER}'\n\
 Run '$mybasename __set_viewer command' to set a valid viewer." 1>&2
             exit $INVALID_VIEWER
             ;;
         "$INVALID_GENDER")
-            echo -e "Invalid gender !" 1>&2
+            echo "invalid gender !" 1>&2
             exit $INVALID_GENDER
             ;;
         "$MOREWHO_ERROR")
-            echo -e "File '$MOREWHO_FILE' was not found !\n\
+            echo -e "file '$MOREWHO_FILE' was not found !\n\
 Re-run '$mybasename fetch-more username'." 1>&2
             exit $MOREWHO_ERROR
             ;;
         "$EMPTY_DIR")
-            echo -e "The directory is empty !" 1>&2
+            echo "the directory is empty !" 1>&2
             exit $EMPTY_DIR
             ;;
         *)
@@ -565,10 +567,11 @@ rem_favorite_line () {
 favorite_choice () {
     declare -n fc_out="$1"
     [[ $2 == "hide_list" ]] || list_favorites -l
-    read -rp "Type your choice (i.e. the beginning number before the ':'), or (Q)uit: " fc_out
+    read -rp "Type your choice (i.e. the number before the ':'), or (Q)uit: " fc_out
     [[ $fc_out == [qQ] || -z "$fc_out" ]] && exit $OK_CODE
-    valid_id "$fc_out" || send_exit_error $BAD_CHOICE
+    valid_id "$fc_out"  || send_exit_error $BAD_CHOICE
     fc_out="$(remove_leading_zeros "$fc_out")"
+    [[ "$fc_out" -lt 1 ]] && send_exit_error $BAD_CHOICE
     [[ "$fc_out" -gt "$(line_count "$FAVORITES_FILE")" ]] &&
         send_exit_error $BAD_CHOICE
 }
@@ -636,6 +639,7 @@ list_more () {
 # Remove leading zeros from '$1' and print result
 # '$1' to check
 remove_leading_zeros () {
+    [[ "$1" =~ ^0*$ ]] && echo 0 && return
     echo "${1#"${1%%[!0]*}"}"
 }
 
@@ -678,6 +682,7 @@ more_room_choice () {
 # Add new room to favorites
 # '$1' room
 add_room () {
+    echo "Adding $1 to favorites ..."
     valid_username "$1" || send_exit_error $INVALID_USERNAME
     stored_room "$1" && send_exit_error $STORED_ROOM
     local ar_status
@@ -696,6 +701,7 @@ remove_room () {
         return $OK_CODE
     fi
     valid_username "$1" || send_exit_error $INVALID_USERNAME
+    echo "Removing $1 room from favorites ..."
     local match
     if match="$(grep -xn "$1" "$FAVORITES_FILE")"; then # Exact match
         rem_favorite_line "${match%%:*}"
@@ -723,26 +729,26 @@ empty_dir () {
 
 # Clear favorites directory
 clear_favorites_dir () {
-    rm -f "${FAVORITES_PDIR:?}"/* && echo -e "\nContents of directory FAVORITES deleted!" ||
-        echo -e "\nAn ${RED_FG}error${CLEAR_FG} occurred while clearing FAVORITES!"
+    rm -f "${FAVORITES_PDIR:?}"/* && echo "Contents of directory FAVORITES deleted!" ||
+        echo -e "An ${RED_FG}error${CLEAR_FG} occurred while clearing FAVORITES!"
 }
 
 # Clear captures directory
 clear_captures_dir () {
-    rm -f "${CAPTURES_PDIR:?}"/* && echo -e "\nContents of directory CAPTURES deleted!" ||
-        echo -e "\nAn ${RED_FG}error${CLEAR_FG} occurred while clearing CAPTURES!"
+    rm -f "${CAPTURES_PDIR:?}"/* && echo "Contents of directory CAPTURES deleted!" ||
+        echo -e "An ${RED_FG}error${CLEAR_FG} occurred while clearing CAPTURES!"
 }
 
 # Clear streams directory
 clear_streams_dir () {
-    rm -f "${STREAMS_PDIR:?}"/* && echo -e "\nContents of directory STREAMS deleted!" ||
-        echo -e "\nAn ${RED_FG}error${CLEAR_FG} occurred while clearing STREAMS!"
+    rm -f "${STREAMS_PDIR:?}"/* && echo "Contents of directory STREAMS deleted!" ||
+        echo -e "An ${RED_FG}error${CLEAR_FG} occurred while clearing STREAMS!"
 }
 
 # Clear rooms directory
 clear_others_dir () {
-    rm -f "${OTHERS_PDIR:?}"/* && echo -e "\nContents of directory OTHERS deleted!" ||
-        echo -e "\nAn ${RED_FG}error${CLEAR_FG} occurred while clearing OTHERS!"
+    rm -f "${OTHERS_PDIR:?}"/* && echo "Contents of directory OTHERS deleted!" ||
+        echo -e "An ${RED_FG}error${CLEAR_FG} occurred while clearing OTHERS!"
 }
 
 # Get preview and save it in given file
@@ -789,10 +795,10 @@ ffr_helper () {
 
 # Get previews of favorites (online only)
 fetch_favorite_rooms () {
-    echo -e "\nFetching favorites rooms!"
+    echo "Fetching favorite rooms!"
     clear_favorites_dir
     echo "Using '${FETCH_TYPE}' fetch type."
-    echo -e "\n${YELLOW_FG}TIP:${CLEAR_FG} Go back in the image viewer to see the most recent ones.\n"
+    echo -e "${YELLOW_FG}TIP:${CLEAR_FG} Go back in the image viewer to see the most recent ones."
     local rvar
 
     # Crazy implementation
@@ -862,6 +868,7 @@ ask_to_play () {
 # '$1' username
 quick_thumb () {
     valid_username "$1" || send_exit_error $INVALID_USERNAME
+    echo "Fetching thumbnail from $1 room ..."
     show_preview "$1"
     echo "$1's room was fetched. Enjoy!"
     ask_to_play "$1"
@@ -963,6 +970,7 @@ global_status () {
 # '$1' show global status (-s)
 # '$2' show line numbers (-l)
 list_favorites () {
+    echo "List of favorite rooms ..."
     declare -i line=1
     local laux
     local room
@@ -1040,7 +1048,7 @@ fetch_rooms_using () {
     [[ $num_rooms -eq 0 ]] && send_exit_error $EMPTY_ROOM_LIST
     $fru_clear
     echo "Using '${FETCH_TYPE}' fetch type."
-    echo -e "\n${YELLOW_FG}TIP:${CLEAR_FG} Go back in the image viewer to see the most recent ones.\n"
+    echo -e "${YELLOW_FG}TIP:${CLEAR_FG} Go back in the image viewer to see the most recent ones."
 
     local room
     local rvar
@@ -1095,8 +1103,8 @@ fetch_other_rooms () {
     limit="$(remove_leading_zeros "$limit")"
     [[ $limit -eq 0 ]] && send_exit_error $INVALID_ROOM_RANGE
 
-    echo -e "\nFetching $gender rooms from $offset to $((offset+limit-1)) ..."
-    echo -e "\n${GREEN_FG}INFO:${CLEAR_FG} Sometimes promoted rooms appear. For this reason, it is possible\n\
+    echo "Fetching $gender rooms from $offset to $((offset+limit-1)) ..."
+    echo -e "${GREEN_FG}INFO:${CLEAR_FG} Sometimes promoted rooms appear. For this reason, it is possible\n\
 that more than $limit rooms will be obtained."
 
     fetch_roomlist_file "$gender" "$offset" "$limit" "$OTHERS_FILE" || send_exit_error $ROOM_LIST_ERROR
@@ -1159,6 +1167,7 @@ quick_rand () {
         3) gender=t
             ;;
     esac
+    echo "Fetching random room ..."
     fetch_roomlist_file "$gender" $((RANDOM%100)) 1 "$RANDOM_FILE" || send_exit_error $ROOM_LIST_ERROR
     local room
     room="$(jq -Mre ".${JQ_RLIST_MAIN}[0].${JQ_RLIST_USER}" "$RANDOM_FILE" 2>/dev/null)" ||
@@ -1206,6 +1215,7 @@ set_viewer () {
 # Set the FETCH_TYPE variable
 set_fetch_type () {
     [[ "$1" =~ ^[a-z]+$ ]] || send_exit_error $UNKNOWN_ERROR
+    echo "Setting fetch type ..."
     sed -i --follow-symlinks "s/FETCH_TYPE=\".*\"/FETCH_TYPE=\"${1}\"/" "$0"
     echo "Now you are using '$1' fetch type."
 }
@@ -1215,6 +1225,7 @@ internal_status () {
     valid_username "$1" || send_exit_error $INVALID_USERNAME
     local is_status
     assert_active_room "$1" is_status
+    echo -n "The internal status is: "
     echo "$is_status"
 }
 
@@ -1235,8 +1246,8 @@ open_more_dir () {
 
 # Remove previews on MORE_PDIR
 clear_more_dir () {
-    rm -f "${MORE_PDIR:?}"/* && echo -e "\nContents of directory MORE deleted!" ||
-        echo -e "\nAn ${RED_FG}error${CLEAR_FG} occurred while clearing MORE!"
+    rm -f "${MORE_PDIR:?}"/* && echo "Contents of directory MORE deleted!" ||
+        echo "An ${RED_FG}error${CLEAR_FG} occurred while clearing MORE!"
 }
 
 # Fetch rooms list similar to '$1' and save on $MORE_FILE
@@ -1250,7 +1261,7 @@ fetch_morelist_file () {
 fetch_more_rooms () {
     valid_username "$1" || send_exit_error $INVALID_USERNAME
     assert_active_room "$1"
-    echo -e "\nFetching more rooms like $1!"
+    echo "Fetching more rooms like $1!"
     fetch_morelist_file "$1" || send_exit_error $ROOM_LIST_ERROR
     echo "$1" > "$MOREWHO_FILE"
     fetch_rooms_using "$MORE_FILE" "$JQ_MLIST_MAIN" "$JQ_MLIST_USER" clear_more_dir open_more_dir
