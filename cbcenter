@@ -171,11 +171,9 @@ show_help () {
   ff, fetch-favorites            - Fetch previews of favorite rooms.\n\
   vf, view-favorites             - Open fetched previews (favorites).\n\
   lf, list-favorites  [-s] [-l]  - List of favorite rooms.\n\
-                                   If '-s' is provided, show online or offline.\n\
-                                   If '-l' is provided, show line number from\n\
-                                   favorites file.\n\
-  rs, room-status    [username]  - Show room status, i.e. public, private,\n\
-                                   hidden, away, or offline.\n\
+                                   If '-s' is provided, show global status(*).\n\
+                                   If '-l' is provided, show line number(**).\n\
+  rs, room-status    [username]  - Show internal status(*).\n\
   rp, room-programs  [username]  - Show available programs of given room.\n\
   ri, room-info      [username]  - Show basic info.\n\
   rb, room-bio       [username]  - Show biocontext.\n\
@@ -203,10 +201,18 @@ show_help () {
   __set_fetch_type         type  - Set the fetch type. See 'Fetch types' section.\n\
   __check_deps                   - Check program dependencies.\n\
   __is_online          username  - Return 0 if online, else 1. Does not check\n\
-                                   if the room is active.\n\
+                                   if the room is active(***).\n\
   __favorites_file               - Show favorites file (path and name).
   h, help                        - This text.\n\n\
-An active room is one that exists and is not banned.\n\
+(*) There are two types of room status:\n\
+    Global: non-detailed room status (less network usage).\n\
+            Possible values: online or offline.\n\
+    Internal: detailed room status.\n\
+              Possible values: public, private, hidden, away, or offline.\n\
+    Therefore, \"online\" means that the room can be public, private, hidden,\n\
+    or away. In both cases \"offline\" means the same thing.\n\
+(**) The line number inside '$FAVORITES_FILE'.
+(***) An active room is one that EXISTS and is NOT BANNED.\n\
 TIP: If [username] is not provided, you will be asked to choose an option\n\
      from your favorites.\n\nFetch ranges:\n\n\
   gender: Gender of room users.\n\
