@@ -1118,6 +1118,11 @@ play_more_choice () {
     play_room "$pmc_choice"
 }
 
+more_like_message () {
+    assert_more_who
+    echo "More rooms like '$(cat "$MOREWHO_FILE")'"
+}
+
 command="$1"
 [[ -n "$command" ]] && command="$(trim_string "$command")"
 
@@ -1209,14 +1214,12 @@ case "$command" in
         play_more_choice hide_list
         ;;
     vm|view-more)
-        assert_more_who
-        echo "More rooms like '$(cat "$MOREWHO_FILE")'"
+        more_like_message
         open_more_dir
         play_more_choice
         ;;
     lm|list-more)
-        assert_more_who
-        echo "More rooms like '$(cat "$MOREWHO_FILE")':"
+        more_like_message
         list_more
         ;;
     sc|save-capture)
