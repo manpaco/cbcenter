@@ -22,10 +22,6 @@ FAVORITES_PDIR="${MYPATH}/favorites"
 FAVORITES_FILE="${FAVORITES_PDIR}.cb"
 STREAMS_PDIR="${DOWNLOADS_PDIR}/streams"
 CAPTURES_PDIR="${DOWNLOADS_PDIR}/captures"
-# ----------- FORMATS ---------------
-VIDEO_FORMAT="mp4"
-IMG_FORMAT="jpg"
-CODEC="h264"
 # ----------- TEMP FILES AND DIRECTORIES -------------
 TMP_PDIR="/tmp/$PROJECT"
 SEARCH_FILE="${TMP_PDIR}/search.cb"
@@ -36,6 +32,10 @@ MORE_PDIR="${TMP_PDIR}/more"
 MORE_FILE="${MORE_PDIR}.cb"
 MOREWHO_FILE="${MORE_FILE}.who"
 RANDOM_FILE="${TMP_PDIR}/random.cb"
+# ----------- FORMATS ---------------
+VIDEO_FORMAT="mp4"
+IMG_FORMAT="jpg"
+CODEC="h264"
 
 #
 # When using url variables remember to add a trailing slash (only when necessary).
