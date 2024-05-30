@@ -444,9 +444,10 @@ valid_room_range () {
 
 # Extract programs from playlist data and show on stdout
 # '$1' playlist data
-extract_programs () {
+show_programs () {
     declare -n ep_data="$1"
     declare -i ep_current=0
+    echo "Available programs:"
     while [[ $ep_data =~ $PROG_REGEX ]]; do
         echo -e "\t${YELLOW_FG}PROG_ID=\"$ep_current\"${CLEAR_FG} - ${BASH_REMATCH[0]}"
         ep_data="${ep_data/${BASH_REMATCH[0]}/}"
@@ -492,7 +493,7 @@ extract_direct_link () {
     dl_data="$(fetch_data "$dl_link")"
     [[ -z $dl_data ]] && send_exit_error $EMPTY_DATA
     if [[ -z $dl_prog ]]; then
-        extract_programs dl_data
+        show_programs dl_data
         read -rp "Select a program ID: " dl_prog
         valid_id "$dl_prog" || send_exit_error $INVALID_PROG_ID
     fi
@@ -935,12 +936,13 @@ save_capture () {
 room_programs () {
     valid_username "$1" || send_exit_error $INVALID_USERNAME
     assert_public_room "$1"
+    echo "Looking for programs ..."
     local rp_link
     extract_playlist "$1" rp_link
     local rp_data
     rp_data="$(fetch_data "$rp_link")"
     [[ -z $rp_data ]] && send_exit_error $EMPTY_DATA
-    extract_programs rp_data
+    show_programs rp_data
 }
 
 # Search given keyword
