@@ -1104,6 +1104,13 @@ play_favorite_choice () {
     play_room "$pfc_choice"
 }
 
+play_other_choice () {
+    poc_choice=""
+    echo "Which room do you want to play?"
+    other_room_choice poc_choice "$1"
+    play_room "$poc_choice"
+}
+
 command="$1"
 [[ -n "$command" ]] && command="$(trim_string "$command")"
 
@@ -1180,17 +1187,11 @@ case "$command" in
         ;;
     fo|fetch-others)
         fetch_other_rooms "$param"
-        for_choice=""
-        echo "Which room do you want to play?"
-        other_room_choice for_choice hide_list
-        play_room "$for_choice"
+        play_other_choice hide_list
         ;;
     vo|view-others)
         open_others_dir
-        ood_choice=""
-        echo "Which room do you want to play?"
-        other_room_choice ood_choice
-        play_room "$ood_choice"
+        play_other_choice
         ;;
     lo|list-others)
         list_others
