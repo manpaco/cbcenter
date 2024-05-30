@@ -161,7 +161,7 @@ check_dependencies () {
 # Show distribution warning
 show_dist_warning () {
     echo -e "${RED_FG}WARNING: Do not distribute the content obtained with this program\n\
-without the user's consent.${CLEAR_FG}\n"
+without the user's consent.${CLEAR_FG}"
 }
 
 # Show help block
@@ -723,26 +723,26 @@ empty_dir () {
 
 # Clear favorites directory
 clear_favorites_dir () {
-    rm -f "${FAVORITES_PDIR:?}"/* && echo "FAVORITES directory cleared!" ||
-        echo -e "An ${RED_FG}error${CLEAR_FG} occurred while clearing FAVORITES!"
+    rm -f "${FAVORITES_PDIR:?}"/* && echo -e "\nContents of directory FAVORITES deleted!" ||
+        echo -e "\nAn ${RED_FG}error${CLEAR_FG} occurred while clearing FAVORITES!"
 }
 
 # Clear captures directory
 clear_captures_dir () {
-    rm -f "${CAPTURES_PDIR:?}"/* && echo "CAPTURES directory cleared!" ||
-        echo -e "An ${RED_FG}error${CLEAR_FG} occurred while clearing CAPTURES!"
+    rm -f "${CAPTURES_PDIR:?}"/* && echo -e "\nContents of directory CAPTURES deleted!" ||
+        echo -e "\nAn ${RED_FG}error${CLEAR_FG} occurred while clearing CAPTURES!"
 }
 
 # Clear streams directory
 clear_streams_dir () {
-    rm -f "${STREAMS_PDIR:?}"/* && echo "STREAMS directory cleared!" ||
-        echo -e "An ${RED_FG}error${CLEAR_FG} occurred while clearing STREAMS!"
+    rm -f "${STREAMS_PDIR:?}"/* && echo -e "\nContents of directory STREAMS deleted!" ||
+        echo -e "\nAn ${RED_FG}error${CLEAR_FG} occurred while clearing STREAMS!"
 }
 
 # Clear rooms directory
 clear_others_dir () {
-    rm -f "${OTHERS_PDIR:?}"/* && echo "OTHERS directory cleared!" ||
-        echo -e "An ${RED_FG}error${CLEAR_FG} occurred while clearing OTHERS!"
+    rm -f "${OTHERS_PDIR:?}"/* && echo -e "\nContents of directory OTHERS deleted!" ||
+        echo -e "\nAn ${RED_FG}error${CLEAR_FG} occurred while clearing OTHERS!"
 }
 
 # Get preview and save it in given file
@@ -789,7 +789,10 @@ ffr_helper () {
 
 # Get previews of favorites (online only)
 fetch_favorite_rooms () {
+    echo -e "\nFetching favorites rooms!"
     clear_favorites_dir
+    echo "Using '${FETCH_TYPE}' fetch type."
+    echo -e "\n${YELLOW_FG}TIP:${CLEAR_FG} Go back in the image viewer to see the most recent ones.\n"
     local rvar
 
     # Crazy implementation
@@ -1035,9 +1038,9 @@ fetch_rooms_using () {
     num_rooms="$(jq -e ".$fru_main | length" "$fru_file" 2>/dev/null)" ||
         send_exit_error $JQ_ERROR
     [[ $num_rooms -eq 0 ]] && send_exit_error $EMPTY_ROOM_LIST
-    echo -e "${YELLOW_FG}TIP:${CLEAR_FG} Go back in the image viewer to see the most recent ones."
     $fru_clear
     echo "Using '${FETCH_TYPE}' fetch type."
+    echo -e "\n${YELLOW_FG}TIP:${CLEAR_FG} Go back in the image viewer to see the most recent ones.\n"
 
     local room
     local rvar
@@ -1092,8 +1095,8 @@ fetch_other_rooms () {
     limit="$(remove_leading_zeros "$limit")"
     [[ $limit -eq 0 ]] && send_exit_error $INVALID_ROOM_RANGE
 
-    echo "Fetching $gender rooms from $offset to $((offset+limit-1)) ..."
-    echo -e "${GREEN_FG}INFO:${CLEAR_FG} Sometimes promoted rooms appear. For this reason, it is possible\n\
+    echo -e "\nFetching $gender rooms from $offset to $((offset+limit-1)) ..."
+    echo -e "\n${GREEN_FG}INFO:${CLEAR_FG} Sometimes promoted rooms appear. For this reason, it is possible\n\
 that more than $limit rooms will be obtained."
 
     fetch_roomlist_file "$gender" "$offset" "$limit" "$OTHERS_FILE" || send_exit_error $ROOM_LIST_ERROR
@@ -1232,8 +1235,8 @@ open_more_dir () {
 
 # Remove previews on MORE_PDIR
 clear_more_dir () {
-    rm -f "${MORE_PDIR:?}"/* && echo "MORE directory cleared!" ||
-        echo -e "An ${RED_FG}error${CLEAR_FG} occurred while clearing MORE!"
+    rm -f "${MORE_PDIR:?}"/* && echo -e "\nContents of directory MORE deleted!" ||
+        echo -e "\nAn ${RED_FG}error${CLEAR_FG} occurred while clearing MORE!"
 }
 
 # Fetch rooms list similar to '$1' and save on $MORE_FILE
