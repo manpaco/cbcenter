@@ -836,7 +836,7 @@ fetch_favorite_rooms () {
         if [[ $((line%FETCH_STEPS)) -eq 0 ]]; then
             wait
             current_count="$(file_count "${FAVORITES_PDIR}/")"
-            if [[ $((current_count-old_count)) -ne 0 ]]; then
+            if [[ $current_count -ne $old_count ]]; then
                 old_count="$current_count"
                 read -rp "Open previews? (Y/n): " rvar
                 [[ $rvar == [yY] || $rvar == [yY][eE][sS] || -z $rvar ]] &&
