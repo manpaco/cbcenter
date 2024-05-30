@@ -737,6 +737,7 @@ ask_to_play () {
 quick_thumb () {
     valid_username "$1" || send_exit_error $INVALID_USERNAME
     show_preview "$1"
+    echo "$1's room was fetched. Enjoy!"
     ask_to_play "$1"
 }
 
@@ -1014,7 +1015,7 @@ quick_rand () {
     fetch_roomlist_file "$gender" $((RANDOM%100)) 1 "$RANDOM_FILE" || send_exit_error $ROOM_LIST_ERROR
     room="$(jq -Mre ".${JQ_RLIST_MAIN}[0].${JQ_RLIST_USER}" "$RANDOM_FILE")" || send_exit_error $JQ_ERROR
     show_preview "$room"
-    echo "Fetched $room room ($gender). Enjoy!"
+    echo "$room's room was fetched ($gender). Enjoy!"
     ask_to_play "$room"
 }
 
