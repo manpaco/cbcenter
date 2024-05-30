@@ -157,6 +157,7 @@ check_dependencies () {
     echo "... or use what you want. Execute '$mybasename __set_viewer command'."
 }
 
+# Show distribution warning
 show_dist_warning () {
     echo -e "${RED_FG}WARNING: Do not distribute the content obtained with this program\n\
 without the user's consent.${CLEAR_FG}\n"
@@ -437,12 +438,12 @@ valid_room_range () {
 # Extract programs from playlist data and show on stdout
 # '$1' playlist data
 extract_programs () {
-    declare -n gp_data="$1"
-    declare -i gp_current=0
-    while [[ $gp_data =~ $PROG_REGEX ]]; do
-        echo -e "\t${YELLOW_FG}PROG_ID=\"$gp_current\"${CLEAR_FG} - ${BASH_REMATCH[0]}"
-        gp_data="${gp_data/${BASH_REMATCH[0]}/}"
-        gp_current+=1
+    declare -n ep_data="$1"
+    declare -i ep_current=0
+    while [[ $ep_data =~ $PROG_REGEX ]]; do
+        echo -e "\t${YELLOW_FG}PROG_ID=\"$ep_current\"${CLEAR_FG} - ${BASH_REMATCH[0]}"
+        ep_data="${ep_data/${BASH_REMATCH[0]}/}"
+        ep_current+=1
     done
 }
 
@@ -478,7 +479,8 @@ extract_direct_link () {
     local dl_link
     extract_playlist "$1" dl_link
     declare -n dl_out="$2"
-    local dl_prog="$3"
+    local dl_prog
+    dl_prog="$3"
     local dl_data
     dl_data="$(fetch_data "$dl_link")"
     [[ -z $dl_data ]] && send_exit_error $EMPTY_DATA
@@ -559,11 +561,11 @@ favorite_choice () {
 # '$1' store username
 # '$2' hide_list (optional)
 favorite_room_choice () {
-    declare -n fuc_out="$1"
+    declare -n frc_out="$1"
     local frc_choice
     favorite_choice frc_choice "$2"
-    fuc_out="$(get_favorite_line "$frc_choice")"
-    [[ -z $fuc_out ]] && send_exit_error $UNKNOWN_ERROR
+    frc_out="$(get_favorite_line "$frc_choice")"
+    [[ -z $frc_out ]] && send_exit_error $UNKNOWN_ERROR
 }
 
 # Get the username from OTHERS_FILE using an index
@@ -580,6 +582,7 @@ get_more_by_index () {
 
 # Show list of other rooms with line number
 list_others () {
+    declare -i num_rooms
     num_rooms="$(jq -e ".${JQ_RLIST_MAIN} | length" "$OTHERS_FILE")" || send_exit_error $JQ_ERROR
     [[ $num_rooms -eq 0 ]] && send_exit_error $EMPTY_ROOM_LIST
     for ((i = 0 ; i < num_rooms ; i++)); do
@@ -589,6 +592,7 @@ list_others () {
 
 # Show list of more rooms with line number
 list_more () {
+    declare -i num_rooms
     num_rooms="$(jq -e ".${JQ_MLIST_MAIN} | length" "$MORE_FILE")" || send_exit_error $JQ_ERROR
     [[ $num_rooms -eq 0 ]] && send_exit_error $EMPTY_ROOM_LIST
     for ((i = 0 ; i < num_rooms ; i++)); do
@@ -597,8 +601,7 @@ list_more () {
 }
 
 # Uses OTHERS_FILE
-# Ask the user for a choice, and store the username on '$1'. If '$2' is other
-# than 'hide_list', then show favorites list (with line numbers).
+# Ask the user for a choice, and store the username on '$1'
 # '$1' store username
 # '$2' hide_list (optional)
 other_room_choice () {
@@ -613,8 +616,7 @@ other_room_choice () {
 }
 
 # Uses MORE_FILE
-# Ask the user for a choice, and store the username on '$1'. If '$2' is other
-# than 'hide_list', then show favorites list (with line numbers).
+# Ask the user for a choice, and store the username on '$1'
 # '$1' store username
 # '$2' hide_list (optional)
 more_room_choice () {
@@ -642,13 +644,14 @@ add_room () {
 # '$1' room
 remove_room () {
     if [[ -z "$1" ]]; then
-        local rr_choice
         echo "Which room do you want to delete?"
+        local rr_choice
         favorite_choice rr_choice
         rem_favorite_line "$rr_choice"
         return $OK_CODE
     fi
     valid_username "$1" || send_exit_error $INVALID_USERNAME
+    local match
     if match="$(grep -xn "$1" "$FAVORITES_FILE")"; then # Exact match
         rem_favorite_line "${match%%:*}"
     else # Search partial matches
@@ -722,6 +725,7 @@ file_count () {
 # '$2' line preffix
 ffr_helper () {
     if valid_username "$1" && is_online "$1"; then
+        local preffix
         [[ $2 -lt 10 ]] && preffix="0$2" || preffix="$2"
         save_preview "$1" "$FAVORITES_PDIR" "$preffix" && echo -e "$2:$1 ${GREEN_FG}fetched${CLEAR_FG}" && return $OK_CODE
         echo -e "$2:$1 ${RED_FG}error${CLEAR_FG}"
@@ -733,10 +737,12 @@ ffr_helper () {
 # Get previews of favorites (online only)
 fetch_favorite_rooms () {
     clear_favorites_dir
+    local rvar
 
     # Crazy implementation
     if [[ "$FETCH_TYPE" == "crazy" ]]; then
         declare -i line=1
+        local room
         while IFS="" read -r room || [ -n "$room" ]
         do
             ffr_helper "$room" "$line" &
@@ -744,16 +750,19 @@ fetch_favorite_rooms () {
         done < "$FAVORITES_FILE"
         wait
         # Ask to show fetched previews
-        read -rp "Open previews? (Y/n): " ropen
-        [[ $ropen == [yY] || $ropen == [yY][eE][sS] || -z $ropen ]] &&
+        local rvar
+        read -rp "Open previews? (Y/n): " rvar
+        [[ $rvar == [yY] || $rvar == [yY][eE][sS] || -z $rvar ]] &&
             open_favorites_dir
         return $OK_CODE
     fi
 
     # Steps implementation
     declare -i line=1
-    local old_count=0
+    local old_count
+    old_count=0
     local current_count
+    local room
     # Read file descriptor 3 (-u 3)
     # That allows us to use 'read' inside the while
     # without an unexpected behavior
@@ -765,12 +774,12 @@ fetch_favorite_rooms () {
             current_count="$(file_count "${FAVORITES_PDIR}/")"
             if [[ $((current_count-old_count)) -ne 0 ]]; then
                 old_count="$current_count"
-                read -rp "Open previews? (Y/n): " ropen
-                [[ $ropen == [yY] || $ropen == [yY][eE][sS] || -z $ropen ]] &&
+                read -rp "Open previews? (Y/n): " rvar
+                [[ $rvar == [yY] || $rvar == [yY][eE][sS] || -z $rvar ]] &&
                     open_favorites_dir
             fi
-            read -rp "Continue fetching? (Y/n): " rcont
-            [[ $rcont == [yY] || $rcont == [yY][eE][sS] || -z $rcont ]] ||
+            read -rp "Continue fetching? (Y/n): " rvar
+            [[ $rvar == [yY] || $rvar == [yY][eE][sS] || -z $rvar ]] ||
                 break
         fi
         line+=1
@@ -778,15 +787,18 @@ fetch_favorite_rooms () {
     wait
     current_count="$(file_count "${FAVORITES_PDIR}/")"
     if [[ $((current_count-old_count)) -ne 0 ]]; then
-        read -rp "Open previews? (Y/n): " ropen
-        [[ $ropen == [yY] || $ropen == [yY][eE][sS] || -z $ropen ]] &&
+        read -rp "Open previews? (Y/n): " rvar
+        [[ $rvar == [yY] || $rvar == [yY][eE][sS] || -z $rvar ]] &&
             open_favorites_dir
     fi
 }
 
+# Ask to the user to play stream
+# '$1' room
 ask_to_play () {
-    read -rp "Do you want to play '$1' stream? (Y/n): " ropen
-    [[ $ropen == [yY] || $ropen == [yY][eE][sS] || -z $ropen ]] || return $OK_CODE
+    local rplay
+    read -rp "Do you want to play '$1' stream? (Y/n): " rplay
+    [[ $rplay == [yY] || $rplay == [yY][eE][sS] || -z $rplay ]] || return $OK_CODE
     play_room "$1"
 }
 
@@ -807,12 +819,12 @@ open_favorites_dir () {
 # Make sure the room is public, else exit program with an error
 # '$1' room
 assert_public_room () {
-    local apra_status
-    assert_active_room "$1" apra_status
-    [[ "$apra_status" == "public" ]] && return $OK_CODE
-    [[ "$apra_status" == "offline" ]] && send_exit_error $OFFLINE_ROOM
-    #[[ "$apra_status" == "null" ]] && send_exit_error $NOT_PUBLIC_ROOM banned
-    send_exit_error $NOT_PUBLIC_ROOM "$apra_status"
+    local apr_status
+    assert_active_room "$1" apr_status
+    [[ "$apr_status" == "public" ]] && return $OK_CODE
+    [[ "$apr_status" == "offline" ]] && send_exit_error $OFFLINE_ROOM
+    #[[ "$apr_status" == "null" ]] && send_exit_error $NOT_PUBLIC_ROOM banned
+    send_exit_error $NOT_PUBLIC_ROOM "$apr_status"
 }
 
 # Play room stream
@@ -832,6 +844,7 @@ save_room () {
     assert_public_room "$1"
     local sr_link
     extract_direct_link "$1" sr_link
+    local output
     output="${STREAMS_PDIR}/$(formated_date)-$1.$VIDEO_FORMAT"
     ffmpeg -i "$sr_link" -codec copy "$output"
 
@@ -848,6 +861,7 @@ save_capture () {
     assert_public_room "$1"
     local sc_link
     extract_direct_link "$1" sc_link 99
+    local output
     output="${CAPTURES_PDIR}/$(formated_date)-$1.$IMG_FORMAT"
     ffmpeg -i "$sc_link" -frames:v 1 -update true "$output"
 }
@@ -859,9 +873,10 @@ room_programs () {
     assert_public_room "$1"
     local rp_link
     extract_playlist "$1" rp_link
-    room_data="$(fetch_data "$rp_link")"
-    [[ -z $room_data ]] && send_exit_error $EMPTY_DATA
-    extract_programs room_data
+    local rp_data
+    rp_data="$(fetch_data "$rp_link")"
+    [[ -z $rp_data ]] && send_exit_error $EMPTY_DATA
+    extract_programs rp_data
 }
 
 # Search given keyword
@@ -892,6 +907,8 @@ global_status () {
 # '$2' show line numbers (-l)
 list_favorites () {
     declare -i line=1
+    local laux
+    local room
     while IFS="" read -r room || [ -n "$room" ]
     do
         if [[ $1 == "-l" || $2 == "-l" ]]; then
@@ -929,6 +946,7 @@ fetch_roomlist_file () {
 # '$2' index preffix
 # '$3' dest dir
 fru_helper () {
+    local preffix
     [[ $2 -lt 10 ]] && preffix="0$2" || preffix="$2"
     save_preview "$1" "$3" "$preffix" && echo "$2:$1 fetched" && return $OK_CODE
     echo -e "$2:$1 ${RED_FG}error${CLEAR_FG}"
@@ -948,17 +966,24 @@ fru_helper () {
 # '$4' function name to clear dir
 # '$5' function name to open dir
 fetch_rooms_using () {
-    local fru_file="$1"
-    local fru_main="$2"
-    local fru_user="$3"
-    local fru_clear="$4"
-    local fru_open="$5"
+    local fru_file
+    fru_file="$1"
+    local fru_main
+    fru_main="$2"
+    local fru_user
+    fru_user="$3"
+    local fru_clear
+    fru_clear="$4"
+    local fru_open
+    fru_open="$5"
     declare -i num_rooms
     num_rooms="$(jq -e ".$fru_main | length" "$fru_file")" || send_exit_error $JQ_ERROR
     [[ $num_rooms -eq 0 ]] && send_exit_error $EMPTY_ROOM_LIST
     echo -e "${YELLOW_FG}TIP:${CLEAR_FG} Go back in the image viewer to see the most recent ones."
     $fru_clear
     echo "Using '${FETCH_TYPE}' fetch type."
+
+    local rvar
 
     # Implementation to go crazy (without steps)
     if [[ "$FETCH_TYPE" == "crazy" ]]; then
@@ -967,8 +992,8 @@ fetch_rooms_using () {
             fru_helper "$room" "$i" "${fru_file%.*}" &
         done
         wait
-        read -rp "Open previews? (Y/n): " ropen
-        [[ $ropen == [yY] || $ropen == [yY][eE][sS] || -z $ropen ]] &&
+        read -rp "Open previews? (Y/n): " rvar
+        [[ $rvar == [yY] || $rvar == [yY][eE][sS] || -z $rvar ]] &&
             $fru_open
         return $OK_CODE
     fi
@@ -984,11 +1009,11 @@ fetch_rooms_using () {
             [[ $((index%FETCH_STEPS)) -ne 0 ]] || break
         done
         wait
-        read -rp "Open previews? (Y/n): " ropen
-        [[ $ropen == [yY] || $ropen == [yY][eE][sS] || -z $ropen ]] && $fru_open
+        read -rp "Open previews? (Y/n): " rvar
+        [[ $rvar == [yY] || $rvar == [yY][eE][sS] || -z $rvar ]] && $fru_open
         [[ $index -eq $num_rooms ]] && break # There are no remaining rooms
-        read -rp "Continue fetching? $((num_rooms-index)) remaining (Y/n): " rcont
-        [[ $rcont == [yY] || $rcont == [yY][eE][sS] || -z $rcont ]] || break
+        read -rp "Continue fetching? $((num_rooms-index)) remaining (Y/n): " rvar
+        [[ $rvar == [yY] || $rvar == [yY][eE][sS] || -z $rvar ]] || break
     done
 }
 
@@ -1063,7 +1088,8 @@ valid_gender () {
 # Show random preview using a custom range ('$1':RANDOM:1 or RANDOM:RANDOM:1 if '$1' is empty)
 # '$1' gender
 quick_rand () {
-    local gender="$1"
+    local gender
+    gender="$1"
     [[ -n "$gender" ]] && ! valid_gender "$gender" && send_exit_error $INVALID_GENDER
     [[ -z "$gender" ]] && case $((RANDOM%4)) in
         0) gender=f
@@ -1076,6 +1102,7 @@ quick_rand () {
             ;;
     esac
     fetch_roomlist_file "$gender" $((RANDOM%100)) 1 "$RANDOM_FILE" || send_exit_error $ROOM_LIST_ERROR
+    local room
     room="$(jq -Mre ".${JQ_RLIST_MAIN}[0].${JQ_RLIST_USER}" "$RANDOM_FILE")" || send_exit_error $JQ_ERROR
     show_preview "$room"
     echo "$room's room was fetched ($gender). Enjoy!"
@@ -1085,7 +1112,8 @@ quick_rand () {
 # Remove leading and trailing spaces
 # '$1' string var
 trim_string() {
-    local var="$*"
+    local var
+    var="$*"
     # remove leading whitespace characters
     var="${var#"${var%%[![:space:]]*}"}"
     # remove trailing whitespace characters
@@ -1107,14 +1135,16 @@ set_viewer () {
     # Verify if it is on PATH
     if ! which_check "${1%% *}"; then
         echo "... but not found on PATH"
-        read -rp "Set anyway? (Y/n): " choice
-        [[ $choice == [yY] || $choice == [yY][eE][sS] || -z $choice ]] || return $OK_CODE
+        local rset
+        read -rp "Set anyway? (Y/n): " rset
+        [[ $rset == [yY] || $rset == [yY][eE][sS] || -z $rset ]] || return $OK_CODE
     fi
     # Escape slashes with backslashes: ${1//\//\\\/} (the first two slashes means 'replace all')
     sed -i --follow-symlinks "s/VIEWER=\".*\"/VIEWER=\"${1//\//\\\/}\"/" "$0"
     echo "Now you are using '$1'"
 }
 
+# Set the FETCH_TYPE variable
 set_fetch_type () {
     [[ "$1" =~ ^[a-z]+$ ]] || send_exit_error $UNKNOWN_ERROR
     sed -i --follow-symlinks "s/FETCH_TYPE=\".*\"/FETCH_TYPE=\"${1}\"/" "$0"
@@ -1131,6 +1161,7 @@ internal_status () {
 
 # Discard invalid usernames from FAVORITES_FILE
 check_favorites () {
+    local rline
     while IFS='' read -r rline; do
         valid_username "$rline" && echo "$rline"
     done < "$FAVORITES_FILE" > "${FAVORITES_FILE}.checked"
@@ -1163,31 +1194,42 @@ fetch_more_rooms () {
     fetch_rooms_using "$MORE_FILE" "$JQ_MLIST_MAIN" "$JQ_MLIST_USER" clear_more_dir open_more_dir
 }
 
+# Send exit error when MOREWHO_FILE does not found
 assert_more_who () {
     [[ -e "$MOREWHO_FILE" ]] || send_exit_error $MOREWHO_ERROR
 }
 
+# Use favorites
+# Ask the user for a choice and play
+# '$1' hide_list
 play_favorite_choice () {
-    local pfc_choice
     echo "Which room do you want to play?"
+    local pfc_choice
     favorite_room_choice pfc_choice "$1"
     play_room "$pfc_choice"
 }
 
+# Use other rooms
+# Ask the user for a choice and play
+# '$1' hide_list
 play_other_choice () {
-    poc_choice=""
     echo "Which room do you want to play?"
+    local poc_choice
     other_room_choice poc_choice "$1"
     play_room "$poc_choice"
 }
 
+# Use more like rooms
+# Ask the user for a choice and play
+# '$1' hide_list
 play_more_choice () {
-    pmc_choice=""
     echo "Which room do you want to play?"
+    local pmc_choice
     more_room_choice pmc_choice "$1"
     play_room "$pmc_choice"
 }
 
+# Show 'More rooms like ...'
 more_like_message () {
     assert_more_who
     echo "More rooms like '$(cat "$MOREWHO_FILE")'"
