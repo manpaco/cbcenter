@@ -1060,6 +1060,12 @@ set_viewer () {
     echo "Now you are using '$1'"
 }
 
+set_fetch_type () {
+    [[ "$1" =~ ^[a-z]+$ ]] || send_exit_error $UNKNOWN_ERROR
+    sed -i --follow-symlinks "s/FETCH_TYPE=\".*\"/FETCH_TYPE=\"${1}\"/" "$0"
+    echo "Now you are using '$1' fetch type."
+}
+
 # Show room status: public, private, hidden, away, or offline
 internal_status () {
     valid_username "$1" || send_exit_error $INVALID_USERNAME
@@ -1280,6 +1286,9 @@ case "$command" in
         ;;
     __set_viewer)
         set_viewer "$param"
+        ;;
+    __set_fetch_type)
+        set_fetch_type "$param"
         ;;
     __check_deps)
         check_dependencies
