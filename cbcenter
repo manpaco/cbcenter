@@ -866,12 +866,12 @@ fetch_roomlist_file () {
     curl -sL --compressed -H "$XRW_HEADER" "$ROOMLIST_PURL/?genders=$1&offset=$2&limit=$3&enable_recommendations=false" -o "$4"
 }
 
-# fetch_rooms_helper helper
+# fetch_rooms_using helper
 # save preview of '$1' on '$3': if success print 'fetched', else 'error'
 # '$1' username
 # '$2' index preffix
 # '$3' dest dir
-frh_helper () {
+fru_helper () {
     [[ $2 -lt 10 ]] && preffix="0$2" || preffix="$2"
     save_preview "$1" "$3" "$preffix" && echo "$2:$1 fetched" && return $OK_CODE
     echo -e "$2:$1 ${RED_FG}error${CLEAR_FG}"
@@ -890,29 +890,29 @@ frh_helper () {
 # '$3' json field inside main array (used to fetch preview)
 # '$4' function name to clear dir
 # '$5' function name to open dir
-fetch_rooms_helper () {
-    local frh_file="$1"
-    local frh_main="$2"
-    local frh_user="$3"
-    local frh_clear="$4"
-    local frh_open="$5"
+fetch_rooms_using () {
+    local fru_file="$1"
+    local fru_main="$2"
+    local fru_user="$3"
+    local fru_clear="$4"
+    local fru_open="$5"
     declare -i num_rooms
-    num_rooms="$(jq -e ".$frh_main | length" "$frh_file")" || send_exit_error $JQ_ERROR
+    num_rooms="$(jq -e ".$fru_main | length" "$fru_file")" || send_exit_error $JQ_ERROR
     [[ $num_rooms -eq 0 ]] && send_exit_error $EMPTY_ROOM_LIST
     echo -e "${YELLOW_FG}TIP:${CLEAR_FG} Go back in the image viewer to see the most recent ones."
-    $frh_clear
+    $fru_clear
     echo "Using '${FETCH_TYPE}' fetch type."
 
     # Implementation to go crazy (without steps)
     if [[ "$FETCH_TYPE" == "crazy" ]]; then
         for ((i = 0 ; i < num_rooms ; i++)); do
-            room="$(jq -Mr ".${frh_main}[$i].$frh_user" "$frh_file")"
-            frh_helper "$room" "$i" "${frh_file%.*}" &
+            room="$(jq -Mr ".${fru_main}[$i].$fru_user" "$fru_file")"
+            fru_helper "$room" "$i" "${fru_file%.*}" &
         done
         wait
         read -rp "Open previews? (Y/n): " ropen
         [[ $ropen == [yY] || $ropen == [yY][eE][sS] || -z $ropen ]] &&
-            $frh_open
+            $fru_open
         return $OK_CODE
     fi
 
@@ -921,14 +921,14 @@ fetch_rooms_helper () {
     local room
     while true; do
         # Fetch room previews by 'FETCH_STEPS' at time
-        while room="$(jq -Mre ".${frh_main}[$index].$frh_user" "$frh_file")"; do
-            frh_helper "$room" "$index" "${frh_file%.*}" &
+        while room="$(jq -Mre ".${fru_main}[$index].$fru_user" "$fru_file")"; do
+            fru_helper "$room" "$index" "${fru_file%.*}" &
             index+=1
             [[ $((index%FETCH_STEPS)) -ne 0 ]] || break
         done
         wait
         read -rp "Open previews? (Y/n): " ropen
-        [[ $ropen == [yY] || $ropen == [yY][eE][sS] || -z $ropen ]] && $frh_open
+        [[ $ropen == [yY] || $ropen == [yY][eE][sS] || -z $ropen ]] && $fru_open
         [[ $index -eq $num_rooms ]] && break # There are no remaining rooms
         read -rp "Continue fetching? $((num_rooms-index)) remaining (Y/n): " rcont
         [[ $rcont == [yY] || $rcont == [yY][eE][sS] || -z $rcont ]] || break
@@ -960,7 +960,7 @@ fetch_other_rooms () {
 that more than $limit rooms will be obtained."
 
     fetch_roomlist_file "$gender" "$offset" "$limit" "$OTHERS_FILE" || send_exit_error $ROOM_LIST_ERROR
-    fetch_rooms_helper "$OTHERS_FILE" "$JQ_RLIST_MAIN" "$JQ_RLIST_USER" clear_others_dir open_others_dir
+    fetch_rooms_using "$OTHERS_FILE" "$JQ_RLIST_MAIN" "$JQ_RLIST_USER" clear_others_dir open_others_dir
 }
 
 # Save biocontext of given room
@@ -1097,7 +1097,7 @@ fetch_more_rooms () {
     assert_active_room "$1"
     fetch_morelist_file "$1" || send_exit_error $ROOM_LIST_ERROR
     echo "$1" > "$MOREWHO_FILE"
-    fetch_rooms_helper "$MORE_FILE" "$JQ_MLIST_MAIN" "$JQ_MLIST_USER" clear_more_dir open_more_dir
+    fetch_rooms_using "$MORE_FILE" "$JQ_MLIST_MAIN" "$JQ_MLIST_USER" clear_more_dir open_more_dir
 }
 
 assert_more_who () {
