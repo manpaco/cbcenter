@@ -3,6 +3,7 @@
 # ----------- VIEWER ------------
 VIEWER="imv -fd" # <<== I'm here!
 FETCH_TYPE="steps" # 'steps' or 'crazy'
+FETCH_STEPS=10
 
 # ---------- NAMES -----------
 mybasename="$(basename "$0")"
@@ -85,7 +86,6 @@ XRW_HEADER="X-Requested-With: XMLHttpRequest"
 HTTP_NOT_FOUND_TEXT="404 Not Found"
 HTTP_TOO_MANY_REQUESTS_TEXT="429 Too Many Requests"
 CONNECT_TIMEOUT=10
-FETCH_STEPS=10
 
 # ----------- EXIT CODES -----------
 OK_CODE=0
