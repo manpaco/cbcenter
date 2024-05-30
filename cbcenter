@@ -641,9 +641,7 @@ other_room_choice () {
     [[ $2 == "hide_list" ]] || list_others
     read -rp "Type your choice (i.e. the beginning number before the ':'), or (Q)uit: " orc_choice
     [[ $orc_choice == [qQ] || -z "$orc_choice" ]] && exit $OK_CODE
-    local orcount
-    orcount="$(other_rooms_count)" || send_exit_error $JQ_ERROR
-    ! valid_id "$orc_choice" || [[ "$((orc_choice+1))" -gt "$orcount" ]] &&
+    ! valid_id "$orc_choice" || [[ "$((orc_choice+1))" -gt "$(other_rooms_count)" ]] &&
         send_exit_error $BAD_CHOICE
     orc_out="$(get_other_by_index "$orc_choice")"
     [[ -z $orc_out ]] && send_exit_error $UNKNOWN_ERROR
@@ -659,9 +657,7 @@ more_room_choice () {
     [[ $2 == "hide_list" ]] || list_more
     read -rp "Type your choice (i.e. the beginning number before the ':'), or (Q)uit: " mrc_choice
     [[ $mrc_choice == [qQ] || -z "$mrc_choice" ]] && exit $OK_CODE
-    local mrcount
-    mrcount="$(more_rooms_count)" || send_exit_error $JQ_ERROR
-    ! valid_id "$mrc_choice" || [[ "$((mrc_choice+1))" -gt "$mrcount" ]] &&
+    ! valid_id "$mrc_choice" || [[ "$((mrc_choice+1))" -gt "$(more_rooms_count)" ]] &&
         send_exit_error $BAD_CHOICE
     mrc_out="$(get_more_by_index "$mrc_choice")"
     [[ -z $mrc_out ]] && send_exit_error $UNKNOWN_ERROR
@@ -1024,7 +1020,8 @@ fetch_rooms_using () {
     local fru_open
     fru_open="$5"
     declare -i num_rooms
-    num_rooms="$(jq -e ".$fru_main | length" "$fru_file")" || send_exit_error $JQ_ERROR
+    num_rooms="$(jq -e ".$fru_main | length" "$fru_file" 2>/dev/null)" ||
+        send_exit_error $JQ_ERROR
     [[ $num_rooms -eq 0 ]] && send_exit_error $EMPTY_ROOM_LIST
     echo -e "${YELLOW_FG}TIP:${CLEAR_FG} Go back in the image viewer to see the most recent ones."
     $fru_clear
@@ -1036,7 +1033,7 @@ fetch_rooms_using () {
     # Implementation to go crazy (without steps)
     if [[ "$FETCH_TYPE" == "crazy" ]]; then
         for ((i = 0 ; i < num_rooms ; i++)); do
-            room="$(jq -Mr ".${fru_main}[$i].$fru_user" "$fru_file")"
+            room="$(jq -Mre ".${fru_main}[$i].$fru_user" "$fru_file")"
             fru_helper "$room" "$i" "${fru_file%.*}" &
         done
         wait
