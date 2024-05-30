@@ -897,6 +897,7 @@ assert_public_room () {
 play_room () {
     valid_username "$1" || send_exit_error $INVALID_USERNAME
     assert_public_room "$1"
+    echo "Wait while resources are obtained ..."
     local pr_link
     extract_playlist "$1" pr_link
     ffplay -i "$pr_link"
@@ -907,6 +908,7 @@ play_room () {
 save_room () {
     valid_username "$1" || send_exit_error $INVALID_USERNAME
     assert_public_room "$1"
+    echo "Wait while resources are obtained ..."
     local sr_link
     extract_direct_link "$1" sr_link
     local output
@@ -924,6 +926,7 @@ save_room () {
 save_capture () {
     valid_username "$1" || send_exit_error $INVALID_USERNAME
     assert_public_room "$1"
+    echo "Wait while resources are obtained ..."
     local sc_link
     extract_direct_link "$1" sc_link 99
     local output
