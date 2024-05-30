@@ -709,32 +709,79 @@ show_preview () {
     curl -sL --compressed -H "$XRW_HEADER" --connect-timeout "$CONNECT_TIMEOUT" "${PREVIEW_PURL}/$1.$IMG_FORMAT" | $VIEWER -
 }
 
+# Print number of files on a directory
+# '$1' directory
+file_count () {
+    find "$1" -maxdepth 1 -type f | wc -l
+}
+
 # fetch_favorite_rooms helper
-# save preview of '$1' on FAVORITES_PDIR: if success print 'fetched', else 'error'
+# save preview of '$1' on FAVORITES_PDIR: if success print 'fetched',
+# else 'error'. If it is offline print 'offline'.
 # '$1' username
 # '$2' line preffix
 ffr_helper () {
     if valid_username "$1" && is_online "$1"; then
-        save_preview "$1" "$FAVORITES_PDIR" && echo "$2:$1 fetched" && return $OK_CODE
+        [[ $2 -lt 10 ]] && preffix="0$2" || preffix="$2"
+        save_preview "$1" "$FAVORITES_PDIR" "$preffix" && echo -e "$2:$1 ${GREEN_FG}fetched${CLEAR_FG}" && return $OK_CODE
         echo -e "$2:$1 ${RED_FG}error${CLEAR_FG}"
         return $UNKNOWN_ERROR
     fi
+    echo "$2:$1 offline"
 }
 
 # Get previews of favorites (online only)
 fetch_favorite_rooms () {
     clear_favorites_dir
+
+    # Crazy implementation
+    if [[ "$FETCH_TYPE" == "crazy" ]]; then
+        declare -i line=1
+        while IFS="" read -r room || [ -n "$room" ]
+        do
+            ffr_helper "$room" "$line" &
+            line+=1
+        done < "$FAVORITES_FILE"
+        wait
+        # Ask to show fetched previews
+        read -rp "Open previews? (Y/n): " ropen
+        [[ $ropen == [yY] || $ropen == [yY][eE][sS] || -z $ropen ]] &&
+            open_favorites_dir
+        return $OK_CODE
+    fi
+
+    # Steps implementation
     declare -i line=1
-    while IFS="" read -r room || [ -n "$room" ]
-    do
+    local old_count=0
+    local current_count
+    # Read file descriptor 3 (-u 3)
+    # That allows us to use 'read' inside the while
+    # without an unexpected behavior
+    # The problem happens when 'read' is used inside 'read'
+    while IFS="" read -u 3 -r room || [ -n "$room" ]; do
         ffr_helper "$room" "$line" &
+        if [[ $((line%FETCH_STEPS)) -eq 0 ]]; then
+            wait
+            current_count="$(file_count "${FAVORITES_PDIR}/")"
+            if [[ $((current_count-old_count)) -ne 0 ]]; then
+                old_count="$current_count"
+                read -rp "Open previews? (Y/n): " ropen
+                [[ $ropen == [yY] || $ropen == [yY][eE][sS] || -z $ropen ]] &&
+                    open_favorites_dir
+            fi
+            read -rp "Continue fetching? (Y/n): " rcont
+            [[ $rcont == [yY] || $rcont == [yY][eE][sS] || -z $rcont ]] ||
+                break
+        fi
         line+=1
-    done < "$FAVORITES_FILE"
+    done 3< "$FAVORITES_FILE" # Send to file descriptor 3
     wait
-    # Ask to show fetched previews
-    read -rp "Open previews? (Y/n): " ropen
-    [[ $ropen == [yY] || $ropen == [yY][eE][sS] || -z $ropen ]] || return $OK_CODE
-    open_favorites_dir
+    current_count="$(file_count "${FAVORITES_PDIR}/")"
+    if [[ $((current_count-old_count)) -ne 0 ]]; then
+        read -rp "Open previews? (Y/n): " ropen
+        [[ $ropen == [yY] || $ropen == [yY][eE][sS] || -z $ropen ]] &&
+            open_favorites_dir
+    fi
 }
 
 ask_to_play () {
