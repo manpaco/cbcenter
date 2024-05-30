@@ -674,22 +674,26 @@ remove_room () {
 
 # Clear favorites directory
 clear_favorites_dir () {
-    rm -f "${FAVORITES_PDIR:?}"/*
+    rm -f "${FAVORITES_PDIR:?}"/* && echo "FAVORITES directory cleared!" ||
+        echo -e "An ${RED_FG}error${CLEAR_FG} occurred while clearing FAVORITES!"
 }
 
 # Clear captures directory
 clear_captures_dir () {
-    rm -f "${CAPTURES_PDIR:?}"/*
+    rm -f "${CAPTURES_PDIR:?}"/* && echo "CAPTURES directory cleared!" ||
+        echo -e "An ${RED_FG}error${CLEAR_FG} occurred while clearing CAPTURES!"
 }
 
 # Clear streams directory
 clear_streams_dir () {
-    rm -f "${STREAMS_PDIR:?}"/*
+    rm -f "${STREAMS_PDIR:?}"/* && echo "STREAMS directory cleared!" ||
+        echo -e "An ${RED_FG}error${CLEAR_FG} occurred while clearing STREAMS!"
 }
 
 # Clear rooms directory
 clear_others_dir () {
-    rm -f "${OTHERS_PDIR:?}"/*
+    rm -f "${OTHERS_PDIR:?}"/* && echo "OTHERS directory cleared!" ||
+        echo -e "An ${RED_FG}error${CLEAR_FG} occurred while clearing OTHERS!"
 }
 
 # Get preview and save it in given file
@@ -1175,7 +1179,8 @@ open_more_dir () {
 
 # Remove previews on MORE_PDIR
 clear_more_dir () {
-    rm -f "${MORE_PDIR:?}"/*
+    rm -f "${MORE_PDIR:?}"/* && echo "MORE directory cleared!" ||
+        echo -e "An ${RED_FG}error${CLEAR_FG} occurred while clearing MORE!"
 }
 
 # Fetch rooms list similar to '$1' and save on $MORE_FILE
