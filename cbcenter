@@ -709,11 +709,11 @@ show_preview () {
     curl -sL --compressed -H "$XRW_HEADER" --connect-timeout "$CONNECT_TIMEOUT" "${PREVIEW_PURL}/$1.$IMG_FORMAT" | $VIEWER -
 }
 
-# fetch_favorites helper
+# fetch_favorite_rooms helper
 # save preview of '$1' on FAVORITES_PDIR: if success print 'fetched', else 'error'
 # '$1' username
 # '$2' line preffix
-ff_helper () {
+ffr_helper () {
     if valid_username "$1" && is_online "$1"; then
         save_preview "$1" "$FAVORITES_PDIR" && echo "$2:$1 fetched" && return $OK_CODE
         echo -e "$2:$1 ${RED_FG}error${CLEAR_FG}"
@@ -722,12 +722,12 @@ ff_helper () {
 }
 
 # Get previews of favorites (online only)
-fetch_favorites () {
+fetch_favorite_rooms () {
     clear_favorites_dir
     declare -i line=1
     while IFS="" read -r room || [ -n "$room" ]
     do
-        ff_helper "$room" "$line" &
+        ffr_helper "$room" "$line" &
         line+=1
     done < "$FAVORITES_FILE"
     wait
@@ -1192,7 +1192,7 @@ case "$command" in
         remove_room "$param"
         ;;
     ff|fetch-favorites)
-        fetch_favorites
+        fetch_favorite_rooms
         play_favorite_choice hide_list
         ;;
     vf|view-favorites)
