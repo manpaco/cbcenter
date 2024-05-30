@@ -1305,7 +1305,10 @@ play_more_choice () {
 # Show 'More rooms like ...'
 more_like_message () {
     assert_more_who
-    echo "More rooms like '$(cat "$MOREWHO_FILE")'"
+    local whois
+    whois="$(cat "$MOREWHO_FILE")"
+    [[ -z "$whois" ]] && return $UNKNOWN_ERROR
+    echo "More rooms like '$whois'"
 }
 
 command="$1"
