@@ -653,7 +653,7 @@ other_room_choice () {
     declare -n orc_out="$1"
     local orc_choice
     [[ $2 == "hide_list" ]] || list_others
-    read -rp "Type your choice (i.e. the beginning number before the ':'), or (Q)uit: " orc_choice
+    read -rp "Type your choice (i.e. the number before the ':'), or (Q)uit: " orc_choice
     [[ $orc_choice == [qQ] || -z "$orc_choice" ]] && exit $OK_CODE
     valid_id "$orc_choice" || send_exit_error $BAD_CHOICE
     orc_choice="$(remove_leading_zeros "$orc_choice")"
@@ -671,7 +671,7 @@ more_room_choice () {
     declare -n mrc_out="$1"
     local mrc_choice
     [[ $2 == "hide_list" ]] || list_more
-    read -rp "Type your choice (i.e. the beginning number before the ':'), or (Q)uit: " mrc_choice
+    read -rp "Type your choice (i.e. the number before the ':'), or (Q)uit: " mrc_choice
     [[ $mrc_choice == [qQ] || -z "$mrc_choice" ]] && exit $OK_CODE
     valid_id "$mrc_choice" || send_exit_error $BAD_CHOICE
     mrc_choice="$(remove_leading_zeros "$mrc_choice")"
