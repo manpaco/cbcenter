@@ -1031,7 +1031,7 @@ fru_helper () {
 # 'room-list' is obtained with fetch_roomlist_file
 # 'more-list' is obtained with fetch_morelist_file
 # Takes a 'room-list' or 'more-list' from '${1}' file and fetch all.
-# '$1' name of json file. Is used to extract PDIR taking into account
+# '$1' name of json file. Also it is used to extract PDIR taking into account
 #      that: e.g. OTHERS_FILE="${OTHERS_PDIR}.cb"
 # '$2' main array
 # '$3' json field inside main array (used to fetch preview)
