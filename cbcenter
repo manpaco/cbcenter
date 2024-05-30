@@ -531,6 +531,13 @@ formated_date () {
     date +%Y%m%d%H%M%S
 }
 
+line_count () {
+    local lcount
+    lcount="$(wc -l "$1" 2>/dev/null)"
+    [[ -z "$lcount" ]] && echo 0 && return
+    echo "${lcount%% *}"
+}
+
 # return 0 if room exists on favorites file, else 1
 # '$1' room
 stored_room () {
@@ -558,7 +565,8 @@ favorite_choice () {
     [[ $2 == "hide_list" ]] || list_favorites -l
     read -rp "Type your choice (i.e. the beginning number before the ':'), or (Q)uit: " fc_out
     [[ $fc_out == [qQ] || -z "$fc_out" ]] && exit $OK_CODE
-    valid_id "$fc_out" || send_exit_error $BAD_CHOICE
+    ! valid_id "$fc_out" || [[ "$fc_out" -gt "$(line_count "$FAVORITES_FILE")" ]] &&
+        send_exit_error $BAD_CHOICE
 }
 
 # Uses FAVORITES_FILE
