@@ -998,6 +998,7 @@ fetch_rooms_using () {
     $fru_clear
     echo "Using '${FETCH_TYPE}' fetch type."
 
+    local room
     local rvar
 
     # Implementation to go crazy (without steps)
@@ -1015,7 +1016,6 @@ fetch_rooms_using () {
 
     # Default implementation with steps (FETCH_STEPS at a time)
     declare -i index=0
-    local room
     while true; do
         # Fetch room previews by 'FETCH_STEPS' at time
         while room="$(jq -Mre ".${fru_main}[$index].$fru_user" "$fru_file")"; do
