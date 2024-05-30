@@ -216,7 +216,7 @@ TIP: If [username] is not provided, you will be asked to choose an option\n\
      from your favorites.\n\nFetch ranges:\n\n\
   gender: Gender of room users.\n\
           'f' (female) or 'm' (male) or 'c' (couple) or 't' (trans)\n\
-  offset: Begining room.\n\
+  offset: Beginning room.\n\
           Two digits (max) integer from 0 (or 00) to 99.\n\
           If none is provided, the value 0 is taken.\n\
   limit:  Number of rooms.\n\
