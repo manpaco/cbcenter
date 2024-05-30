@@ -170,9 +170,8 @@ show_help () {
   r, remove          [username]  - Remove room from favorites.\n\
   ff, fetch-favorites            - Fetch previews of favorite rooms.\n\
   vf, view-favorites             - Open fetched previews (favorites).\n\
-  lf, list-favorites  [-s] [-l]  - List of favorite rooms.\n\
+  lf, list-favorites       [-s]  - List of favorite rooms.\n\
                                    If '-s' is provided, show global status(*).\n\
-                                   If '-l' is provided, show line number(**).\n\
   rs, room-status    [username]  - Show internal status(*).\n\
   rp, room-programs  [username]  - Show available programs of given room.\n\
   ri, room-info      [username]  - Show basic info.\n\
@@ -201,7 +200,7 @@ show_help () {
   __set_fetch_type         type  - Set the fetch type. See 'Fetch types' section.\n\
   __check_deps                   - Check program dependencies.\n\
   __is_online          username  - Return 0 if online, else 1. Does not check\n\
-                                   if the room is active(***).\n\
+                                   if the room is active(**).\n\
   __favorites_file               - Show favorites file (path and name).
   h, help                        - This text.\n\n\
 (*) There are two types of room status:\n\
@@ -211,8 +210,7 @@ show_help () {
               Possible values: public, private, hidden, away, or offline.\n\
     Therefore, \"online\" means that the room can be public, private, hidden,\n\
     or away. In both cases \"offline\" means the same thing.\n\
-(**) The line number inside '$FAVORITES_FILE'.
-(***) An active room is one that EXISTS and is NOT BANNED.\n\
+(**) An active room is one that EXISTS and is NOT BANNED.\n\n\
 TIP: If [username] is not provided, you will be asked to choose an option\n\
      from your favorites.\n\nFetch ranges:\n\n\
   gender: Gender of room users.\n\
@@ -849,12 +847,12 @@ list_favorites () {
     declare -i line=1
     while IFS="" read -r room || [ -n "$room" ]
     do
-        if [[ $1 == "-l" || $2 == "-l" || "$1" == "-sl" || "$1" == "-ls" ]]; then
+        if [[ $1 == "-l" || $2 == "-l" ]]; then
             laux="$line"
         else
             laux=""
         fi
-        if [[ $1 == "-s" || $2 == "-s" || "$1" == "-sl" || "$1" == "-ls" ]]; then
+        if [[ $1 == "-s" || $2 == "-s" ]]; then
             global_status "$room" "$laux" &
         else
             echo "${laux:+$laux:}$room"
@@ -1202,9 +1200,7 @@ case "$command" in
         play_favorite_choice
         ;;
     lf|list-favorites)
-        extra_param="$3"
-        [[ -n "$extra_param" ]] && extra_param="$(trim_string "$extra_param")"
-        list_favorites "$param" "$extra_param"
+        list_favorites "$param"
         ;;
     rs|room-status)
         [[ -z $param ]] && favorite_room_choice param
