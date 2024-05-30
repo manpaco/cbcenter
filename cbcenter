@@ -2,6 +2,7 @@
 
 # ----------- VIEWER ------------
 VIEWER="imv -fd" # <<== I'm here!
+FETCH_TYPE="steps" # 'steps' or 'crazy'
 
 # ---------- NAMES -----------
 mybasename="$(basename "$0")"
@@ -900,17 +901,22 @@ fetch_rooms_helper () {
     [[ $num_rooms -eq 0 ]] && send_exit_error $EMPTY_ROOM_LIST
     echo -e "${YELLOW_FG}TIP:${CLEAR_FG} Go back in the image viewer to see the most recent ones."
     $frh_clear
+    echo "Using '${FETCH_TYPE}' fetch type."
 
-    # Implementation to go crazy (without stops)
-    # for ((i = 0 ; i < num_rooms ; i++)); do
-    #     room="$(jq -Mr ".${frh_main}[$i].$frh_user" "$frh_file")"
-    #     frh_helper "$room" "$i" "${frh_file%.*}" &
-    # done
-    # wait
-    # read -rp "Open previews? (Y/n): " ropen
-    # [[ $ropen == [yY] || $ropen == [yY][eE][sS] || -z $ropen ]] && $frh_open
+    # Implementation to go crazy (without steps)
+    if [[ "$FETCH_TYPE" == "crazy" ]]; then
+        for ((i = 0 ; i < num_rooms ; i++)); do
+            room="$(jq -Mr ".${frh_main}[$i].$frh_user" "$frh_file")"
+            frh_helper "$room" "$i" "${frh_file%.*}" &
+        done
+        wait
+        read -rp "Open previews? (Y/n): " ropen
+        [[ $ropen == [yY] || $ropen == [yY][eE][sS] || -z $ropen ]] &&
+            $frh_open
+        return $OK_CODE
+    fi
 
-    # Implementation with stops (FETCH_STEPS at a time)
+    # Default implementation with steps (FETCH_STEPS at a time)
     declare -i index=0
     local room
     while true; do
