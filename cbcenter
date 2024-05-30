@@ -496,6 +496,7 @@ extract_direct_link () {
         show_programs dl_data
         read -rp "Select a program ID: " dl_prog
         valid_id "$dl_prog" || send_exit_error $INVALID_PROG_ID
+        dl_prog="$(remove_leading_zeros "$dl_prog")"
     fi
     local dl_chunk
     declare -i dl_current=0
