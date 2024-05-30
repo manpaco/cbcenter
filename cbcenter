@@ -96,8 +96,8 @@ OFFLINE_ROOM=2
 UNKNOWN_ERROR=3
 PLAYLIST_NOT_FOUND=4
 CHUNK_NOT_FOUND=5
-ROOM_ALREADY_EXIST=6
-ROOM_DOESNT_EXIST=7
+STORED_ROOM=6
+UNSTORED_ROOM=7
 EMPTY_DATA=8
 INVALID_ROOM_RANGE=9
 INVALID_PROG_ID=10
@@ -299,13 +299,13 @@ send_exit_error () {
             echo "An error occurred while processing room data ! (CHUNK_NOT_FOUND)" 1>&2
             exit $CHUNK_NOT_FOUND
             ;;
-        "$ROOM_ALREADY_EXIST")
+        "$STORED_ROOM")
             echo "The room already exists in the favorites list !" 1>&2
-            exit $ROOM_ALREADY_EXIST
+            exit $STORED_ROOM
             ;;
-        "$ROOM_DOESNT_EXIST")
+        "$UNSTORED_ROOM")
             echo "The room does not exists in the favorites list !" 1>&2
-            exit $ROOM_DOESNT_EXIST
+            exit $UNSTORED_ROOM
             ;;
         "$EMPTY_DATA")
             echo "Error getting room data ! (EMPTY_DATA)" 1>&2
@@ -528,7 +528,7 @@ formated_date () {
 
 # return 0 if room exists on favorites file, else 1
 # '$1' room
-room_exists () {
+stored_room () {
     grep -qx "$1" "$FAVORITES_FILE"
 }
 
@@ -634,7 +634,7 @@ more_room_choice () {
 # '$1' room
 add_room () {
     valid_username "$1" || send_exit_error $INVALID_USERNAME
-    room_exists "$1" && send_exit_error $ROOM_ALREADY_EXIST
+    stored_room "$1" && send_exit_error $STORED_ROOM
     local ar_status
     assert_active_room "$1" ar_status
     echo "$1" >> "$FAVORITES_FILE" && echo "Favorite added! The room is $ar_status"
@@ -657,7 +657,7 @@ remove_room () {
     else # Search partial matches
         # Use '-n' option on grep to use line numbers as choices if partial matches found
         match="$(grep -n "$1" "$FAVORITES_FILE")"
-        [[ -z $match ]] && send_exit_error $ROOM_DOESNT_EXIST
+        [[ -z $match ]] && send_exit_error $UNSTORED_ROOM
         echo "No exact match found!"
         echo "Which room do you want to delete?"
         echo "$match"
