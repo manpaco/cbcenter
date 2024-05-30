@@ -1250,6 +1250,7 @@ fetch_morelist_file () {
 fetch_more_rooms () {
     valid_username "$1" || send_exit_error $INVALID_USERNAME
     assert_active_room "$1"
+    echo -e "\nFetching more rooms like $1!"
     fetch_morelist_file "$1" || send_exit_error $ROOM_LIST_ERROR
     echo "$1" > "$MOREWHO_FILE"
     fetch_rooms_using "$MORE_FILE" "$JQ_MLIST_MAIN" "$JQ_MLIST_USER" clear_more_dir open_more_dir
