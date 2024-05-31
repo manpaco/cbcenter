@@ -1327,7 +1327,7 @@ fi
 
 if [[ "$command" == "__favorites_file" ]]; then
     echo "$FAVORITES_FILE"
-    exit
+    exit $OK_CODE
 fi
 
 param="$2"
