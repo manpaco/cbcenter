@@ -561,7 +561,7 @@ get_favorite_line () {
 # Remove line from FAVORITES_FILE
 # '$1' line number
 rem_favorite_line () {
-    sed -i "${1:?Empty parameter !}d" "$FAVORITES_FILE" && echo "Favorite removed!"
+    sed -i "${1:?Empty parameter !}d" "$FAVORITES_FILE" && echo "Done, removed!"
 }
 
 # Ask the user for a choice, and store the choice on '$1'. If '$2' is other
@@ -1374,8 +1374,9 @@ multi_remove () {
     [[ $rvar == [yY] || $rvar == [yY][eE][sS] || -z $rvar ]] || exit $OK_CODE
     # Remove by line number.
     for c in "${br_choices[@]}"; do
-        rem_favorite_line "$c"
+        rem_favorite_line "$c" >/dev/null
     done
+    echo "Done, ${#br_choices[@]} favorite(s) removed!"
 }
 
 command="$1"
