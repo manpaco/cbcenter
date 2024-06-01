@@ -986,7 +986,7 @@ global_status () {
 # '$1' show global status (-s)
 # '$2' show line numbers (-l)
 list_favorites () {
-    echo "List of favorite rooms ..."
+    echo "List of favorite rooms:"
     declare -i line=1
     local laux
     local room
