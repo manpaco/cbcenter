@@ -1333,7 +1333,7 @@ more_like_message () {
 
 # Ask user for multiple choices
 # Store an array of numbers on '$1'
-# e.g. the user enters " 4 51 3 4    32 1 " ---> return (51 32 4 3 1)
+# e.g. the user enters " 4 51 3 04    32 0001 " ---> return (4 51 3 4 32 1)
 # '$1' to store
 favorite_multi_choice () {
     declare -n fc_out="$1"
