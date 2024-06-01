@@ -199,6 +199,7 @@ show_help () {
   __clear_captures               - Clear the 'captures' directory.\n\
   __clear_streams                - Clear the 'streams' directory.\n\
   __clear_others                 - Clear the 'others' directory.\n\
+  __clear_more                   - Clear the 'more' directory.\n\
   __clear_all\n\
   __set_viewer          command  - Set the 'command' as viewer.\n\
   __set_fetch_type         type  - Set the fetch type. See 'Fetch types' section.\n\
@@ -1522,11 +1523,15 @@ case "$command" in
     __clear_others)
         clear_others_dir
         ;;
+    __clear_more)
+        clear_more_dir
+        ;;
     __clear_all)
         clear_favorites_dir &&
             clear_captures_dir &&
             clear_streams_dir &&
-            clear_others_dir
+            clear_others_dir &&
+            clear_more_dir
         ;;
     __set_viewer)
         set_viewer "$param"
