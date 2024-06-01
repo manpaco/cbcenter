@@ -626,6 +626,7 @@ list_others () {
     declare -i num_rooms
     num_rooms="$(other_rooms_count)"
     [[ $num_rooms -eq 0 ]] && send_exit_error $EMPTY_ROOM_LIST
+    echo "List of 'other' rooms:"
     for ((i = 0 ; i < num_rooms ; i++)); do
         echo "$i:$(get_other_by_index "$i")"
     done
@@ -636,6 +637,7 @@ list_more () {
     declare -i num_rooms
     num_rooms="$(more_rooms_count)"
     [[ $num_rooms -eq 0 ]] && send_exit_error $EMPTY_ROOM_LIST
+    echo "List of 'more-like' rooms:"
     for ((i = 0 ; i < num_rooms ; i++)); do
         echo "$i:$(get_more_by_index "$i")"
     done
@@ -986,7 +988,7 @@ global_status () {
 # '$1' show global status (-s)
 # '$2' show line numbers (-l)
 list_favorites () {
-    echo "List of favorite rooms:"
+    echo "List of 'favorite' rooms:"
     declare -i line=1
     local laux
     local room
