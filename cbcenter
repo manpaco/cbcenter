@@ -170,7 +170,8 @@ show_help () {
     echo -e "Manage your favorite rooms from $CB_ROOT_PURL.\n\nUsage:\n\n\
   $mybasename COMMAND OPTION\n\nCommands and options:\n\n\
   a, add               username  - Add new room to favorites.\n\
-  r, remove          [username]  - Remove room from favorites.\n\
+  r, remove          [username]  - Remove one room from favorites.\n\
+  R, multi-remove                - Remove multiple rooms from favorites.\n\
   ff, fetch-favorites            - Fetch previews of favorite rooms.\n\
   vf, view-favorites             - Open fetched previews (favorites).\n\
   lf, list-favorites       [-s]  - List of favorite rooms.\n\
@@ -1317,6 +1318,51 @@ more_like_message () {
     echo "More rooms like '$whois'"
 }
 
+# Ask user for multiple choices
+# Store an array of numbers on '$1'
+# e.g. the user enters " 4 51 3 4    32 1 " ---> return (51 32 4 3 1)
+# '$1' to store
+favorite_multi_choice () {
+    declare -n fc_out="$1"
+    [[ $2 == "hide_list" ]] || list_favorites -l
+    read -rp "==> Enter your choices separated by spaces (e.g. 3 12 7 9), or (Q)uit: " -a fc_out
+    [[ "${fc_out[0]}" == [qQ] || -z "${fc_out[0]}" ]] && exit $OK_CODE
+    local lcount
+    lcount="$(line_count "$FAVORITES_FILE")"
+    #echo "input:     ${fc_out[*]}"
+    for i in "${!fc_out[@]}"; do
+        valid_id "${fc_out[$i]}"  || send_exit_error $BAD_CHOICE
+        fc_out[i]="$(remove_leading_zeros "${fc_out[$i]}")"
+        [[ "${fc_out[$i]}" -lt 1 ]] && send_exit_error $BAD_CHOICE
+        [[ "${fc_out[$i]}" -gt "$lcount" ]] && send_exit_error $BAD_CHOICE
+    done
+    #echo "sanitized: ${fc_out[*]}"
+}
+
+# Ask user for favorites to remove
+multi_remove () {
+    echo "Bulk remove ..."
+    local br_choices
+    favorite_multi_choice br_choices
+
+    # Sort (reverse -r) and keep unique (-u) numbers (-n).
+    # Using here-string ( <<< ), process substitution ( <(command) ), and
+    # output redirection ( < ). Finally store in array with readarray
+    readarray -t br_choices < <(IFS=$'\n'; sort -run <<<"${br_choices[*]}")
+    #echo "sorted:    ${br_choices[*]}"
+
+    echo "You are about to delete:"
+    for c in "${br_choices[@]}"; do
+        echo -n "  "; get_favorite_line "$c"
+    done
+    read -rp "==> Confirm? (Y/n): " rvar
+    [[ $rvar == [yY] || $rvar == [yY][eE][sS] || -z $rvar ]] || exit $OK_CODE
+    # Remove by line number.
+    for c in "${br_choices[@]}"; do
+        rem_favorite_line "$c"
+    done
+}
+
 command="$1"
 [[ -n "$command" ]] && command="$(trim_string "$command")"
 
@@ -1363,6 +1409,9 @@ case "$command" in
         ;;
     r|remove)
         remove_room "$param"
+        ;;
+    R|multi-remove)
+        multi_remove
         ;;
     ff|fetch-favorites)
         fetch_favorite_rooms
