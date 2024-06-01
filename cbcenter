@@ -806,8 +806,8 @@ ffr_helper () {
 # Get previews of favorites (online only)
 fetch_favorite_rooms () {
     echo "Fetching favorite rooms ..."
-    clear_favorites_dir
     echo "Using '${FETCH_TYPE}' fetch type."
+    clear_favorites_dir
     echo -e "${YELLOW_FG}TIP:${CLEAR_FG} Go back in the image viewer to see the most recent ones."
     local rvar
 
@@ -1065,8 +1065,8 @@ fetch_rooms_using () {
     num_rooms="$(jq -e ".$fru_main | length" "$fru_file" 2>/dev/null)" ||
         send_exit_error $JQ_ERROR
     [[ $num_rooms -eq 0 ]] && send_exit_error $EMPTY_ROOM_LIST
-    $fru_clear
     echo "Using '${FETCH_TYPE}' fetch type."
+    $fru_clear
     echo -e "${YELLOW_FG}TIP:${CLEAR_FG} Go back in the image viewer to see the most recent ones."
 
     local room
@@ -1355,7 +1355,7 @@ favorite_multi_choice () {
 
 # Ask user for favorites to remove
 multi_remove () {
-    echo "Bulk remove ..."
+    echo "Multi remove ..."
     local br_choices
     favorite_multi_choice br_choices
 
