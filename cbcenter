@@ -495,7 +495,8 @@ extract_direct_link () {
     [[ -z $dl_data ]] && send_exit_error $EMPTY_DATA
     if [[ -z $dl_prog ]]; then
         show_programs dl_data
-        read -rp "Select a program ID: " dl_prog
+        echo -en "${YELLOW_FG}==>${CLEAR_FG} Select a program ID: "
+        read -r dl_prog
         valid_id "$dl_prog" || send_exit_error $INVALID_PROG_ID
         dl_prog="$(remove_leading_zeros "$dl_prog")"
     fi
@@ -570,7 +571,8 @@ rem_favorite_line () {
 favorite_choice () {
     declare -n fc_out="$1"
     [[ $2 == "hide_list" ]] || list_favorites -l
-    read -rp "Type your choice (i.e. the number before the ':'), or (Q)uit: " fc_out
+    echo -en "${YELLOW_FG}==>${CLEAR_FG} Type your choice (i.e. the number before the ':'), or (Q)uit: "
+    read -r fc_out
     [[ $fc_out == [qQ] || -z "$fc_out" ]] && exit $OK_CODE
     valid_id "$fc_out"  || send_exit_error $BAD_CHOICE
     fc_out="$(remove_leading_zeros "$fc_out")"
@@ -654,7 +656,8 @@ other_room_choice () {
     declare -n orc_out="$1"
     local orc_choice
     [[ $2 == "hide_list" ]] || list_others
-    read -rp "Type your choice (i.e. the number before the ':'), or (Q)uit: " orc_choice
+    echo -en "${YELLOW_FG}==>${CLEAR_FG} Type your choice (i.e. the number before the ':'), or (Q)uit: "
+    read -r orc_choice
     [[ $orc_choice == [qQ] || -z "$orc_choice" ]] && exit $OK_CODE
     valid_id "$orc_choice" || send_exit_error $BAD_CHOICE
     orc_choice="$(remove_leading_zeros "$orc_choice")"
@@ -672,7 +675,8 @@ more_room_choice () {
     declare -n mrc_out="$1"
     local mrc_choice
     [[ $2 == "hide_list" ]] || list_more
-    read -rp "Type your choice (i.e. the number before the ':'), or (Q)uit: " mrc_choice
+    echo -en "${YELLOW_FG}==>${CLEAR_FG} Type your choice (i.e. the number before the ':'), or (Q)uit: "
+    read -r mrc_choice
     [[ $mrc_choice == [qQ] || -z "$mrc_choice" ]] && exit $OK_CODE
     valid_id "$mrc_choice" || send_exit_error $BAD_CHOICE
     mrc_choice="$(remove_leading_zeros "$mrc_choice")"
@@ -816,7 +820,8 @@ fetch_favorite_rooms () {
         wait
         # Ask to show fetched previews
         local rvar
-        read -rp "Open previews? (Y/n): " rvar
+        echo "${YELLOW_FG}==>${CLEAR_FG} Open previews? (Y/n): "
+        read -r rvar
         [[ $rvar == [yY] || $rvar == [yY][eE][sS] || -z $rvar ]] &&
             open_favorites_dir
         return $OK_CODE
@@ -839,11 +844,13 @@ fetch_favorite_rooms () {
             current_count="$(file_count "${FAVORITES_PDIR}/")"
             if [[ $current_count -ne $old_count ]]; then
                 old_count="$current_count"
-                read -rp "Open previews? (Y/n): " rvar
+                echo -en "${YELLOW_FG}==>${CLEAR_FG} Open previews? (Y/n): "
+                read -r rvar
                 [[ $rvar == [yY] || $rvar == [yY][eE][sS] || -z $rvar ]] &&
                     open_favorites_dir
             fi
-            read -rp "Continue fetching? (Y/n): " rvar
+            echo -en "${YELLOW_FG}==>${CLEAR_FG} Continue fetching? (Y/n): "
+            read -r rvar
             [[ $rvar == [yY] || $rvar == [yY][eE][sS] || -z $rvar ]] ||
                 break
         fi
@@ -852,7 +859,8 @@ fetch_favorite_rooms () {
     wait
     current_count="$(file_count "${FAVORITES_PDIR}/")"
     if [[ $current_count -ne $old_count ]]; then
-        read -rp "Open previews? (Y/n): " rvar
+        echo -en "${YELLOW_FG}==>${CLEAR_FG} Open previews? (Y/n): "
+        read -r rvar
         [[ $rvar == [yY] || $rvar == [yY][eE][sS] || -z $rvar ]] &&
             open_favorites_dir
     fi
@@ -862,7 +870,8 @@ fetch_favorite_rooms () {
 # '$1' room
 ask_to_play () {
     local rplay
-    read -rp "Do you want to play '$1' stream? (Y/n): " rplay
+    echo "${YELLOW_FG}==>${CLEAR_FG} Do you want to play '$1' stream? (Y/n): "
+    read -r rplay
     [[ $rplay == [yY] || $rplay == [yY][eE][sS] || -z $rplay ]] || return $OK_CODE
     play_room "$1"
 }
@@ -1067,7 +1076,8 @@ fetch_rooms_using () {
             fru_helper "$room" "$i" "${fru_file%.*}" &
         done
         wait
-        read -rp "Open previews? (Y/n): " rvar
+        echo -en "${YELLOW_FG}==>${CLEAR_FG} Open previews? (Y/n): "
+        read -r rvar
         [[ $rvar == [yY] || $rvar == [yY][eE][sS] || -z $rvar ]] &&
             $fru_open
         return $OK_CODE
@@ -1083,10 +1093,12 @@ fetch_rooms_using () {
             [[ $((index%FETCH_STEPS)) -ne 0 ]] || break
         done
         wait
-        read -rp "Open previews? (Y/n): " rvar
+        echo -en "${YELLOW_FG}==>${CLEAR_FG} Open previews? (Y/n): "
+        read -r rvar
         [[ $rvar == [yY] || $rvar == [yY][eE][sS] || -z $rvar ]] && $fru_open
         [[ $index -eq $num_rooms ]] && break # There are no remaining rooms
-        read -rp "Continue fetching? $((num_rooms-index)) remaining (Y/n): " rvar
+        echo -en "${YELLOW_FG}==>${CLEAR_FG} Continue fetching? $((num_rooms-index)) remaining (Y/n): "
+        read -r rvar
         [[ $rvar == [yY] || $rvar == [yY][eE][sS] || -z $rvar ]] || break
     done
 }
@@ -1211,7 +1223,8 @@ set_viewer () {
     if ! which_check "${1%% *}"; then
         echo "... but not found on PATH"
         local rset
-        read -rp "Set anyway? (Y/n): " rset
+        echo -en "${YELLOW_FG}==>${CLEAR_FG} Set anyway? (Y/n): "
+        read -r rset
         [[ $rset == [yY] || $rset == [yY][eE][sS] || -z $rset ]] || return $OK_CODE
     fi
     # Escape slashes with backslashes: ${1//\//\\\/} (the first two slashes means 'replace all')
@@ -1325,7 +1338,8 @@ more_like_message () {
 favorite_multi_choice () {
     declare -n fc_out="$1"
     [[ $2 == "hide_list" ]] || list_favorites -l
-    read -rp "==> Enter your choices separated by spaces (e.g. 3 12 7 9), or (Q)uit: " -a fc_out
+    echo -en "${YELLOW_FG}==>${CLEAR_FG} Enter your choices separated by spaces (e.g. 3 12 7 9), or (Q)uit: "
+    read -r -a fc_out
     [[ "${fc_out[0]}" == [qQ] || -z "${fc_out[0]}" ]] && exit $OK_CODE
     local lcount
     lcount="$(line_count "$FAVORITES_FILE")"
@@ -1355,7 +1369,8 @@ multi_remove () {
     for c in "${br_choices[@]}"; do
         echo -n "  "; get_favorite_line "$c"
     done
-    read -rp "==> Confirm? (Y/n): " rvar
+    echo -en "${YELLOW_FG}==>${CLEAR_FG} Confirm? (Y/n): "
+    read -r rvar
     [[ $rvar == [yY] || $rvar == [yY][eE][sS] || -z $rvar ]] || exit $OK_CODE
     # Remove by line number.
     for c in "${br_choices[@]}"; do
