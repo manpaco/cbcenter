@@ -873,7 +873,7 @@ fetch_favorite_rooms () {
 # '$1' room
 ask_to_play () {
     local rplay
-    echo "${YELLOW_FG}==>${CLEAR_FG} Do you want to play '$1' stream? (Y/n): "
+    echo -en "${YELLOW_FG}==>${CLEAR_FG} Do you want to play '$1' stream? (Y/n): "
     read -r rplay
     [[ $rplay == [yY] || $rplay == [yY][eE][sS] || -z $rplay ]] || return $OK_CODE
     play_room "$1"
