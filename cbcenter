@@ -768,10 +768,10 @@ save_preview_in () {
     curl -sL --compressed -H "$XRW_HEADER" --connect-timeout "$CONNECT_TIMEOUT" "${PREVIEW_PURL}/$1.$IMG_FORMAT" -o "$2"
 }
 
-# Get preview and save it in given directory with predefined preffix (custom preffix is optional)
+# Get preview and save it in given directory with predefined prefix (custom prefix is optional)
 # '$1' username
 # '$2' directory
-# '$3' custom preffix (optional)
+# '$3' custom prefix (optional)
 save_preview () {
     curl -sL --compressed -H "$XRW_HEADER" --connect-timeout "$CONNECT_TIMEOUT" "${PREVIEW_PURL}/$1.$IMG_FORMAT" -o "${2}/$3$(formated_date)-$1.$IMG_FORMAT"
 }
@@ -791,12 +791,12 @@ file_count () {
 # save preview of '$1' on FAVORITES_PDIR: if success print 'fetched',
 # else 'error'. If it is offline print 'offline'.
 # '$1' username
-# '$2' line preffix
+# '$2' line prefix
 ffr_helper () {
     if valid_username "$1" && is_online "$1"; then
-        local preffix
-        [[ $2 -lt 10 ]] && preffix="0$2" || preffix="$2"
-        save_preview "$1" "$FAVORITES_PDIR" "$preffix" && echo -e "$2:$1 ${GREEN_FG}fetched${CLEAR_FG}" && return $OK_CODE
+        local prefix
+        [[ $2 -lt 10 ]] && prefix="0$2" || prefix="$2"
+        save_preview "$1" "$FAVORITES_PDIR" "$prefix" && echo -e "$2:$1 ${GREEN_FG}fetched${CLEAR_FG}" && return $OK_CODE
         echo -e "$2:$1 ${RED_FG}error${CLEAR_FG}"
         return $UNKNOWN_ERROR
     fi
@@ -1028,12 +1028,12 @@ fetch_roomlist_file () {
 # fetch_rooms_using helper
 # save preview of '$1' on '$3': if success print 'fetched', else 'error'
 # '$1' username
-# '$2' index preffix
+# '$2' index prefix
 # '$3' dest dir
 fru_helper () {
-    local preffix
-    [[ $2 -lt 10 ]] && preffix="0$2" || preffix="$2"
-    save_preview "$1" "$3" "$preffix" && echo "$2:$1 fetched" && return $OK_CODE
+    local prefix
+    [[ $2 -lt 10 ]] && prefix="0$2" || prefix="$2"
+    save_preview "$1" "$3" "$prefix" && echo "$2:$1 fetched" && return $OK_CODE
     echo -e "$2:$1 ${RED_FG}error${CLEAR_FG}"
     return $UNKNOWN_ERROR
 }
