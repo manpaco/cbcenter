@@ -706,9 +706,8 @@ add_room () {
 # '$1' room
 remove_room () {
     if [[ -z "$1" ]]; then
-        echo "Which room do you want to delete?"
         local rr_choice
-        favorite_choice rr_choice
+        favorite_choice rr_choice show_list delete
         rem_favorite_line "$rr_choice"
         return $OK_CODE
     fi
@@ -722,10 +721,9 @@ remove_room () {
         match="$(grep -n "$1" "$FAVORITES_FILE")"
         [[ -z $match ]] && send_exit_error $UNSTORED_ROOM
         echo "No exact match found!"
-        echo "Which room do you want to delete?"
         echo "$match"
         local rr_choice
-        favorite_choice rr_choice hide_list
+        favorite_choice rr_choice hide_list delete
         # Validate choice
         if echo "$match" | grep -q -E "^($rr_choice:)" -; then
             rem_favorite_line "$rr_choice"
