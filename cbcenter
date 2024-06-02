@@ -17,6 +17,8 @@ PROJECT="cbcenter"
 #
 # ---------- FILES AND DIRECTORIES -----------
 MYPATH="${HOME}/.local/$PROJECT"
+MYCONFIG="${HOME}/.config/$PROJECT"
+MYCONFIG_FILE="${MYCONFIG}/config"
 DOWNLOADS_PDIR="${MYPATH}/downloads"
 FAVORITES_PDIR="${MYPATH}/favorites"
 FAVORITES_FILE="${FAVORITES_PDIR}.cb"
@@ -126,6 +128,10 @@ LIGHT_BLUE_FG="\033[1;34m"
 YELLOW_FG="\033[1;33m"
 CLEAR_FG="\033[0m"
 
+configure () {
+    [[ -e "$MYCONFIG_FILE" ]] && source "$MYCONFIG_FILE"
+}
+
 # Check if a executable if found on PATH
 # '$1' executable name
 which_check () {
@@ -156,7 +162,7 @@ check_dependencies () {
     echo -n "  "; [[ "${cd_viewer%% *}" =~ ^(imv)$ ]] && echo -en "${LIGHT_BLUE_FG}using${CLEAR_FG} --> "; which_check imv
     echo -n "  "; [[ "${cd_viewer%% *}" =~ ^(imv-x11)$ ]] && echo -en "${LIGHT_BLUE_FG}using${CLEAR_FG} --> "; which_check imv-x11
     echo -n "  "; [[ "${cd_viewer%% *}" =~ ^(imv-wayland)$ ]] && echo -en "${LIGHT_BLUE_FG}using${CLEAR_FG} --> "; which_check imv-wayland
-    echo "... or use what you want. Execute '$mybasename __set_viewer command'."
+    echo "... or use what you want. See the help to know how to configure it."
 }
 
 # Show distribution warning
@@ -205,8 +211,6 @@ show_help () {
   __clear_others                 - Clear the 'others' directory.\n\
   __clear_more                   - Clear the 'more' directory.\n\
   __clear_all\n\
-  __set_viewer          command  - Set the 'command' as viewer.\n\
-  __set_fetch_type         type  - Set the fetch type. See 'Fetch types' section.\n\
   __check_deps                   - Check program dependencies.\n\
   __is_online          username  - Return 0 if online, else 1. Does not check\n\
                                    if the room is active(**).\n\
@@ -271,9 +275,7 @@ TIP: If [username] is not provided, you will be asked to choose an option\n\
   - What do the strange errors mean when I want to play/save/capture?\n\
       See 'Exit codes' section.\n\
   - How can I change the default image viewer for previews?\n\
-      Just change the 'VIEWER' variable to whatever you want (within the\n\
-      executable), or use '__set_viewer' command. See 'Examples' section.\n\
-      NOTE: the image viewer must support opening entire directories.\n\
+      See 'Configuration' section.\n\
   - Why are the rooms fetched in $FETCH_STEPS at a time?\n\
       To avoid error code $HTTP_TOO_MANY_REQUESTS_ERROR. See 'Exit codes' section.\n\nExamples:\n\n\
   - Add new rooms to favorites:\n\
@@ -285,10 +287,7 @@ TIP: If [username] is not provided, you will be asked to choose an option\n\
   - Fetch a (random) trans room:\n\
       $mybasename random t\n\
   - Fetch more rooms with a similar appearance and content:\n\
-      $mybasename fetch-more userhere\n\
-  - Set the image viewer:\n\
-      $mybasename __set_viewer gpicview\n\
-      $mybasename __set_viewer \"imv-wayland -fd\"\n"
+      $mybasename fetch-more userhere\n"
 }
 
 # Send error message and exit program
@@ -383,12 +382,6 @@ send_exit_error () {
         "$BANNED_ROOM")
             echo "the room is banned from the site !" 1>&2
             exit $BANNED_ROOM
-            ;;
-        "$INVALID_VIEWER")
-            echo "invalid viewer command !" 1>&2
-            [[ -n "$2" ]] && echo -e "VIEWER variable contains: '${VIEWER}'\n\
-Run '$mybasename __set_viewer command' to set a valid viewer." 1>&2
-            exit $INVALID_VIEWER
             ;;
         "$INVALID_GENDER")
             echo "invalid gender !" 1>&2
@@ -1299,32 +1292,6 @@ valid_command_string () {
     [[ "$1" =~ ^[a-zA-Z0-9\ \/\._-]+$ ]]
 }
 
-# Set the image viewer command
-# '$1' image viewer
-set_viewer () {
-    valid_command_string "$1" || send_exit_error $INVALID_VIEWER
-    echo "Setting image viewer ..."
-    # Verify if it is on PATH
-    if ! which_check "${1%% *}"; then
-        echo "... but not found on PATH"
-        local rset
-        echo -en "${YELLOW_FG}==>${CLEAR_FG} Set anyway? (Y/n): "
-        read -r rset
-        [[ $rset == [yY] || $rset == [yY][eE][sS] || -z $rset ]] || return $OK_CODE
-    fi
-    # Escape slashes with backslashes: ${1//\//\\\/} (the first two slashes means 'replace all')
-    sed -i --follow-symlinks "s/VIEWER=\".*\"/VIEWER=\"${1//\//\\\/}\"/" "$0"
-    echo "Now you are using '$1'"
-}
-
-# Set the FETCH_TYPE variable
-set_fetch_type () {
-    [[ "$1" =~ ^[a-z]+$ ]] || send_exit_error $UNKNOWN_ERROR
-    echo "Setting fetch type ..."
-    sed -i --follow-symlinks "s/FETCH_TYPE=\".*\"/FETCH_TYPE=\"${1}\"/" "$0"
-    echo "Now you are using '$1' fetch type."
-}
-
 # Show room status: public, private, hidden, away, or offline
 internal_status () {
     valid_username "$1" || send_exit_error $INVALID_USERNAME
@@ -1510,6 +1477,7 @@ valid_command_string "$VIEWER" || send_exit_error $INVALID_VIEWER "$VIEWER"
 [[ -e "$FAVORITES_FILE" ]] || touch "$FAVORITES_FILE"
 
 check_favorites
+configure
 
 # Main switch
 case "$command" in
@@ -1659,12 +1627,6 @@ case "$command" in
             clear_streams_dir &&
             clear_others_dir &&
             clear_more_dir
-        ;;
-    __set_viewer)
-        set_viewer "$param"
-        ;;
-    __set_fetch_type)
-        set_fetch_type "$param"
         ;;
     __check_deps)
         check_dependencies
