@@ -858,7 +858,7 @@ fetch_favorite_rooms () {
         wait
         # Ask to show fetched previews
         local rvar
-        echo "${YELLOW_FG}==>${CLEAR_FG} Open previews? (Y/n): "
+        echo -en "${YELLOW_FG}==>${CLEAR_FG} Open previews? (Y/n): "
         read -r rvar
         [[ $rvar == [yY] || $rvar == [yY][eE][sS] || -z $rvar ]] &&
             open_favorites_dir
