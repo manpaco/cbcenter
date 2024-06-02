@@ -1517,8 +1517,11 @@ case "$command" in
             param="$(trim_string "$param")"
             internal_status "$param" "$eparam"
         else
-            [[ -z $param || "$param" == "-e" ]] && favorite_room_choice param
-            internal_status "$param"
+            if [[ -z $param || "$param" == "-e" ]]; then
+                [[ "$param" == "-e" ]] && eparam="-e"
+                favorite_room_choice param
+            fi
+            internal_status "$param" "$eparam"
         fi
         ;;
     rp|room-programs)
