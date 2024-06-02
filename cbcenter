@@ -219,7 +219,8 @@ show_help () {
               Possible values: public, private, hidden, away, or offline. If\n\
               '-e' option is not provided, also: not found or banned.\n\
     Therefore, \"online\" means that the room can be public, private, hidden,\n\
-    or away. In both cases \"offline\" means the same thing.\n\
+    or away. On the other hand, \"offline\" could mean the room can be offline,\n\
+    not found (does not exist), or banned.\n\
 (**) An active room is one that EXISTS and is NOT BANNED.\n\n\
 TIP: If [username] is not provided, you will be asked to choose an option\n\
      from your favorites.\n\nFetch ranges:\n\n\
