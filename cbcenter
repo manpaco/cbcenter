@@ -1332,7 +1332,8 @@ check_favorites () {
     while IFS='' read -r rline; do
         valid_username "$rline" && echo "$rline"
     done < "$FAVORITES_FILE" > "${FAVORITES_FILE}.checked"
-    mv "${FAVORITES_FILE}.checked" "$FAVORITES_FILE"
+    sort -u "$FAVORITES_FILE.checked" > "$FAVORITES_FILE"
+    rm "${FAVORITES_FILE}.checked"
 }
 
 # Open previews on MORE_PDIR
