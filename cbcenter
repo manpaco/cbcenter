@@ -1502,8 +1502,13 @@ case "$command" in
         # discard "command" parameter
         shift
         if [[ "$#" -gt 1 ]]; then
+            declare -a parr
+            # Trim all params
+            for r in "$@"; do
+                parr+=("$(trim_string "$r")")
+            done
             # pass all params
-            add_multi_room "$@"
+            add_multi_room "${parr[@]}"
         else
             add_room "$param"
         fi
