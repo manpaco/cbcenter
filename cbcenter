@@ -349,7 +349,7 @@ send_exit_error () {
             exit $INVALID_ROOM_RANGE
             ;;
         "$BAD_CHOICE")
-            echo "bad choice !" 1>&2
+            echo "'${2:--}' bad choice! (${3:--})" 1>&2
             exit $BAD_CHOICE
             ;;
         "$ROOM_LIST_ERROR")
@@ -605,11 +605,11 @@ favorite_choice () {
     echo -en "${YELLOW_FG}==>${CLEAR_FG} Type your choice (i.e. the number before the ':'), or (Q)uit: "
     read -r fc_out
     [[ $fc_out == [qQ] || -z "$fc_out" ]] && exit $OK_CODE
-    valid_id "$fc_out"  || send_exit_error $BAD_CHOICE
+    valid_id "$fc_out"  || send_exit_error $BAD_CHOICE "$fc_out" "non-numeric"
     fc_out="$(remove_leading_zeros "$fc_out")"
-    [[ "$fc_out" -lt 1 ]] && send_exit_error $BAD_CHOICE
+    [[ "$fc_out" -lt 1 ]] && send_exit_error $BAD_CHOICE "$fc_out" "out of range"
     [[ "$fc_out" -gt "$(line_count "$FAVORITES_FILE")" ]] &&
-        send_exit_error $BAD_CHOICE
+        send_exit_error $BAD_CHOICE "$fc_out" "out of range"
 }
 
 # Uses FAVORITES_FILE
@@ -693,10 +693,10 @@ other_room_choice () {
     echo -en "${YELLOW_FG}==>${CLEAR_FG} Type your choice (i.e. the number before the ':'), or (Q)uit: "
     read -r orc_choice
     [[ $orc_choice == [qQ] || -z "$orc_choice" ]] && exit $OK_CODE
-    valid_id "$orc_choice" || send_exit_error $BAD_CHOICE
+    valid_id "$orc_choice" || send_exit_error $BAD_CHOICE "$mrc_choice" "non-numeric"
     orc_choice="$(remove_leading_zeros "$orc_choice")"
     [[ "$((orc_choice+1))" -gt "$(other_rooms_count)" ]] &&
-        send_exit_error $BAD_CHOICE
+        send_exit_error $BAD_CHOICE "$orc_choice" "out of range"
     orc_out="$(get_other_by_index "$orc_choice")"
     [[ -z $orc_out ]] && send_exit_error $UNKNOWN_ERROR
 }
@@ -713,10 +713,10 @@ more_room_choice () {
     echo -en "${YELLOW_FG}==>${CLEAR_FG} Type your choice (i.e. the number before the ':'), or (Q)uit: "
     read -r mrc_choice
     [[ $mrc_choice == [qQ] || -z "$mrc_choice" ]] && exit $OK_CODE
-    valid_id "$mrc_choice" || send_exit_error $BAD_CHOICE
+    valid_id "$mrc_choice" || send_exit_error $BAD_CHOICE "$mrc_choice" "non-numeric"
     mrc_choice="$(remove_leading_zeros "$mrc_choice")"
     [[ "$((mrc_choice+1))" -gt "$(more_rooms_count)" ]] &&
-        send_exit_error $BAD_CHOICE
+        send_exit_error $BAD_CHOICE "$mrc_choice" "out of range"
     mrc_out="$(get_more_by_index "$mrc_choice")"
     [[ -z $mrc_out ]] && send_exit_error $UNKNOWN_ERROR
 }
@@ -779,7 +779,7 @@ remove_room () {
         if echo "$match" | grep -q -E "^($rr_choice:)" -; then
             rem_favorite_line "$rr_choice"
         else
-            send_exit_error $BAD_CHOICE
+            send_exit_error $BAD_CHOICE "$rr_choice" "no match"
         fi
     fi
 }
@@ -1423,10 +1423,10 @@ favorite_multi_choice () {
     lcount="$(line_count "$FAVORITES_FILE")"
     #echo "input:     ${fc_out[*]}"
     for i in "${!fc_out[@]}"; do
-        valid_id "${fc_out[$i]}"  || send_exit_error $BAD_CHOICE
+        valid_id "${fc_out[$i]}"  || send_exit_error $BAD_CHOICE "${fc_out[$i]}" "non-numeric"
         fc_out[i]="$(remove_leading_zeros "${fc_out[$i]}")"
-        [[ "${fc_out[$i]}" -lt 1 ]] && send_exit_error $BAD_CHOICE
-        [[ "${fc_out[$i]}" -gt "$lcount" ]] && send_exit_error $BAD_CHOICE
+        [[ "${fc_out[$i]}" -lt 1 ]] && send_exit_error $BAD_CHOICE "${fc_out[$i]}" "out of range"
+        [[ "${fc_out[$i]}" -gt "$lcount" ]] && send_exit_error $BAD_CHOICE "${fc_out[$i]}" "out of range"
     done
     #echo "sanitized: ${fc_out[*]}"
 }
