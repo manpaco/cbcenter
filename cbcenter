@@ -1499,8 +1499,10 @@ check_favorites
 # Main switch
 case "$command" in
     a|add)
+        # discard "command" parameter
         shift
         if [[ "$#" -gt 1 ]]; then
+            # pass all params
             add_multi_room "$@"
         else
             add_room "$param"
@@ -1521,7 +1523,9 @@ case "$command" in
         play_favorite_choice
         ;;
     lf|list-favorites)
+        # discard "command" parameter
         shift
+        # search '-s', '-l' params, or combinations
         for p in "$@"; do
             [[ "$p" == "-s" ]] && sparam="$p"
             [[ "$p" == "-l" ]] && lparam="$p"
@@ -1530,8 +1534,10 @@ case "$command" in
         list_favorites "$sparam" "$lparam"
         ;;
     rs|room-status)
+        # discard "command" parameter
         shift
         if [[ "$#" -gt 1 ]]; then
+            # search '-e' param, and use the last parameter found as room
             for e in "$@"; do
                 [[ "$e" == "-e" ]] && eparam="$e"
                 param="$e"
