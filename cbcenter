@@ -175,8 +175,9 @@ show_help () {
   R, multi-remove                - Remove multiple rooms from favorites.\n\
   ff, fetch-favorites            - Fetch previews of favorite rooms.\n\
   vf, view-favorites             - Open fetched previews (favorites).\n\
-  lf, list-favorites       [-s]  - List of favorite rooms. If '-s' is provided\n\
-                                   show global status(*).\n\
+  lf, list-favorites  [-l] [-s]  - List of favorite rooms. If '-s' is provided\n\
+                                   show global status(*). If '-l' is provided\n\
+                                   show position (line) on favorites file.\n\
   rs, room-status    [-e] [username]\n\
                                  - Show internal status(*). If '-e' is provided\n\
                                    retrun error on fetch fail.\n\
@@ -1498,7 +1499,13 @@ case "$command" in
         play_favorite_choice
         ;;
     lf|list-favorites)
-        list_favorites "$param"
+        shift
+        for p in "$@"; do
+            [[ "$p" == "-s" ]] && sparam="$p"
+            [[ "$p" == "-l" ]] && lparam="$p"
+            [[ "$p" == "-sl" || "$p" == "-ls" ]] && lparam="-l" && sparam="-s"
+        done
+        list_favorites "$sparam" "$lparam"
         ;;
     rs|room-status)
         shift
