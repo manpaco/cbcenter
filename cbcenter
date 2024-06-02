@@ -1255,6 +1255,10 @@ trim_string() {
     var="${var#"${var%%[![:space:]]*}"}"
     # remove trailing whitespace characters
     var="${var%"${var##*[![:space:]]}"}"
+    # Use printf instead of echo, due to possible false parameters in echo
+    # e.g. if user enters '-e' option on 'room-status'
+    # echo interprets 'var' expansion as parameter: echo "$var" --> echo "-e"
+    # See echo manual
     printf '%s' "$var"
 }
 
