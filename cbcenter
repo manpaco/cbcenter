@@ -790,8 +790,11 @@ empty_dir () {
 
 # Clear favorites directory
 clear_favorites_dir () {
-    rm -f "${FAVORITES_PDIR:?}"/* && echo "Contents of directory FAVORITES deleted!" ||
-        echo -e "An ${RED_FG}error${CLEAR_FG} occurred while clearing FAVORITES!"
+    if rm -f "${FAVORITES_PDIR:?}"/*; then
+        echo -n "  "; echo "Old content of directory FAVORITES deleted!"
+    else
+        echo -n "  "; echo -e "An ${RED_FG}error${CLEAR_FG} occurred while clearing FAVORITES!"
+    fi
 }
 
 # Clear captures directory
