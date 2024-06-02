@@ -177,7 +177,9 @@ show_help () {
   vf, view-favorites             - Open fetched previews (favorites).\n\
   lf, list-favorites       [-s]  - List of favorite rooms.\n\
                                    If '-s' is provided, show global status(*).\n\
-  rs, room-status    [username]  - Show internal status(*).\n\
+  rs, room-status    [-e] [username]\n\
+                                 - Show internal status(*). If '-e' is provided\n\
+                                   retrun error on fetch fail.\n\
   rp, room-programs  [username]  - Show available programs of given room.\n\
   ri, room-info      [username]  - Show basic info.\n\
   rb, room-bio       [username]  - Show biocontext.\n\
@@ -213,7 +215,8 @@ show_help () {
     Global: non-detailed room status (less network usage).\n\
             Possible values: online or offline.\n\
     Internal: detailed room status.\n\
-              Possible values: public, private, hidden, away, or offline.\n\
+              Possible values: public, private, hidden, away, or offline. If\n\
+              '-e' option is not provided, also: not found or banned.\n\
     Therefore, \"online\" means that the room can be public, private, hidden,\n\
     or away. In both cases \"offline\" means the same thing.\n\
 (**) An active room is one that EXISTS and is NOT BANNED.\n\n\
