@@ -860,9 +860,8 @@ ffr_helper () {
 # Get previews of favorites (online only)
 fetch_favorite_rooms () {
     echo "Fetching favorite rooms ..."
-    echo "Using '${FETCH_TYPE}' fetch type."
+    show_fetch_message
     clear_favorites_dir
-    echo -e "${YELLOW_FG}TIP:${CLEAR_FG} Go back in the image viewer to see the most recent ones."
     local rvar
 
     # Crazy implementation
