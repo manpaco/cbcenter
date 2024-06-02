@@ -1252,7 +1252,7 @@ trim_string() {
     var="${var#"${var%%[![:space:]]*}"}"
     # remove trailing whitespace characters
     var="${var%"${var##*[![:space:]]}"}"
-    echo "$var"
+    printf '%s' "$var"
 }
 
 # Verify that '$1' only contains letters, numbers, spaces, and '/' '.' '_' '-' symbols
@@ -1291,8 +1291,12 @@ set_fetch_type () {
 internal_status () {
     valid_username "$1" || send_exit_error $INVALID_USERNAME
     local is_status
-    assert_active_room "$1" is_status
-    echo -n "The internal status is: "
+    if [[ "$2" == "-e" ]]; then
+        assert_active_room "$1" is_status
+    else
+        is_status="$(fetch_room_status "$1")"
+    fi
+    echo -n "Internal status: "
     echo "$is_status"
 }
 
@@ -1490,8 +1494,18 @@ case "$command" in
         list_favorites "$param"
         ;;
     rs|room-status)
-        [[ -z $param ]] && favorite_room_choice param
-        internal_status "$param"
+        shift
+        if [[ "$#" -gt 1 ]]; then
+            for e in "$@"; do
+                [[ "$e" == "-e" ]] && eparam="$e"
+                param="$e"
+            done
+            param="$(trim_string "$param")"
+            internal_status "$param" "$eparam"
+        else
+            [[ -z $param || "$param" == "-e" ]] && favorite_room_choice param
+            internal_status "$param"
+        fi
         ;;
     rp|room-programs)
         [[ -z $param ]] && favorite_room_choice param
