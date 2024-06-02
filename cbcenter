@@ -608,7 +608,8 @@ choice_message () {
 # Ask the user for a choice, and store the choice on '$1'. If '$2' is other
 # than 'hide_list', then show favorites list (with line numbers).
 # '$1' store choice
-# '$2' hide_list (optional)
+# '$2' hide_list
+# '$3' custom action (string after "Which room do you want to...")
 favorite_choice () {
     declare -n fc_out="$1"
     [[ $2 == "hide_list" ]] || list_favorites -l
@@ -625,7 +626,8 @@ favorite_choice () {
 # Uses FAVORITES_FILE
 # The same as 'favorite_choice' but store username on '$1'.
 # '$1' store username
-# '$2' hide_list (optional)
+# '$2' hide_list
+# '$3' custom target (string after "Which room do you want to...")
 favorite_room_choice () {
     declare -n frc_out="$1"
     local frc_choice
@@ -694,7 +696,8 @@ remove_leading_zeros () {
 # Uses OTHERS_FILE
 # Ask the user for a choice, and store the username on '$1'
 # '$1' store username
-# '$2' hide_list (optional)
+# '$2' hide_list
+# '$3' custom action (string after "Which room do you want to...")
 other_room_choice () {
     declare -n orc_out="$1"
     local orc_choice
@@ -713,7 +716,8 @@ other_room_choice () {
 # Uses MORE_FILE
 # Ask the user for a choice, and store the username on '$1'
 # '$1' store username
-# '$2' hide_list (optional)
+# '$2' hide_list
+# '$3' custom action (string after "Which room do you want to...")
 more_room_choice () {
     declare -n mrc_out="$1"
     local mrc_choice
@@ -1422,6 +1426,8 @@ more_like_message () {
 # Store an array of numbers on '$1'
 # e.g. the user enters " 4 51 3 04    32 0001 " ---> return (4 51 3 4 32 1)
 # '$1' to store
+# '$2' hide_list
+# '$3' custom target (string after "Which room do you want to...")
 favorite_multi_choice () {
     declare -n fc_out="$1"
     [[ $2 == "hide_list" ]] || list_favorites -l
