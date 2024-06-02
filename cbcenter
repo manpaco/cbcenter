@@ -594,6 +594,17 @@ rem_favorite_line () {
     sed -i "${1:?Empty parameter !}d" "$FAVORITES_FILE" && echo "Done, removed!"
 }
 
+choice_message () {
+    local wroom
+    local echoi
+    if [[ "$1" == "multi" ]]; then
+        wroom="s"
+        echoi="s separated by spaces"
+    fi
+    echo "  Which room$wroom do you want to ${2:-choose}?"
+    echo -en "${YELLOW_FG}==>${CLEAR_FG} Enter your choice$echoi, or (Q)uit: "
+}
+
 # Ask the user for a choice, and store the choice on '$1'. If '$2' is other
 # than 'hide_list', then show favorites list (with line numbers).
 # '$1' store choice
@@ -601,8 +612,7 @@ rem_favorite_line () {
 favorite_choice () {
     declare -n fc_out="$1"
     [[ $2 == "hide_list" ]] || list_favorites -l
-    echo "Which room do you want to ${3:-choose}?"
-    echo -en "${YELLOW_FG}==>${CLEAR_FG} Type your choice (i.e. the number before the ':'), or (Q)uit: "
+    choice_message single "$3"
     read -r fc_out
     [[ $fc_out == [qQ] || -z "$fc_out" ]] && exit $OK_CODE
     valid_id "$fc_out"  || send_exit_error $BAD_CHOICE "$fc_out" "non-numeric"
@@ -689,8 +699,7 @@ other_room_choice () {
     declare -n orc_out="$1"
     local orc_choice
     [[ $2 == "hide_list" ]] || list_others
-    echo "Which room do you want to ${3:-choose}?"
-    echo -en "${YELLOW_FG}==>${CLEAR_FG} Type your choice (i.e. the number before the ':'), or (Q)uit: "
+    choice_message single "$3"
     read -r orc_choice
     [[ $orc_choice == [qQ] || -z "$orc_choice" ]] && exit $OK_CODE
     valid_id "$orc_choice" || send_exit_error $BAD_CHOICE "$mrc_choice" "non-numeric"
@@ -709,8 +718,7 @@ more_room_choice () {
     declare -n mrc_out="$1"
     local mrc_choice
     [[ $2 == "hide_list" ]] || list_more
-    echo "Which room do you want to ${3:-choose}?"
-    echo -en "${YELLOW_FG}==>${CLEAR_FG} Type your choice (i.e. the number before the ':'), or (Q)uit: "
+    choice_message single "$3"
     read -r mrc_choice
     [[ $mrc_choice == [qQ] || -z "$mrc_choice" ]] && exit $OK_CODE
     valid_id "$mrc_choice" || send_exit_error $BAD_CHOICE "$mrc_choice" "non-numeric"
@@ -758,7 +766,7 @@ add_room () {
 remove_room () {
     if [[ -z "$1" ]]; then
         local rr_choice
-        favorite_choice rr_choice show_list delete
+        favorite_choice rr_choice show_list remove
         rem_favorite_line "$rr_choice"
         return $OK_CODE
     fi
@@ -774,7 +782,7 @@ remove_room () {
         echo "No exact match found!"
         echo "$match"
         local rr_choice
-        favorite_choice rr_choice hide_list delete
+        favorite_choice rr_choice hide_list remove
         # Validate choice
         if echo "$match" | grep -q -E "^($rr_choice:)" -; then
             rem_favorite_line "$rr_choice"
@@ -1417,7 +1425,7 @@ more_like_message () {
 favorite_multi_choice () {
     declare -n fc_out="$1"
     [[ $2 == "hide_list" ]] || list_favorites -l
-    echo -en "${YELLOW_FG}==>${CLEAR_FG} Enter your choices separated by spaces (e.g. 3 12 7 9), or (Q)uit: "
+    choice_message multi "$3"
     read -r -a fc_out
     [[ "${fc_out[0]}" == [qQ] || -z "${fc_out[0]}" ]] && exit $OK_CODE
     local lcount
@@ -1436,7 +1444,7 @@ favorite_multi_choice () {
 multi_remove () {
     echo "Multi remove ..."
     local br_choices
-    favorite_multi_choice br_choices
+    favorite_multi_choice br_choices show_list remove
 
     # Sort (reverse -r) and keep unique (-u) numbers (-n).
     # Using here-string ( <<< ), process substitution ( <(command) ), and
