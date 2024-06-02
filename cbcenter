@@ -169,7 +169,8 @@ without the user's consent.${CLEAR_FG}"
 show_help () {
     echo -e "Manage your favorite rooms from $CB_ROOT_PURL.\n\nUsage:\n\n\
   $mybasename COMMAND OPTION\n\nCommands and options:\n\n\
-  a, add               username  - Add new room to favorites.\n\
+  a, add             username [username2 [username3 [...]]]\n\
+                                 - Add new room(s) to favorites.\n\
   r, remove          [username]  - Remove one room from favorites.\n\
   R, multi-remove                - Remove multiple rooms from favorites.\n\
   ff, fetch-favorites            - Fetch previews of favorite rooms.\n\
@@ -690,6 +691,39 @@ more_room_choice () {
         send_exit_error $BAD_CHOICE
     mrc_out="$(get_more_by_index "$mrc_choice")"
     [[ -z $mrc_out ]] && send_exit_error $UNKNOWN_ERROR
+}
+
+message_active_room () {
+    [[ -n "$2" ]] && declare -n rs_out="$2"
+    fetch_bio "$1"
+    if ! rs_out="$(jq -Mr ".${JQ_BIO_RSTATUS}" "$BIOCONTEXT_FILE" 2>/dev/null)";
+    then
+        echo "'$1' not found."
+        return $ROOM_NOT_FOUND
+    fi
+    if [[ "$rs_out" == "null" ]]; then
+        echo "'$1' is banned from the site."
+        return $BANNED_ROOM
+    fi
+    return $OK_CODE
+}
+
+# Add new room to favorites
+# '$1' room
+add_multi_room () {
+    for a in "$@"; do
+        if ! valid_username "$a"; then
+            echo "'$a' invalid username."
+            continue
+        fi
+        if stored_room "$a"; then
+            echo "'$a' is already in favorites."
+            continue
+        fi
+        local ar_status
+        message_active_room "$a" ar_status || continue
+        echo "$a" >> "$FAVORITES_FILE" && echo "'$a' added! The room is $ar_status"
+    done
 }
 
 # Add new room to favorites
@@ -1422,7 +1456,12 @@ check_favorites
 # Main switch
 case "$command" in
     a|add)
-        add_room "$param"
+        shift
+        if [[ "$#" -gt 1 ]]; then
+            add_multi_room "$@"
+        else
+            add_room "$param"
+        fi
         ;;
     r|remove)
         remove_room "$param"
