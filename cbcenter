@@ -723,19 +723,19 @@ more_room_choice () {
 add_multi_room () {
     for a in "$@"; do
         if ! valid_username "$a"; then
-            echo "'$a' invalid username."
+            echo -e "'$a' ${RED_FG}-->${CLEAR_FG} invalid username."
             continue
         fi
         if stored_room "$a"; then
-            echo "'$a' is already in favorites."
+            echo -e "'$a' ${RED_FG}-->${CLEAR_FG} already in favorites."
             continue
         fi
         local ar_status
         if ! ar_status="$(fetch_room_status "$a")"; then
-            echo "'$a' --> $ar_status"
+            echo -e "'$a' ${RED_FG}-->${CLEAR_FG} $ar_status"
             continue
         fi
-        echo "$a" >> "$FAVORITES_FILE" && echo "'$a' added! The room is $ar_status"
+        echo "$a" >> "$FAVORITES_FILE" && echo -e "'$a' ${LIGHT_BLUE_FG}added${CLEAR_FG}! The room is $ar_status"
     done
 }
 
