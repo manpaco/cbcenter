@@ -421,6 +421,9 @@ is_online () {
     curl_search "$1" | jq -Mc ".${JQ_ONLINE}" | grep -q "\"$1\""
 }
 
+# Fetch biocontext and extract internal room status
+# '$1' room
+# '$2' stdout control
 fetch_room_status () {
     fetch_bio "$1"
     local frs_out
@@ -711,7 +714,7 @@ more_room_choice () {
     [[ -z $mrc_out ]] && send_exit_error $UNKNOWN_ERROR
 }
 
-# Add new room to favorites
+# Add new rooms to favorites
 # '$1' room
 add_multi_room () {
     for a in "$@"; do
