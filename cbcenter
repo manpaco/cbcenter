@@ -1076,6 +1076,11 @@ fetch_roomlist_file () {
     curl -sL --compressed -H "$XRW_HEADER" "$ROOMLIST_PURL/?genders=$1&offset=$2&limit=$3&enable_recommendations=false" -o "$4"
 }
 
+show_fetch_message () {
+    echo -n "  "; echo "Using '${FETCH_TYPE}' fetch type."
+    echo -e "${YELLOW_FG}TIP:${CLEAR_FG} Go back in the image viewer to see the most recent ones."
+}
+
 # fetch_rooms_using helper
 # save preview of '$1' on '$3': if success print 'fetched', else 'error'
 # '$1' username
@@ -1116,9 +1121,7 @@ fetch_rooms_using () {
     num_rooms="$(jq -e ".$fru_main | length" "$fru_file" 2>/dev/null)" ||
         send_exit_error $JQ_ERROR
     [[ $num_rooms -eq 0 ]] && send_exit_error $EMPTY_ROOM_LIST
-    echo "Using '${FETCH_TYPE}' fetch type."
     $fru_clear
-    echo -e "${YELLOW_FG}TIP:${CLEAR_FG} Go back in the image viewer to see the most recent ones."
 
     local room
     local rvar
@@ -1177,10 +1180,11 @@ fetch_other_rooms () {
     [[ $limit -eq 0 ]] && send_exit_error $INVALID_ROOM_RANGE
 
     echo "Fetching $gender rooms from $offset to $((offset+limit-1)) ..."
+    fetch_roomlist_file "$gender" "$offset" "$limit" "$OTHERS_FILE" || send_exit_error $ROOM_LIST_ERROR
+    show_fetch_message
     echo -e "${GREEN_FG}INFO:${CLEAR_FG} Sometimes promoted rooms appear. For this reason, it is possible\n\
 that more than $limit rooms will be obtained."
 
-    fetch_roomlist_file "$gender" "$offset" "$limit" "$OTHERS_FILE" || send_exit_error $ROOM_LIST_ERROR
     fetch_rooms_using "$OTHERS_FILE" "$JQ_RLIST_MAIN" "$JQ_RLIST_USER" clear_others_dir open_others_dir
 }
 
@@ -1346,6 +1350,7 @@ fetch_more_rooms () {
     echo "Fetching more rooms like $1 ..."
     fetch_morelist_file "$1" || send_exit_error $ROOM_LIST_ERROR
     echo "$1" > "$MOREWHO_FILE"
+    show_fetch_message
     fetch_rooms_using "$MORE_FILE" "$JQ_MLIST_MAIN" "$JQ_MLIST_USER" clear_more_dir open_more_dir
 }
 
