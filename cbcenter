@@ -116,7 +116,6 @@ NOT_PUBLIC_ROOM=20
 ROOM_NOT_FOUND=21
 CURL_ERROR=22
 BANNED_ROOM=23
-INVALID_VIEWER=24
 INVALID_GENDER=25
 MOREWHO_ERROR=26
 EMPTY_DIR=27
@@ -149,6 +148,10 @@ configure () {
         FETCH_STEPS="$def_fs"
         echo -e "\
     ${YELLOW_FG}-->${CLEAR_FG} Warning: Invalid FETCH_STEPS value on config file! Using default '$def_fs'. ${YELLOW_FG}<--${CLEAR_FG}"
+    fi
+    if ! valid_command_string "$VIEWER"; then
+        echo -e "\
+    ${YELLOW_FG}-->${CLEAR_FG} Warning: Posible invalid VIEWER value on config file! Check the config. ${YELLOW_FG}<--${CLEAR_FG}"
     fi
 }
 
@@ -1495,7 +1498,6 @@ if [[ "$command" == "__is_online" ]]; then
 fi
 
 show_dist_warning
-valid_command_string "$VIEWER" || send_exit_error $INVALID_VIEWER "$VIEWER"
 
 # Make directories
 #[[ -d "$MYPATH" ]] || mkdir -p "$MYPATH"
