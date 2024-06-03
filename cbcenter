@@ -253,11 +253,11 @@ TIP: If [username] is not provided, you will be asked to choose an option\n\
      from your favorites.\n\nConfiguration:\n\n\
   Create a file called 'config' in directory '${MYCONFIG_PDIR}/' and use:\n\n\
   VIEWER=\"<your-viewer>\"
-         Replace <your-viewer> with whatever you want. e.g. VIEWER=\"gpicview\"\n\
+    Replace <your-viewer> with whatever you want. e.g. VIEWER=\"gpicview\"\n\
   FETCH_TYPE=\"<type>\"
-             Replace <type> with 'steps' or 'crazy'. See 'Fetch types' sectio.\n\
+    Replace <type> with 'steps' or 'crazy'. See 'Fetch types' sectio.\n\
   FETCH_STEPS=\"<int>\"
-              Replace <int> with an integer greater than 0.\n\nFetch ranges:\n\n\
+    Replace <int> with an integer greater than 0.\n\nFetch ranges:\n\n\
   gender: Gender of room users.\n\
           'f' (female) or 'm' (male) or 'c' (couple) or 't' (trans)\n\
   offset: Beginning room.\n\
