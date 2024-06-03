@@ -128,8 +128,28 @@ LIGHT_BLUE_FG="\033[1;34m"
 YELLOW_FG="\033[1;33m"
 CLEAR_FG="\033[0m"
 
+valid_fetch_type () {
+    [[ "$1" == "steps" || "$1" == "crazy" ]]
+}
+
 configure () {
-    [[ -e "$MYCONFIG_FILE" ]] && source "$MYCONFIG_FILE"
+    ! [[ -e "$MYCONFIG_FILE" ]] && return
+    local def_ft="$FETCH_TYPE"
+    local def_fs="$FETCH_STEPS"
+    source "$MYCONFIG_FILE"
+    VIEWER="$(trim_string "$VIEWER")"
+    FETCH_TYPE="$(trim_string "$FETCH_TYPE")"
+    FETCH_STEPS="$(trim_string "$FETCH_STEPS")"
+    if ! valid_fetch_type "$FETCH_TYPE"; then
+        FETCH_TYPE="$def_ft"
+        echo -e "\
+    ${YELLOW_FG}-->${CLEAR_FG} Warning: Invalid FETCH_TYPE value on config file! Using default '$def_ft'. ${YELLOW_FG}<--${CLEAR_FG}"
+    fi
+    if ! valid_id "$FETCH_STEPS"; then
+        FETCH_STEPS="$def_fs"
+        echo -e "\
+    ${YELLOW_FG}-->${CLEAR_FG} Warning: Invalid FETCH_STEPS value on config file! Using default '$def_fs'. ${YELLOW_FG}<--${CLEAR_FG}"
+    fi
 }
 
 # Check if a executable if found on PATH
