@@ -17,8 +17,8 @@ PROJECT="cbcenter"
 #
 # ---------- FILES AND DIRECTORIES -----------
 MYPATH="${HOME}/.local/$PROJECT"
-MYCONFIG="${HOME}/.config/$PROJECT"
-MYCONFIG_FILE="${MYCONFIG}/config"
+MYCONFIG_PDIR="${HOME}/.config/$PROJECT"
+MYCONFIG_FILE="${MYCONFIG_PDIR}/config"
 DOWNLOADS_PDIR="${MYPATH}/downloads"
 FAVORITES_PDIR="${MYPATH}/favorites"
 FAVORITES_FILE="${FAVORITES_PDIR}.cb"
@@ -227,7 +227,14 @@ show_help () {
     not found (does not exist), or banned.\n\
 (**) An active room is one that EXISTS and is NOT BANNED.\n\n\
 TIP: If [username] is not provided, you will be asked to choose an option\n\
-     from your favorites.\n\nFetch ranges:\n\n\
+     from your favorites.\n\nConfiguration:\n\n\
+  Create a file called 'config' in directory '${MYCONFIG_PDIR}/' and use:\n\n\
+  VIEWER=\"<your-viewer>\"
+         Replace <your-viewer> with whatever you want. e.g. VIEWER=\"gpicview\"\n\
+  FETCH_TYPE=\"<type>\"
+             Replace <type> with 'steps' or 'crazy'. See 'Fetch types' sectio.\n\
+  FETCH_STEPS=\"<int>\"
+              Replace <int> with an integer greater than 0.\n\nFetch ranges:\n\n\
   gender: Gender of room users.\n\
           'f' (female) or 'm' (male) or 'c' (couple) or 't' (trans)\n\
   offset: Beginning room.\n\
@@ -239,6 +246,8 @@ TIP: If [username] is not provided, you will be asked to choose an option\n\
          all of them. (DEFAULT)\n\
   crazy: Fetch all the rooms at once.\n\nDirectories and files:\n\n\
   PROJECT DIR:   $MYPATH/\n\
+  CONFIG DIR:    $MYCONFIG_PDIR/\n\
+  CONFIG:        $MYCONFIG_FILE\n\
   DOWNLOADS DIR: $DOWNLOADS_PDIR/\n\
   FAVORITES DIR: $FAVORITES_PDIR/\n\
   FAVORITES:     $FAVORITES_FILE\n\
@@ -277,7 +286,9 @@ TIP: If [username] is not provided, you will be asked to choose an option\n\
   - How can I change the default image viewer for previews?\n\
       See 'Configuration' section.\n\
   - Why are the rooms fetched in $FETCH_STEPS at a time?\n\
-      To avoid error code $HTTP_TOO_MANY_REQUESTS_ERROR. See 'Exit codes' section.\n\nExamples:\n\n\
+      To avoid error code $HTTP_TOO_MANY_REQUESTS_ERROR. See 'Exit codes' section.\n\
+      Also you can change that value (or even disable the option) in 'config'\n\
+      file, see 'Configuration' section.\n\nExamples:\n\n\
   - Add new rooms to favorites:\n\
       $mybasename add bigkeys69 hot_port22 back_xz_door560\n\
   - Fetch the first 10 female rooms:\n\
