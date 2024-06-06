@@ -503,13 +503,13 @@ valid_room_range () {
 # Extract programs from playlist data and show on stdout
 # '$1' playlist data
 show_programs () {
-    declare -n ep_data="$1"
-    declare -i ep_current=0
+    declare -n sp_data="$1"
+    declare -i sp_current=0
     echo "Available programs:"
-    while [[ $ep_data =~ $PROG_REGEX ]]; do
-        echo -e "\t${YELLOW_FG}PROG_ID=\"$ep_current\"${CLEAR_FG} - ${BASH_REMATCH[0]}"
-        ep_data="${ep_data/${BASH_REMATCH[0]}/}"
-        ep_current+=1
+    while [[ $sp_data =~ $PROG_REGEX ]]; do
+        echo -e "\t${YELLOW_FG}PROG_ID=\"$sp_current\"${CLEAR_FG} - ${BASH_REMATCH[0]}"
+        sp_data="${sp_data/${BASH_REMATCH[0]}/}"
+        sp_current+=1
     done
 }
 
