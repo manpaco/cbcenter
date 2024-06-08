@@ -9,6 +9,10 @@ PROJECT="cbcenter"
 # For that reason, PDIR stands for (P)artial (DIR)ectory.
 #
 # ---------- FILES AND DIRECTORIES -----------
+if ! [[ -d "${HOME:?HOME var is not assigned !}" ]]; then
+    echo "HOME var is not valid !" 1>&2
+    exit 1
+fi
 MYPATH="${HOME}/.local/$PROJECT"
 MYCONFIG_PDIR="${HOME}/.config/$PROJECT"
 MYCONFIG_FILE="${MYCONFIG_PDIR}/config"
