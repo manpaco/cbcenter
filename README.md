@@ -104,9 +104,7 @@ Of course you can also make a multi-user notifier (storing online user in `verif
     }
     
     remove_user () {
-        if match="$(grep -xn "$1" "$verifile")"; then # Exact match
-            sed -i "${match%%:*}d" "$verifile"
-        fi
+        sed -i -E "/^($1)$/d" "$verifile"
     }
     
     notified () {
