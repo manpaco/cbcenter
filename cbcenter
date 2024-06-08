@@ -1,12 +1,5 @@
 #!/usr/bin/env bash
 
-# ----------- VIEWER ------------
-VIEWER="imv -fd" # <<== I'm here!
-
-# ----------- FETCH ------------
-FETCH_TYPE="steps" # 'steps' or 'crazy'
-FETCH_STEPS=10
-
 # ---------- NAMES -----------
 mybasename="$(basename "$0")"
 PROJECT="cbcenter"
@@ -34,10 +27,18 @@ MORE_PDIR="${TMP_PDIR}/more"
 MORE_FILE="${MORE_PDIR}.cb"
 MOREWHO_FILE="${MORE_FILE}.who"
 RANDOM_FILE="${TMP_PDIR}/random.cb"
+
 # ----------- FORMATS ---------------
 VIDEO_FORMAT="mp4"
 IMG_FORMAT="jpg"
 CODEC="h264"
+
+# ----------- VIEWER ------------
+VIEWER="imv -fd" # <<== I'm here!
+
+# ----------- FETCH ------------
+FETCH_TYPE="steps" # 'steps' or 'crazy'
+FETCH_STEPS=10
 
 #
 # When using url variables remember to add a trailing slash (only when necessary).
