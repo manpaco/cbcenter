@@ -407,7 +407,7 @@ send_exit_error () {
             exit $JQ_ERROR
             ;;
         "$NOT_PUBLIC_ROOM")
-            echo "the room is not public (${2:-private/hidden}) !" 1>&2
+            echo "the room is ${2:-not public} !" 1>&2
             exit $NOT_PUBLIC_ROOM
             ;;
         "$ROOM_NOT_FOUND")
