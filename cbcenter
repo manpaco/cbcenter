@@ -464,7 +464,10 @@ is_online () {
 # '$1' room
 # '$2' stdout control
 fetch_room_status () {
-    fetch_bio "$1"
+    if ! fetch_bio "$1"; then
+        [[ "$2" == "hide" ]] || echo "error"
+        return $BIOCONTEXT_ERROR
+    fi
     local frs_out
     if ! frs_out="$(jq -Mr ".${JQ_BIO_RSTATUS}" "$BIOCONTEXT_FILE" 2>/dev/null)";
     then
@@ -1246,7 +1249,7 @@ that more than $limit rooms will be obtained."
 # Save biocontext of given room
 # '$1' room
 fetch_bio () {
-    curl -sL --compressed -H "$XRW_HEADER" "${BIOCONTEXT_PURL}/$1" -o "$BIOCONTEXT_FILE" || send_exit_error $BIOCONTEXT_ERROR
+    curl -sL --compressed -H "$XRW_HEADER" "${BIOCONTEXT_PURL}/$1" -o "$BIOCONTEXT_FILE"
 }
 
 # Show basic info using biocontext
