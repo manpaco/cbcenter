@@ -2,7 +2,9 @@
 
 Manage your favorite rooms.
 
-WARNING: Do not distribute the content obtained with this program without the user's consent.
+## WARNING !!!
+
+Do not distribute content (from anywhere) without consent. Personal use only.
 
 ## Usage
 
