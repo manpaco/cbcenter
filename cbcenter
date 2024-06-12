@@ -343,11 +343,11 @@ send_exit_error () {
             exit $OFFLINE_ROOM
             ;;
         "$PLAYLIST_NOT_FOUND")
-            echo "occurred while processing the page ! (PLAYLIST_NOT_FOUND)" 1>&2
+            echo "while processing the page ! (PLAYLIST_NOT_FOUND)" 1>&2
             exit $PLAYLIST_NOT_FOUND
             ;;
         "$CHUNK_NOT_FOUND")
-            echo "occurred while processing room data ! (CHUNK_NOT_FOUND)" 1>&2
+            echo "while processing room data ! (CHUNK_NOT_FOUND)" 1>&2
             exit $CHUNK_NOT_FOUND
             ;;
         "$STORED_ROOM")
@@ -359,7 +359,7 @@ send_exit_error () {
             exit $UNSTORED_ROOM
             ;;
         "$EMPTY_DATA")
-            echo "getting room data ! (EMPTY_DATA)" 1>&2
+            echo "while getting room data ! (EMPTY_DATA)" 1>&2
             exit $EMPTY_DATA
             ;;
         "$INVALID_PROG_ID")
@@ -391,7 +391,7 @@ send_exit_error () {
             exit $BAD_CHOICE
             ;;
         "$ROOM_LIST_ERROR")
-            echo "gettig room list !" 1>&2
+            echo "while gettig room list !" 1>&2
             exit $ROOM_LIST_ERROR
             ;;
         "$EMPTY_ROOM_LIST")
@@ -399,11 +399,11 @@ send_exit_error () {
             exit $EMPTY_ROOM_LIST
             ;;
         "$BIOCONTEXT_ERROR")
-            echo "getting biocontext" 1>&2
+            echo "while getting biocontext" 1>&2
             exit $BIOCONTEXT_ERROR
             ;;
         "$JQ_ERROR")
-            echo "occurred while processing json data !" 1>&2
+            echo "while processing json data !" 1>&2
             exit $JQ_ERROR
             ;;
         "$NOT_PUBLIC_ROOM")
@@ -415,7 +415,7 @@ send_exit_error () {
             exit $ROOM_NOT_FOUND
             ;;
         "$CURL_ERROR")
-            echo "occurred while fetching resource !" 1>&2
+            echo "while fetching resource !" 1>&2
             exit $CURL_ERROR
             ;;
         "$BANNED_ROOM")
