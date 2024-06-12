@@ -196,8 +196,7 @@ check_dependencies () {
 
 # Show distribution warning
 show_dist_warning () {
-    echo -e "${RED_FG}WARNING: Do not distribute the content obtained with this program\n\
-without the user's consent.${CLEAR_FG}"
+    echo -e "${RED_FG}CB_WARNING: Do not distribute content (from anywhere) without consent. Personal use only.${CLEAR_FG}"
 }
 
 # Show help block
