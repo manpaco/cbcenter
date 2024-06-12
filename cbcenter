@@ -121,6 +121,7 @@ NOT_PUBLIC_ROOM=20
 ROOM_NOT_FOUND=21
 CURL_ERROR=22
 BANNED_ROOM=23
+CONNECTION_ERROR=24
 INVALID_GENDER=25
 MOREWHO_ERROR=26
 EMPTY_DIR=27
@@ -1494,6 +1495,8 @@ if [[ "$command" == "__favorites_file" ]]; then
     echo "$FAVORITES_FILE"
     exit $OK_CODE
 fi
+
+ping -c 1 "${CB_ROOT_PURL##*/}" &>/dev/null || send_exit_error $CONNECTION_ERROR
 
 param="$2"
 [[ -n "$param" ]] && param="$(trim_string "$param")"
