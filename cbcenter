@@ -436,6 +436,10 @@ Re-run '$mybasename fetch-more username'." 1>&2
             echo "the directory is empty !" 1>&2
             exit $EMPTY_DIR
             ;;
+        "$CONNECTION_ERROR")
+            echo "the connection failed !" 1>&2
+            exit $CONNECTION_ERROR
+            ;;
         *)
             echo "UNKNOWN_ERROR" 1>&2
             exit $UNKNOWN_ERROR
