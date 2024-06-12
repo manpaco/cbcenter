@@ -1495,6 +1495,8 @@ if [[ "$command" == "__favorites_file" ]]; then
     exit $OK_CODE
 fi
 
+show_dist_warning
+
 if [[ "$command" == "h" || "$command" == "help" ]]; then
     show_help
     exit $OK_CODE
@@ -1512,8 +1514,6 @@ if [[ "$command" == "__is_online" ]]; then
     # last command executed.
     exit
 fi
-
-show_dist_warning
 
 # Make directories
 #[[ -d "$MYPATH" ]] || mkdir -p "$MYPATH"
