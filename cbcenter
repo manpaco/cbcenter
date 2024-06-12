@@ -1342,6 +1342,7 @@ internal_status () {
         assert_active_room "$1" is_status
     else
         is_status="$(fetch_room_status "$1")"
+        [[ $? -eq $BIOCONTEXT_ERROR ]] && send_exit_error $BIOCONTEXT_ERROR
     fi
     echo -n "Internal status: "
     echo "$is_status"
