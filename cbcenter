@@ -1490,13 +1490,13 @@ multi_remove () {
 command="$1"
 [[ -n "$command" ]] && command="$(trim_string "$command")"
 
-if [[ "$command" == "h" || "$command" == "help" ]]; then
-    show_help
+if [[ "$command" == "__favorites_file" ]]; then
+    echo "$FAVORITES_FILE"
     exit $OK_CODE
 fi
 
-if [[ "$command" == "__favorites_file" ]]; then
-    echo "$FAVORITES_FILE"
+if [[ "$command" == "h" || "$command" == "help" ]]; then
+    show_help
     exit $OK_CODE
 fi
 
