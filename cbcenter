@@ -1505,6 +1505,11 @@ if [[ "$command" == "h" || "$command" == "help" ]]; then
     exit $OK_CODE
 fi
 
+if [[ "$command" == "__check_deps" ]]; then
+    check_dependencies
+    exit $OK_CODE
+fi
+
 connection_check
 
 param="$2"
@@ -1679,9 +1684,6 @@ case "$command" in
             clear_streams_dir &&
             clear_others_dir &&
             clear_more_dir
-        ;;
-    __check_deps)
-        check_dependencies
         ;;
     *)
         send_exit_error $INVALID_COMMAND
