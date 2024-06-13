@@ -142,6 +142,7 @@ configure () {
     ! [[ -e "$MYCONFIG_FILE" ]] && return
     local def_ft="$FETCH_TYPE"
     local def_fs="$FETCH_STEPS"
+    local def_cc="$CHECK_CONNECTION"
     source "$MYCONFIG_FILE"
     VIEWER="$(trim_string "$VIEWER")"
     FETCH_TYPE="$(trim_string "$FETCH_TYPE")"
@@ -155,6 +156,11 @@ configure () {
         FETCH_STEPS="$def_fs"
         echo -e "\
     ${YELLOW_FG}-->${CLEAR_FG} Warning: Invalid FETCH_STEPS value on config file! Using default '$def_fs'. ${YELLOW_FG}<--${CLEAR_FG}"
+    fi
+    if ! [[ "$CHECK_CONNECTION" =~ ^[0-1]$ ]]; then
+        CHECK_CONNECTION="$def_cc"
+        echo -e "\
+    ${YELLOW_FG}-->${CLEAR_FG} Warning: Invalid CHECK_CONNECTION value on config file! Using default '$def_cc'. ${YELLOW_FG}<--${CLEAR_FG}"
     fi
     if ! valid_command_string "$VIEWER"; then
         echo -e "\
