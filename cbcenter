@@ -468,7 +468,17 @@ curl_search () {
 # return 0 if online/private/hidden, else 1 (offline)
 # '$1' username
 is_online () {
-    curl_search "$1" | jq -Mc ".${JQ_ONLINE}" | grep -q "\"$1\""
+    [[ -n "$2" ]] && declare -n io_out="$2"
+    local cs_online
+    if ! cs_online="$(curl_search "$1" | jq -Mc ".${JQ_ONLINE}" 2>/dev/null)"; then
+        io_out="connection_error"
+        return $CONNECTION_ERROR
+    fi
+    if ! echo "$cs_online" | grep -q "\"$1\""; then
+        io_out="offline"
+        return $OFFLINE_ROOM
+    fi
+    return $OK_CODE
 }
 
 # Fetch biocontext and extract internal room status
@@ -914,14 +924,19 @@ file_count () {
 # '$1' username
 # '$2' line prefix
 ffr_helper () {
-    if valid_username "$1" && is_online "$1"; then
+    local ffr_aux
+    if valid_username "$1" && is_online "$1" ffr_aux; then
         local prefix
         [[ $2 -lt 10 ]] && prefix="0$2" || prefix="$2"
         save_preview "$1" "$FAVORITES_PDIR" "$prefix" && echo -e "$2:$1 ${GREEN_FG}fetched${CLEAR_FG}" && return $OK_CODE
         echo -e "$2:$1 ${RED_FG}error${CLEAR_FG}"
         return $UNKNOWN_ERROR
     fi
-    echo "$2:$1 offline"
+    if [[ "$ffr_aux" == "offline" ]]; then
+        echo "$2:$1 $ffr_aux"
+    else
+        echo -e "$2:$1 ${YELLOW_FG}${ffr_aux}${CLEAR_FG}"
+    fi
 }
 
 # Get previews of favorites (online only)
@@ -1098,10 +1113,15 @@ keyword_search () {
 # Show room status
 # Only show online or offline (not the same as 'internal_status' function)
 global_status () {
-    if is_online "$1"; then
-        echo -e "${2:+$2:}$1 is ${LIGHT_BLUE_FG}online${CLEAR_FG}"
+    local gs_aux
+    if is_online "$1" gs_aux; then
+        echo -e "${2:+$2:}$1 ${LIGHT_BLUE_FG}online${CLEAR_FG}"
     else
-        echo "${2:+$2:}$1 is offline"
+        if [[ "$gs_aux" == "offline" ]]; then
+            echo "${2:+$2:}$1 $gs_aux"
+        else
+            echo -e "${2:+$2:}$1 ${YELLOW_FG}${gs_aux}${CLEAR_FG}"
+        fi
     fi
 }
 
