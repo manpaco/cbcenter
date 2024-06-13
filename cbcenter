@@ -1505,6 +1505,38 @@ if [[ "$command" == "h" || "$command" == "help" ]]; then
     exit $OK_CODE
 fi
 
+# __clear_* switch/case
+case "$command" in
+    __clear_favorites)
+        clear_favorites_dir
+        exit
+        ;;
+    __clear_captures)
+        clear_captures_dir
+        exit
+        ;;
+    __clear_streams)
+        clear_streams_dir
+        exit
+        ;;
+    __clear_others)
+        clear_others_dir
+        exit
+        ;;
+    __clear_more)
+        clear_more_dir
+        exit
+        ;;
+    __clear_all)
+        clear_favorites_dir &&
+            clear_captures_dir &&
+            clear_streams_dir &&
+            clear_others_dir &&
+            clear_more_dir
+        exit
+        ;;
+esac
+
 param="$2"
 [[ -n "$param" ]] && param="$(trim_string "$param")"
 
@@ -1513,6 +1545,15 @@ if [[ "$command" == "__is_online" ]]; then
     is_online "$param"
     # When exit without error code, the value shall be the exit value of the
     # last command executed.
+    exit
+fi
+
+if [[ "$command" == "__extract_playlist" ]]; then # debug proposes
+    [[ -z $param ]] && favorite_room_choice param
+    valid_username "$param" || send_exit_error $INVALID_USERNAME
+    __ep=""
+    extract_playlist "$param" __ep
+    echo "$__ep"
     exit
 fi
 
@@ -1665,35 +1706,6 @@ case "$command" in
         connection_check
         [[ -z $param ]] && favorite_room_choice param
         quick_thumb "$param"
-        ;;
-    __extract_playlist) # debug proposes
-        [[ -z $param ]] && favorite_room_choice param
-        valid_username "$param" || send_exit_error $INVALID_USERNAME
-        __ep=""
-        extract_playlist "$param" __ep
-        echo "$__ep"
-        ;;
-    __clear_favorites)
-        clear_favorites_dir
-        ;;
-    __clear_captures)
-        clear_captures_dir
-        ;;
-    __clear_streams)
-        clear_streams_dir
-        ;;
-    __clear_others)
-        clear_others_dir
-        ;;
-    __clear_more)
-        clear_more_dir
-        ;;
-    __clear_all)
-        clear_favorites_dir &&
-            clear_captures_dir &&
-            clear_streams_dir &&
-            clear_others_dir &&
-            clear_more_dir
         ;;
     __check_deps)
         check_dependencies
