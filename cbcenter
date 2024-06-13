@@ -1487,6 +1487,7 @@ multi_remove () {
 }
 
 connection_check () {
+    echo "Checking connection ..."
     ping -c 1 "${CB_ROOT_PURL##*/}" &>/dev/null || send_exit_error $CONNECTION_ERROR
 }
 
@@ -1613,6 +1614,7 @@ case "$command" in
             [[ "$p" == "-l" ]] && lparam="$p"
             [[ "$p" == "-sl" || "$p" == "-ls" ]] && lparam="-l" && sparam="-s"
         done
+        [[ -n "$sparam" ]] && connection_check
         list_favorites "$sparam" "$lparam"
         ;;
     rs|room-status)
