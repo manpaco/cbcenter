@@ -95,6 +95,7 @@ XRW_HEADER="X-Requested-With: XMLHttpRequest"
 HTTP_NOT_FOUND_TEXT="404 Not Found"
 HTTP_TOO_MANY_REQUESTS_TEXT="429 Too Many Requests"
 CONNECT_TIMEOUT=10
+CHECK_CONNECTION=0
 
 # ----------- EXIT CODES -----------
 OK_CODE=0
@@ -1487,6 +1488,7 @@ multi_remove () {
 }
 
 connection_check () {
+    [[ $CHECK_CONNECTION -eq 0 ]] && return
     echo "Checking connection ..."
     ping -c 1 "${CB_ROOT_PURL##*/}" &>/dev/null || send_exit_error $CONNECTION_ERROR
 }
