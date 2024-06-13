@@ -1486,6 +1486,10 @@ multi_remove () {
     echo "Done, ${#br_choices[@]} favorite(s) removed!"
 }
 
+connection_check () {
+    ping -c 1 "${CB_ROOT_PURL##*/}" &>/dev/null || send_exit_error $CONNECTION_ERROR
+}
+
 command="$1"
 [[ -n "$command" ]] && command="$(trim_string "$command")"
 
@@ -1501,7 +1505,7 @@ if [[ "$command" == "h" || "$command" == "help" ]]; then
     exit $OK_CODE
 fi
 
-ping -c 1 "${CB_ROOT_PURL##*/}" &>/dev/null || send_exit_error $CONNECTION_ERROR
+connection_check
 
 param="$2"
 [[ -n "$param" ]] && param="$(trim_string "$param")"
