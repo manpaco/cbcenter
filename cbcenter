@@ -1510,8 +1510,6 @@ if [[ "$command" == "__check_deps" ]]; then
     exit $OK_CODE
 fi
 
-connection_check
-
 param="$2"
 [[ -n "$param" ]] && param="$(trim_string "$param")"
 
@@ -1539,6 +1537,7 @@ configure
 # Main switch
 case "$command" in
     a|add)
+        connection_check
         # discard "command" parameter
         shift
         if [[ "$#" -gt 1 ]]; then
@@ -1560,11 +1559,13 @@ case "$command" in
         multi_remove
         ;;
     ff|fetch-favorites)
+        connection_check
         fetch_favorite_rooms
         play_favorite_choice hide_list
         ;;
     vf|view-favorites)
         open_favorites_dir
+        connection_check
         play_favorite_choice
         ;;
     lf|list-favorites)
@@ -1579,6 +1580,7 @@ case "$command" in
         list_favorites "$sparam" "$lparam"
         ;;
     rs|room-status)
+        connection_check
         # discard "command" parameter
         shift
         if [[ "$#" -gt 1 ]]; then
@@ -1598,29 +1600,35 @@ case "$command" in
         fi
         ;;
     rp|room-programs)
+        connection_check
         [[ -z $param ]] && favorite_room_choice param
         room_programs "$param"
         ;;
     ri|room-info)
+        connection_check
         [[ -z $param ]] && favorite_room_choice param
         room_info "$param"
         ;;
     rb|room-bio)
+        connection_check
         [[ -z $param ]] && favorite_room_choice param
         room_bio "$param"
         ;;
     fo|fetch-others)
+        connection_check
         fetch_other_rooms "$param"
         play_other_choice hide_list
         ;;
     vo|view-others)
         open_others_dir
+        connection_check
         play_other_choice
         ;;
     lo|list-others)
         list_others
         ;;
     fm|fetch-more)
+        connection_check
         [[ -z $param ]] && favorite_room_choice param
         fetch_more_rooms "$param"
         play_more_choice hide_list
@@ -1628,6 +1636,7 @@ case "$command" in
     vm|view-more)
         more_like_message
         open_more_dir
+        connection_check
         play_more_choice
         ;;
     lm|list-more)
@@ -1635,24 +1644,30 @@ case "$command" in
         list_more
         ;;
     sc|save-capture)
+        connection_check
         [[ -z $param ]] && favorite_room_choice param
         save_capture "$param"
         ;;
     ss|save-stream)
+        connection_check
         [[ -z $param ]] && favorite_room_choice param
         save_room "$param"
         ;;
     ps|play-stream)
+        connection_check
         [[ -z $param ]] && favorite_room_choice param
         play_room "$param"
         ;;
     ks|keyword-search)
+        connection_check
         keyword_search "$param"
         ;;
     ra|random)
+        connection_check
         quick_rand "$param"
         ;;
     tn|thumbnail)
+        connection_check
         [[ -z $param ]] && favorite_room_choice param
         quick_thumb "$param"
         ;;
