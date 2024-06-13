@@ -14,4 +14,4 @@
 + Add 'fetch-more user' command, to fetch more rooms like 'user'.
 - Check config file before 'source' it.
 - Check 'FETCH_STEPS' greater than 0.
-- Improve behaviour when exceed rate limit on 'is_online' function.
++ Improve behaviour when exceed rate limit on 'is_online' function.
