@@ -12,7 +12,8 @@
 - Open the first file in a directory, instead of the entire directory:
   This way you can use a greater variety of image viewers.
 + Add 'fetch-more user' command, to fetch more rooms like 'user'.
-- Check config file before 'source' it.
+- Check config file (line by line) before 'source' it.
 - Check 'FETCH_STEPS' greater than 0.
 + Improve behaviour when exceed rate limit on 'is_online' function.
 - Add '-f' (force) option in 'fetch-favorites' command.
+- Improve parameters parse in 'room-status' command.
