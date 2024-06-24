@@ -219,7 +219,8 @@ show_help () {
                                  - Add new room(s) to favorites.\n\
   r, remove          [username]  - Remove one room from favorites.\n\
   R, multi-remove                - Remove multiple rooms from favorites.\n\
-  ff, fetch-favorites            - Fetch previews of favorite rooms.\n\
+  ff, fetch-favorites      [-f]  - Fetch previews of favorite rooms. If '-f' is\n\
+                                   provided do not check global status(*).
   vf, view-favorites             - Open fetched previews (favorites).\n\
   lf, list-favorites  [-l] [-s]  - List of favorite rooms. If '-s' is provided\n\
                                    show global status(*). If '-l' is provided\n\
@@ -928,11 +929,13 @@ file_count () {
 # fetch_favorite_rooms helper
 # save preview of '$1' on FAVORITES_PDIR: if success print 'fetched',
 # else 'error'. If it is offline print 'offline'.
-# '$1' username
+# '$1' VALID username
 # '$2' line prefix
+# '$3' force_fetch
 ffr_helper () {
+    [[ "$3" == "true" || "$3" == "false" ]] || return $UNKNOWN_ERROR
     local ffr_aux
-    if valid_username "$1" && is_online "$1" ffr_aux; then
+    if $3 || is_online "$1" ffr_aux; then
         local prefix
         [[ $2 -lt 10 ]] && prefix="0$2" || prefix="$2"
         save_preview "$1" "$FAVORITES_PDIR" "$prefix" && echo -e "$2:$1 ${GREEN_FG}fetched${CLEAR_FG}" && return $OK_CODE
@@ -953,13 +956,16 @@ fetch_favorite_rooms () {
     clear_favorites_dir
     local rvar
 
+    local force_fetch=false
+    [[ "$1" == "-f" ]] && force_fetch=true
+
     # Crazy implementation
     if [[ "$FETCH_TYPE" == "crazy" ]]; then
         declare -i line=1
         local room
         while IFS="" read -r room || [ -n "$room" ]
         do
-            ffr_helper "$room" "$line" &
+            ffr_helper "$room" "$line" "$force_fetch" &
             line+=1
         done < "$FAVORITES_FILE"
         wait
@@ -983,7 +989,7 @@ fetch_favorite_rooms () {
     # without an unexpected behavior
     # The problem happens when 'read' is used inside 'read'
     while IFS="" read -u 3 -r room || [ -n "$room" ]; do
-        ffr_helper "$room" "$line" &
+        ffr_helper "$room" "$line" "$force_fetch" &
         if [[ $((line%FETCH_STEPS)) -eq 0 ]]; then
             wait
             current_count="$(file_count "${FAVORITES_PDIR}/")"
@@ -1633,7 +1639,7 @@ case "$command" in
         ;;
     ff|fetch-favorites)
         connection_check
-        fetch_favorite_rooms
+        fetch_favorite_rooms "$param"
         play_favorite_choice hide_list
         ;;
     vf|view-favorites)
