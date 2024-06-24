@@ -1615,7 +1615,7 @@ param="$2"
 
 if [[ "$command" == "__is_online" ]]; then
     valid_username "$param" || send_exit_error $INVALID_USERNAME
-    is_online "$param"
+    alt_is_online "$param"
     # When exit without error code, the value shall be the exit value of the
     # last command executed.
     exit
