@@ -1652,8 +1652,11 @@ case "$command" in
         if [[ "$#" -gt 1 ]]; then
             # search '-e' param, and use the last parameter found as room
             for e in "$@"; do
-                [[ "$e" == "-e" ]] && eparam="$e"
-                param="$e"
+                if [[ "$e" == "-e" ]]; then
+                    eparam="$e"
+                else
+                    param="$e"
+                fi
             done
             param="$(trim_string "$param")"
             internal_status "$param" "$eparam"
