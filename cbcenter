@@ -253,7 +253,7 @@ show_help () {
                                    show position (line) on favorites file.\n\
   rs, room-status    [-e] [username]\n\
                                  - Show internal status(*). If '-e' is provided\n\
-                                   retrun error on fetch fail.\n\
+                                   return error on fetch fail (not found or banned).\n\
   rp, room-programs  [username]  - Show available programs of given room.\n\
   ri, room-info      [username]  - Show basic info.\n\
   rb, room-bio       [username]  - Show biocontext.\n\
