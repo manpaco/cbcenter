@@ -15,6 +15,6 @@
 - Check config file (line by line) before 'source' it.
 - Check 'FETCH_STEPS' greater than 0.
 + Improve behaviour when exceed rate limit on 'is_online' function.
-- Add '-f' (force) option in 'fetch-favorites' command (ignore global status).
++ Add '-f' (force) option in 'fetch-favorites' command (ignore global status).
 + Improve parameters parse in 'room-status' command.
 + Add warning about rate limiting. Suggest not adding more than 10 favorites.
