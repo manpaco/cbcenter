@@ -980,6 +980,12 @@ ffr_helper () {
     fi
 }
 
+show_force_info () {
+    echo -e "\
+${GREEN_FG}INFO:${CLEAR_FG} When using the '-f' option you will probably get previews of rooms that are offline.\n\
+  This is because the servers store the last preview for a few hours after going offline."
+}
+
 # Get previews of favorites (online only)
 fetch_favorite_rooms () {
     echo "Fetching favorite rooms ..."
@@ -988,7 +994,10 @@ fetch_favorite_rooms () {
     local rvar
 
     local force_fetch=false
-    [[ "$1" == "-f" ]] && force_fetch=true
+    if [[ "$1" == "-f" ]]; then
+        force_fetch=true
+        show_force_info
+    fi
 
     # Crazy implementation
     if [[ "$FETCH_TYPE" == "crazy" ]]; then
