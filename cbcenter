@@ -315,7 +315,9 @@ TIP: If [username] is not provided, you will be asked to choose an option\n\
   OPEN_ENTIRE_DIR=\"<bool>\"\n\
     Repalce <bool> with a boolean integer.\n\n\
   Comments and unnecessary spaces are not allowed. e.g. the following lines\n\
-  are not valid: '# Setting to 0 because...' or ' VIEWER=\"imv-dir -f\" '\n\nFetch ranges:\n\n\
+  are not valid: '# Setting to 0 because...' or ' VIEWER=\"imv -fd\" '\n\
+                  ^ comment                      ^                ^\n\
+                                                 ^ unnecessary spaces\nFetch ranges:\n\n\
   gender: Gender of room users.\n\
           'f' (female) or 'm' (male) or 'c' (couple) or 't' (trans)\n\
   offset: Beginning room.\n\
