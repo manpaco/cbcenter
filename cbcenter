@@ -1094,7 +1094,13 @@ quick_thumb () {
 # Open favorites directory
 open_favorites_dir () {
     empty_dir "${FAVORITES_PDIR}/" && send_exit_error $EMPTY_DIR
-    $VIEWER "$FAVORITES_PDIR"
+    if [[ $OPEN_ENTIRE_DIR -eq 1 ]]; then
+        $VIEWER "$FAVORITES_PDIR"
+    else
+        local ffiles
+        ffiles=($FAVORITES_PDIR/*)
+        $VIEWER "${ffiles[0]}"
+    fi
 }
 
 # Make sure the room is public, else exit program with an error
@@ -1465,7 +1471,13 @@ check_favorites () {
 # Open previews on MORE_PDIR
 open_more_dir () {
     empty_dir "${MORE_PDIR}/" && send_exit_error $EMPTY_DIR
-    $VIEWER "$MORE_PDIR"
+    if [[ $OPEN_ENTIRE_DIR -eq 1 ]]; then
+        $VIEWER "$MORE_PDIR"
+    else
+        local mfiles
+        mfiles=($MORE_PDIR/*)
+        $VIEWER "${mfiles[0]}"
+    fi
 }
 
 # Remove previews on MORE_PDIR
