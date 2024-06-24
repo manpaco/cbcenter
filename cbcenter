@@ -201,6 +201,11 @@ check_dependencies () {
     echo "... or use what you want. See the help to know how to configure it."
 }
 
+# Show favorites limit suggestion
+show_add_suggestion () {
+    echo -e "${LIGHT_BLUE_FG}SUGGESTION:${CLEAR_FG} Do not add more than 10 favorites to avoid reaching the rate limit too soon."
+}
+
 # Show distribution warning
 show_dist_warning () {
     echo -e "${RED_FG}CB_WARNING: Do not distribute content (from anywhere) without consent. Personal use only.${CLEAR_FG}"
@@ -1605,6 +1610,7 @@ configure
 case "$command" in
     a|add)
         connection_check
+        show_add_suggestion
         # discard "command" parameter
         shift
         if [[ "$#" -gt 1 ]]; then
