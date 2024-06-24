@@ -307,14 +307,19 @@ TIP: If [username] is not provided, you will be asked to choose an option\n\
   Create a file called 'config' in directory '${MYCONFIG_PDIR}/' and use:\n\n\
   VIEWER=\"<command>\"\n\
     Replace <command> with whatever you want. e.g. VIEWER=\"gpicview\"\n\
+    DEFAULT: '$VIEWER'\n\
   FETCH_TYPE=\"<type>\"\n\
     Replace <type> with 'steps' or 'crazy'. See 'Fetch types' section.\n\
+    DEFAULT: '$FETCH_TYPE'\n\
   FETCH_STEPS=\"<int>\"\n\
     Replace <int> with an integer greater than 0.\n\
+    DEFAULT: '$FETCH_STEPS'\n\
   CHECK_CONNECTION=\"<bool>\"\n\
     Replace <bool> with a boolean integer, i.e. 1 or 0.\n\
+    DEFAULT: '$CHECK_CONNECTION'\n\
   OPEN_ENTIRE_DIR=\"<bool>\"\n\
-    Repalce <bool> with a boolean integer.\n\n\
+    Repalce <bool> with a boolean integer.\n\
+    DEFAULT: '$OPEN_ENTIRE_DIR'\n\n\
   Comments and unnecessary spaces are not allowed. e.g. the following lines\n\
   are not valid: '# Setting to 0 because...' or ' VIEWER=\"imv -fd\" '\n\
                   ^ comment                      ^                ^\n\
@@ -326,8 +331,7 @@ TIP: If [username] is not provided, you will be asked to choose an option\n\
           If none is provided, the value 0 is taken.\n\
   limit:  Number of rooms.\n\
           Two digits (max) integer from 1 (or 01) to 99.\n\nFetch types:\n\n\
-  steps: Fetch x rooms in each iteration until you obtain\n\
-         all of them. (DEFAULT)\n\
+  steps: Fetch x rooms in each iteration until you obtain all of them.\n\
   crazy: Fetch all the rooms at once.\n\nDirectories and files:\n\n\
   PROJECT DIR:   $MYPATH/\n\
   CONFIG DIR:    $MYCONFIG_PDIR/\n\
