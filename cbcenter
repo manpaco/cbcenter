@@ -230,6 +230,7 @@ check_dependencies () {
     local cd_viewer
     cd_viewer="$(trim_string "$VIEWER")"
     echo -n "  "; [[ "${cd_viewer%% *}" =~ ^(imv)$ ]] && echo -en "${LIGHT_BLUE_FG}using${CLEAR_FG} --> "; which_check imv
+    echo -n "  "; [[ "${cd_viewer%% *}" =~ ^(imv-dir)$ ]] && echo -en "${LIGHT_BLUE_FG}using${CLEAR_FG} --> "; which_check imv-dir
     echo -n "  "; [[ "${cd_viewer%% *}" =~ ^(imv-x11)$ ]] && echo -en "${LIGHT_BLUE_FG}using${CLEAR_FG} --> "; which_check imv-x11
     echo -n "  "; [[ "${cd_viewer%% *}" =~ ^(imv-wayland)$ ]] && echo -en "${LIGHT_BLUE_FG}using${CLEAR_FG} --> "; which_check imv-wayland
     echo "... or use what you want. See the help to know how to configure it."
