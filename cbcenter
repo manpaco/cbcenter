@@ -138,33 +138,59 @@ valid_fetch_type () {
     [[ "$1" == "steps" || "$1" == "crazy" ]]
 }
 
+valid_config_line () {
+    [[ "$1" =~ ^(FETCH_TYPE=\".+\")$ ]] ||
+        [[ "$1" =~ ^(FETCH_STEPS=\".+\")$ ]] ||
+        [[ "$1" =~ ^(VIEWER=\".+\")$ ]] ||
+        [[ "$1" =~ ^(CHECK_CONNECTION=\".+\")$ ]] ||
+        [[ -z "$1" ]]
+}
+
+check_and_source_config () {
+    declare -i nline=1
+    while IFS='' read -r rline; do
+        if valid_config_line "$rline"; then
+            echo "$rline"
+        else
+            echo -e "${RED_FG}Invalid config line $nline:${CLEAR_FG} '$rline'" 1>&2
+        fi
+        nline+=1
+    done < "$MYCONFIG_FILE" > "${MYCONFIG_FILE}.checked" # only redirect stdout to checked config
+    source "${MYCONFIG_FILE}.checked"
+    rm "$MYCONFIG_FILE.checked"
+}
+
 configure () {
     ! [[ -e "$MYCONFIG_FILE" ]] && return
     local def_ft="$FETCH_TYPE"
     local def_fs="$FETCH_STEPS"
     local def_cc="$CHECK_CONNECTION"
-    source "$MYCONFIG_FILE"
-    VIEWER="$(trim_string "$VIEWER")"
-    FETCH_TYPE="$(trim_string "$FETCH_TYPE")"
-    FETCH_STEPS="$(trim_string "$FETCH_STEPS")"
+    check_and_source_config
     if ! valid_fetch_type "$FETCH_TYPE"; then
         FETCH_TYPE="$def_ft"
         echo -e "\
-    ${YELLOW_FG}-->${CLEAR_FG} Warning: Invalid FETCH_TYPE value on config file! Using default '$def_ft'. ${YELLOW_FG}<--${CLEAR_FG}"
+    ${YELLOW_FG}-->${CLEAR_FG} Warning: Invalid FETCH_TYPE value in config file! Using default '$def_ft'. ${YELLOW_FG}<--${CLEAR_FG}"
     fi
     if ! valid_id "$FETCH_STEPS"; then
         FETCH_STEPS="$def_fs"
         echo -e "\
-    ${YELLOW_FG}-->${CLEAR_FG} Warning: Invalid FETCH_STEPS value on config file! Using default '$def_fs'. ${YELLOW_FG}<--${CLEAR_FG}"
+    ${YELLOW_FG}-->${CLEAR_FG} Warning: Invalid FETCH_STEPS value in config file! Using default '$def_fs'. ${YELLOW_FG}<--${CLEAR_FG}"
+    else
+        FETCH_STEPS="$(remove_leading_zeros "$FETCH_STEPS")"
+        if [[ $FETCH_STEPS -eq 0 ]]; then
+            FETCH_STEPS="$def_fs"
+            echo -e "\
+    ${YELLOW_FG}-->${CLEAR_FG} Warning: FETCH_STEPS value equal to 0 in config file! Using default '$def_fs'. ${YELLOW_FG}<--${CLEAR_FG}"
+        fi
     fi
     if ! [[ "$CHECK_CONNECTION" =~ ^[0-1]$ ]]; then
         CHECK_CONNECTION="$def_cc"
         echo -e "\
-    ${YELLOW_FG}-->${CLEAR_FG} Warning: Invalid CHECK_CONNECTION value on config file! Using default '$def_cc'. ${YELLOW_FG}<--${CLEAR_FG}"
+    ${YELLOW_FG}-->${CLEAR_FG} Warning: Invalid CHECK_CONNECTION value in config file! Using default '$def_cc'. ${YELLOW_FG}<--${CLEAR_FG}"
     fi
     if ! valid_command_string "$VIEWER"; then
         echo -e "\
-    ${YELLOW_FG}-->${CLEAR_FG} Warning: Posible invalid VIEWER value on config file! Check the config. ${YELLOW_FG}<--${CLEAR_FG}"
+    ${YELLOW_FG}-->${CLEAR_FG} Warning: Posible invalid VIEWER value in config file! Check the config. ${YELLOW_FG}<--${CLEAR_FG}"
     fi
 }
 
