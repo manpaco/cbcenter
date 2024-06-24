@@ -366,7 +366,7 @@ TIP: If [username] is not provided, you will be asked to choose an option\n\
 # Send error message and exit program
 # '$1' error code
 send_exit_error () {
-    echo -n "Error: " 1>&2
+    echo -n "$mybasename: error: " 1>&2
     case "$1" in
         "$INVALID_USERNAME")
             echo "invalid username !" 1>&2
