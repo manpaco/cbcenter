@@ -492,8 +492,18 @@ curl_search () {
     curl -sL --compressed -H "$XRW_HEADER" "${SEARCH_PURL}$1"
 }
 
-# return 0 if online/private/hidden, else 1 (offline)
+# Alternative and simple global status checker
+# With this approach if the rate limit is reached always return offline
+alt_is_online () {
+    curl_search "$1" | jq -Mc ".${JQ_ONLINE}" | grep -q "\"$1\""
+    # You can add stderr redirection to hide jq errors in case of reaching
+    # rate limit
+    #curl_search "$1" | jq -Mc ".${JQ_ONLINE}" 2>/dev/null | grep -q "\"$1\""
+}
+
+# return 0 if online/private/hidden, else offline/connection_error
 # '$1' username
+# '$2' return value when is not online.
 is_online () {
     [[ -n "$2" ]] && declare -n io_out="$2"
     local cs_online
