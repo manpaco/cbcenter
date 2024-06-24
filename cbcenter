@@ -247,6 +247,7 @@ show_dist_warning () {
 }
 
 # Show help block
+# always call before 'configure' to show correct default values
 show_help () {
     echo -e "Manage your favorite rooms from $CB_ROOT_PURL.\n\nUsage:\n\n\
   $mybasename COMMAND OPTION\n\nCommands and options:\n\n\
