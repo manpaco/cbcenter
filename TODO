@@ -17,4 +17,4 @@
 + Improve behaviour when exceed rate limit on 'is_online' function.
 - Add '-f' (force) option in 'fetch-favorites' command (ignore global status).
 + Improve parameters parse in 'room-status' command.
-- Add warning about rate limiting. Suggest not adding more than 10 favorites.
++ Add warning about rate limiting. Suggest not adding more than 10 favorites.
