@@ -311,7 +311,9 @@ TIP: If [username] is not provided, you will be asked to choose an option\n\
   FETCH_STEPS=\"<int>\"\n\
     Replace <int> with an integer greater than 0.\n\
   CHECK_CONNECTION=\"<bool>\"\n\
-    Replace <bool> with a boolean integer, i.e. 1 or 0.\n\nFetch ranges:\n\n\
+    Replace <bool> with a boolean integer, i.e. 1 or 0.\n\
+  OPEN_ENTIRE_DIR=\"<bool>\"\n\
+    Repalce <bool> with a boolean integer.\n\nFetch ranges:\n\n\
   gender: Gender of room users.\n\
           'f' (female) or 'm' (male) or 'c' (couple) or 't' (trans)\n\
   offset: Beginning room.\n\
@@ -351,7 +353,9 @@ TIP: If [username] is not provided, you will be asked to choose an option\n\
       limiting solution will not fulfill the IP address's requests for a\n\
       certain amount of time.\n\
   - How can I change the default image viewer for previews?\n\
-      See 'Configuration' section.\n\
+      Use VIEWER configuration variable. Remember to set OPEN_ENTIRE_DIR to 0\n\
+      if your viewer do not support open entire directories. See 'Configuration'\n\
+      section for more info.\n\
   - Why are the rooms fetched in $FETCH_STEPS at a time?\n\
       To avoid reaching the rate limit too soon.\n\
       Also you can change that value (or even disable the option) in 'config'\n\
