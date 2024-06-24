@@ -144,6 +144,7 @@ valid_config_line () {
         [[ "$1" =~ ^(FETCH_STEPS=\".+\")$ ]] ||
         [[ "$1" =~ ^(VIEWER=\".+\")$ ]] ||
         [[ "$1" =~ ^(CHECK_CONNECTION=\".+\")$ ]] ||
+        [[ "$1" =~ ^(OPEN_ENTIRE_DIR=\".+\")$ ]] ||
         [[ -z "$1" ]]
 }
 
@@ -166,6 +167,7 @@ configure () {
     local def_ft="$FETCH_TYPE"
     local def_fs="$FETCH_STEPS"
     local def_cc="$CHECK_CONNECTION"
+    local def_oed="$OPEN_ENTIRE_DIR"
     check_and_source_config
     if ! valid_fetch_type "$FETCH_TYPE"; then
         FETCH_TYPE="$def_ft"
@@ -188,6 +190,11 @@ configure () {
         CHECK_CONNECTION="$def_cc"
         echo -e "\
     ${YELLOW_FG}-->${CLEAR_FG} Warning: Invalid CHECK_CONNECTION value in config file! Using default '$def_cc'. ${YELLOW_FG}<--${CLEAR_FG}"
+    fi
+    if ! [[ "$OPEN_ENTIRE_DIR" =~ ^[0-1]$ ]]; then
+        OPEN_ENTIRE_DIR="$def_oed"
+        echo -e "\
+    ${YELLOW_FG}-->${CLEAR_FG} Warning: Invalid OPEN_ENTIRE_DIR value in config file! Using default '$def_oed'. ${YELLOW_FG}<--${CLEAR_FG}"
     fi
     if ! valid_command_string "$VIEWER"; then
         echo -e "\
