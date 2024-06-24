@@ -1100,6 +1100,10 @@ open_favorites_dir () {
         $VIEWER "$FAVORITES_PDIR"
     else
         local ffiles
+        # shellcheck disable=SC2206
+        # Quote to prevent word splitting/globbing,
+        # or split robustly with mapfile or read -a:
+        #read -r -a array <<< "$var"
         ffiles=($FAVORITES_PDIR/*)
         $VIEWER "${ffiles[0]}"
     fi
@@ -1232,6 +1236,10 @@ open_others_dir () {
         $VIEWER "$OTHERS_PDIR"
     else
         local ofiles
+        # shellcheck disable=SC2206
+        # Quote to prevent word splitting/globbing,
+        # or split robustly with mapfile or read -a:
+        #read -r -a array <<< "$var"
         ofiles=($OTHERS_PDIR/*)
         $VIEWER "${ofiles[0]}"
     fi
@@ -1477,6 +1485,10 @@ open_more_dir () {
         $VIEWER "$MORE_PDIR"
     else
         local mfiles
+        # shellcheck disable=SC2206
+        # Quote to prevent word splitting/globbing,
+        # or split robustly with mapfile or read -a:
+        #read -r -a array <<< "$var"
         mfiles=($MORE_PDIR/*)
         $VIEWER "${mfiles[0]}"
     fi
