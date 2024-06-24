@@ -39,6 +39,7 @@ CODEC="h264"
 
 # ----------- VIEWER ------------
 VIEWER="imv -fd" # <<== I'm here!
+OPEN_ENTIRE_DIR=1
 
 # ----------- FETCH ------------
 FETCH_TYPE="steps" # 'steps' or 'crazy'
@@ -1206,7 +1207,13 @@ list_favorites () {
 # Open others directory
 open_others_dir () {
     empty_dir "${OTHERS_PDIR}/" && send_exit_error $EMPTY_DIR
-    $VIEWER "$OTHERS_PDIR"
+    if [[ $OPEN_ENTIRE_DIR -eq 1 ]]; then
+        $VIEWER "$OTHERS_PDIR"
+    else
+        local ofiles
+        ofiles=($OTHERS_PDIR/*)
+        $VIEWER "${ofiles[0]}"
+    fi
 }
 
 # Save rooms list from given range on '$4' file.
