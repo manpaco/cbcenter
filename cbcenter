@@ -267,9 +267,9 @@ show_help () {
   rp, room-programs  [username]  - Show available programs of given room.\n\
   ri, room-info      [username]  - Show basic info.\n\
   rb, room-bio       [username]  - Show biocontext.\n\
-  fo, fetch-others   gender:[offset]:limit\n\
+  fo, fetch-others   [gender]:[offset]:limit [filters]\n\
                                  - Fetch previews of other rooms. See\n\
-                                   'Fetch ranges' section.\n\
+                                   'Fetch options' section.\n\
   vo, view-others                - Open fetched previews (others).\n\
   lo, list-others                - List of fetched rooms (others).\n\
   fm, fetch-more     [username]  - Fetch previews of rooms like 'username'.\n\
@@ -324,14 +324,22 @@ TIP: If [username] is not provided, you will be asked to choose an option\n\
   Comments and unnecessary spaces are not allowed. e.g. the following lines\n\
   are not valid: '# Setting to 0 because...' or ' VIEWER=\"imv -fd\" '\n\
                   ^ comment                      ^                ^\n\
-                                                 ^ unnecessary spaces\nFetch ranges:\n\n\
+                                                 ^ unnecessary spaces\nFetch options:\n\n\
   gender: Gender of room users.\n\
           'f' (female) or 'm' (male) or 'c' (couple) or 't' (trans)\n\
+          If none is provided, fetch mixed rooms.\n\
   offset: Beginning room.\n\
           Two digits (max) integer from 0 (or 00) to 99.\n\
           If none is provided, the value 0 is taken.\n\
   limit:  Number of rooms.\n\
-          Two digits (max) integer from 1 (or 01) to 99.\n\nFetch types:\n\n\
+          Two digits (max) integer from 1 (or 01) to 99.\n\n\
+  You can also specify filters:\n\n\
+  -a from:to                 --> age range\n\
+                                 example: -a 20:25\n\
+  -r region[,region2[...]]   --> region(s)\n\
+                                 example: -r NA,SA,O\n\
+  -h hashtag[,hashtag2[...]] --> hashtag(s)\n\
+                                 example: -h hotkeys,bigbus,threadpool\n\nFetch types:\n\n\
   steps: Fetch x rooms in each iteration until you obtain all of them.\n\
   crazy: Fetch all the rooms at once.\n\nDirectories and files:\n\n\
   PROJECT DIR:   $MYPATH/\n\
