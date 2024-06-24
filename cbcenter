@@ -471,10 +471,12 @@ is_online () {
     [[ -n "$2" ]] && declare -n io_out="$2"
     local cs_online
     if ! cs_online="$(curl_search "$1" | jq -Mc ".${JQ_ONLINE}" 2>/dev/null)"; then
+        # shellcheck disable=SC2034
         io_out="connection_error"
         return $CONNECTION_ERROR
     fi
     if ! echo "$cs_online" | grep -q "\"$1\""; then
+        # shellcheck disable=SC2034
         io_out="offline"
         return $OFFLINE_ROOM
     fi
