@@ -308,7 +308,7 @@ TIP: If [username] is not provided, you will be asked to choose an option\n\
   VIEWER=\"<command>\"\n\
     Replace <command> with whatever you want. e.g. VIEWER=\"gpicview\"\n\
   FETCH_TYPE=\"<type>\"\n\
-    Replace <type> with 'steps' or 'crazy'. See 'Fetch types' sectio.\n\
+    Replace <type> with 'steps' or 'crazy'. See 'Fetch types' section.\n\
   FETCH_STEPS=\"<int>\"\n\
     Replace <int> with an integer greater than 0.\n\
   CHECK_CONNECTION=\"<bool>\"\n\
@@ -326,7 +326,7 @@ TIP: If [username] is not provided, you will be asked to choose an option\n\
           If none is provided, the value 0 is taken.\n\
   limit:  Number of rooms.\n\
           Two digits (max) integer from 1 (or 01) to 99.\n\nFetch types:\n\n\
-  steps: Fetch $FETCH_STEPS rooms in each iteration until you obtain\n\
+  steps: Fetch x rooms in each iteration until you obtain\n\
          all of them. (DEFAULT)\n\
   crazy: Fetch all the rooms at once.\n\nDirectories and files:\n\n\
   PROJECT DIR:   $MYPATH/\n\
@@ -361,10 +361,10 @@ TIP: If [username] is not provided, you will be asked to choose an option\n\
       Use VIEWER configuration variable. Remember to set OPEN_ENTIRE_DIR to 0\n\
       if your viewer do not support open entire directories. See 'Configuration'\n\
       section for more info.\n\
-  - Why are the rooms fetched in $FETCH_STEPS at a time?\n\
+  - Why are the rooms fetched in x at a time?\n\
       To avoid reaching the rate limit too soon.\n\
       Also you can change that value (or even disable the option) in 'config'\n\
-      file, see 'Configuration' section.\n\
+      file, see 'Configuration' and 'Fetch types' sections.\n\
   - How can I change video quality when playing stream?\n\
       Pres 'c' key to cycle stream 'programs'.\n\
       See ffplay documentation for more info.\n\nExamples:\n\n\
