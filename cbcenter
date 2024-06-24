@@ -329,11 +329,11 @@ TIP: If [username] is not provided, you will be asked to choose an option\n\
   OTHERS:        $OTHERS_FILE\n\
   RANDOM:        $RANDOM_FILE\n\
   SEARCH:        $SEARCH_FILE\n\nFAQs:\n\n\
-  - What is a 'program ID'?\n\
-      A 'program' represent the stream 'channel' or 'quality'. This channels\n\
+  - What is a stream 'program'?\n\
+      A 'program' represent the video 'channel' or 'quality'. This channels\n\
       are identified by ID, from '0' (lowest quality) to 'n' (highest quality).\n\
-      To get cam programs use 'info' command. You can go to FFMPEG Documentation\n\
-      for more info.\n\
+      To get programs use 'room-programs' command. You can go to\n\
+      FFMPEG Documentation for more info.\n\
   - What do the strange errors mean when I want to play/save/capture/fetch?\n\
       You are probably being blocked by rate limiting.\n\
       A rate limiting solution measures the amount of time between each\n\
@@ -347,7 +347,10 @@ TIP: If [username] is not provided, you will be asked to choose an option\n\
   - Why are the rooms fetched in $FETCH_STEPS at a time?\n\
       To avoid reaching the rate limit too soon.\n\
       Also you can change that value (or even disable the option) in 'config'\n\
-      file, see 'Configuration' section.\n\nExamples:\n\n\
+      file, see 'Configuration' section.\n\
+  - How can I change video quality when playing stream?\n\
+      Pres 'c' key to cycle stream 'programs'.\n\
+      See ffplay documentation for more info.\n\nExamples:\n\n\
   - Add new rooms to favorites:\n\
       $mybasename add bigkeys69 hot_port22 back_xz_door560\n\
   - Fetch the first 10 female rooms:\n\
