@@ -13,3 +13,5 @@
 + Add '-f' (force) option in 'fetch-favorites' command (ignore global status).
 + Improve parameters parse in 'room-status' command.
 + Add warning about rate limiting. Suggest not adding more than 10 favorites.
+- Add 'top-hashtags' command to fetch the most popular hashtags:
+  e.g. fetch the top 10 hashtags: cbcenter top-hashtags 10
