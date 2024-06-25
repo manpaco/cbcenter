@@ -1809,6 +1809,21 @@ case "$command" in
         shift
         while [[ "$#" -gt 0 ]]; do
             case "$1" in
+                -o)
+                    [[ -z "$2" ]] && send_exit_error $UNKNOWN_ERROR
+                    oparam="$(trim_string "$2")"
+                    shift 2
+                    ;;
+                -l)
+                    [[ -z "$2" ]] && send_exit_error $UNKNOWN_ERROR
+                    lparam="$(trim_string "$2")"
+                    shift 2
+                    ;;
+                -g)
+                    [[ -z "$2" ]] && send_exit_error $UNKNOWN_ERROR
+                    gparam="$(trim_string "$2")"
+                    shift 2
+                    ;;
                 -a)
                     [[ -z "$2" ]] && send_exit_error $UNKNOWN_ERROR
                     aparam="$(trim_string "$2")"
@@ -1825,12 +1840,13 @@ case "$command" in
                     shift 2
                     ;;
                 *)
-                    param="$(trim_string "$1")"
-                    shift
+                    send_exit_error $UNKNOWN_ERROR
                     ;;
             esac
         done
-        echo "param:  $param"
+        echo "oparam: $oparam"
+        echo "lparam: $lparam"
+        echo "gparam: $gparam"
         echo "aparam: $aparam"
         echo "rparam: $rparam"
         echo "hparam: $hparam"
