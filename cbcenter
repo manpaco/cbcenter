@@ -1805,8 +1805,37 @@ case "$command" in
         ;;
     fo|fetch-others)
         connection_check
-        fetch_other_rooms "$param"
-        play_other_choice hide_list
+        # discard "command" parameter
+        shift
+        while [[ "$#" -gt 0 ]]; do
+            case "$1" in
+                -a)
+                    [[ -z "$2" ]] && send_exit_error $UNKNOWN_ERROR
+                    aparam="$(trim_string "$2")"
+                    shift 2
+                    ;;
+                -r)
+                    [[ -z "$2" ]] && send_exit_error $UNKNOWN_ERROR
+                    rparam="$(trim_string "$2")"
+                    shift 2
+                    ;;
+                -h)
+                    [[ -z "$2" ]] && send_exit_error $UNKNOWN_ERROR
+                    hparam="$(trim_string "$2")"
+                    shift 2
+                    ;;
+                *)
+                    param="$(trim_string "$1")"
+                    shift
+                    ;;
+            esac
+        done
+        echo "param:  $param"
+        echo "aparam: $aparam"
+        echo "rparam: $rparam"
+        echo "hparam: $hparam"
+        #fetch_other_rooms "$param" "$aparam" "$rparam" "$hparam"
+        #play_other_choice hide_list
         ;;
     vo|view-others)
         open_others_dir
