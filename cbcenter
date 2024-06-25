@@ -308,6 +308,7 @@ TIP: If [username] is not provided, you will be asked to choose an option\n\
   Create a file called 'config' in directory '${MYCONFIG_PDIR}/' and use:\n\n\
   VIEWER=\"<command>\"\n\
     Replace <command> with whatever you want. e.g. VIEWER=\"gpicview\"\n\
+    Command used to open images (previews and captures).
     DEFAULT: '$VIEWER'\n\
   FETCH_TYPE=\"<type>\"\n\
     Replace <type> with 'steps' or 'crazy'.\n\
@@ -316,12 +317,15 @@ TIP: If [username] is not provided, you will be asked to choose an option\n\
     DEFAULT: '$FETCH_TYPE'\n\
   FETCH_STEPS=\"<int>\"\n\
     Replace <int> with an integer greater than 0.\n\
+    Number of rooms fetched in each iteration when user set FETCH_TYPE to 'steps'.
     DEFAULT: '$FETCH_STEPS'\n\
   CHECK_CONNECTION=\"<bool>\"\n\
     Replace <bool> with a boolean integer, i.e. 1 or 0.\n\
+    Check connection to main page. If set to 0 ignore check.
     DEFAULT: '$CHECK_CONNECTION'\n\
   OPEN_ENTIRE_DIR=\"<bool>\"\n\
     Repalce <bool> with a boolean integer.\n\
+    Open entire directories with VIEWER. If set to 0 open the first file.
     DEFAULT: '$OPEN_ENTIRE_DIR'\n\n\
   Comments and unnecessary spaces are not allowed. e.g. the following lines\n\
   are not valid: '# Setting to 0 because...' or ' VIEWER=\"imv -fd\" '\n\
