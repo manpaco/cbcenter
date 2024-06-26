@@ -489,7 +489,7 @@ Re-run '$mybasename fetch-more username'." 1>&2
             ;;
         "$INVALID_VALUE")
             shift
-            echo "invalid parameter: $*"
+            echo "invalid $*"
             exit $INVALID_VALUE
             ;;
         *)
