@@ -19,5 +19,6 @@
 + Add warning about rate limiting. Suggest not adding more than 10 favorites.
 - Add 'top-hashtags' command to fetch the most popular hashtags:
   e.g. fetch the top 10 hashtags: cbcenter top-hashtags 10
-- Merge error handlers in more generic handlers (plus extra message)
-  example: NOT_FOUND_ROOM, BANNED_ROOM, STORED_ROOM ---> ROOM_ERROR
++ Merge error handlers in more generic handlers (plus extra message)
+  example: NOT_FOUND_ROOM, BANNED_ROOM, STORED_ROOM ---> ROOM_ERROR <=== Not possible, but...
+  example: EMPTY_DATA, CURL_ERROR, ROOM_LIST_ERROR, ... ---> GET_ERROR <=== Done! and much more.
