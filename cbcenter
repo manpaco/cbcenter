@@ -1528,7 +1528,7 @@ internal_status () {
         is_status="$(fetch_room_status "$1")"
         [[ $? -eq $GET_ERROR ]] && send_exit_error $GET_ERROR
     fi
-    echo -n "Internal status: "
+    echo -n "$1 status: "
     echo "$is_status"
 }
 
@@ -1810,26 +1810,21 @@ case "$command" in
         ;;
     rs|room-status)
         connection_check
+        # discard "param" parameter
+        unset param
         # discard "command" parameter
         shift
-        if [[ "$#" -gt 1 ]]; then
-            # search '-e' param, and use the last parameter found as room
-            for e in "$@"; do
-                if [[ "$e" == "-e" ]]; then
-                    eparam="$e"
-                else
-                    param="$e"
-                fi
-            done
-            param="$(trim_string "$param")"
-            internal_status "$param" "$eparam"
-        else
-            if [[ -z $param || "$param" == "-e" ]]; then
-                [[ "$param" == "-e" ]] && eparam="-e"
-                favorite_room_choice param
+        # search '-e' param, and use the last parameter found as room
+        for e in "$@"; do
+            if [[ "$e" == "-e" ]]; then
+                eparam="-e"
+            else
+                param="$e"
             fi
-            internal_status "$param" "$eparam"
-        fi
+        done
+        param="$(trim_string "$param")"
+        [[ -z "$param" ]] && favorite_room_choice param
+        internal_status "$param" "$eparam"
         ;;
     rp|room-programs)
         connection_check
