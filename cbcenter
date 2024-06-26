@@ -1696,7 +1696,7 @@ top_hashtags () {
     local count
     count="$(remove_leading_zeros "$1")"
     [[ $count -gt 0 ]] || send_exit_error $VALUE_ERROR "the value must be greater than 0"
-    curl_top_tags "$count" | jq -M .all_tags
+    curl_top_tags "$count" | jq -M .all_tags || send_exit_error $PROCESSING_ERROR "json data"
 }
 
 command="$1"
