@@ -84,6 +84,7 @@ GENDER_REGEX="${FEMALE_ROOM}|${MALE_ROOM}|${COUPLE_ROOM}|${TRANS_ROOM}"
 FETCH_DIGITS_REGEX="[0-9]{1,2}"
 MIN_AGE=18
 MAX_AGE=99
+TAG_REGEX="[a-z0-9]{2,30}"
 
 # ----------- TOOLS ------------
 JQ_ONLINE="online"
@@ -1306,6 +1307,10 @@ fetch_rooms_using () {
     done
 }
 
+valid_tag () {
+    [[ "$1" =~ ^($TAG_REGEX)$ ]]
+}
+
 # Return 0 if '$1' is a valid region, else 1
 # '$1' possible region
 valid_region () {
@@ -1417,7 +1422,7 @@ fetch_other_rooms () {
         IFS=","
         # check hashtags
         for h in $hashtags; do
-            valid_username "$h" || send_exit_error $VALUE_ERROR "invalid hashtag $h"
+            valid_tag "$h" || send_exit_error $VALUE_ERROR "invalid hashtag $h"
         done
         unset IFS
         xtras+="&hashtags=$hashtags"
