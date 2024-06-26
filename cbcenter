@@ -1405,14 +1405,14 @@ valid_fetch_digits () {
 fetch_other_rooms () {
     local offset="$1"
     if [[ -n "$offset" ]]; then
-        valid_fetch_digits "$offset" || send_exit_error $UNKNOWN_ERROR $1
+        valid_fetch_digits "$offset" || send_exit_error $INVALID_PARAM "offset $offset"
         offset="$(remove_leading_zeros "$offset")"
     else
         offset=0
     fi
     local limit="$2"
     if [[ -n "$limit" ]]; then
-        valid_fetch_digits "$limit" || send_exit_error $UNKNOWN_ERROR $2
+        valid_fetch_digits "$limit" || send_exit_error $INVALID_PARAM "limit $limit"
         limit="$(remove_leading_zeros "$limit")"
     else
         limit="$FETCH_STEPS"
@@ -1426,22 +1426,24 @@ fetch_other_rooms () {
         IFS=","
         # check genders
         for g in $genders; do
-            valid_gender "$g" || send_exit_error $INVALID_GENDER "$g"
+            valid_gender "$g" || send_exit_error $INVALID_PARAM "gender $g"
         done
         unset IFS
         xtras+="&genders=$genders"
     fi
     local from_age="$4"
     if [[ -n "$from_age" ]]; then
-        valid_fetch_digits "$from_age" || send_exit_error $UNKNOWN_ERROR $4
+        valid_fetch_digits "$from_age" || send_exit_error $INVALID_PARAM "from age $from_age"
         from_age="$(remove_leading_zeros "$from_age")"
-        [[ $from_age -ge $MIN_AGE && $from_age -le $MAX_AGE ]] || send_exit_error $UNKNOWN_ERROR "from < 18"
+        [[ $from_age -ge $MIN_AGE && $from_age -le $MAX_AGE ]] ||
+            send_exit_error $INVALID_PARAM "from age ($from_age) out of range"
     fi
     local to_age="$5"
     if [[ -n "$to_age" ]]; then
-        valid_fetch_digits "$to_age" || send_exit_error $UNKNOWN_ERROR $5
+        valid_fetch_digits "$to_age" || send_exit_error $INVALID_PARAM "to age $to_age"
         to_age="$(remove_leading_zeros "$to_age")"
-        [[ $to_age -ge $MIN_AGE && $to_age -le $MAX_AGE ]] || send_exit_error $UNKNOWN_ERROR "to < 18"
+        [[ $to_age -ge $MIN_AGE && $to_age -le $MAX_AGE ]] ||
+            send_exit_error $INVALID_PARAM "to age ($to_age) out of range"
     fi
     if [[ -z "$from_age" && -n "$to_age" ]]; then
         from_age="$MIN_AGE"
@@ -1450,7 +1452,7 @@ fetch_other_rooms () {
     fi
     if [[ -n "$from_age" && -n "$to_age" ]]; then
         [[ $from_age -gt $to_age ]] &&
-            send_exit_error $UNKNOWN_ERROR "from ($from_age) > to ($to_age)"
+            send_exit_error $INVALID_PARAM "'from age' ($from_age) is greater than 'to age' ($to_age)"
         xtras+="&ages=$from_age-$to_age"
         xtras+="&from_age=$from_age"
         # xtras+="&to_age=$to_age"
@@ -1464,7 +1466,7 @@ fetch_other_rooms () {
         IFS=","
         # check regions
         for r in $regions; do
-            valid_region "$r" || send_exit_error $UNKNOWN_ERROR "$r"
+            valid_region "$r" || send_exit_error $INVALID_PARAM "region $r"
         done
         unset IFS
         xtras+="&regions=$regions"
@@ -1477,7 +1479,7 @@ fetch_other_rooms () {
         IFS=","
         # check hashtags
         for h in $hashtags; do
-            valid_username "$h" || send_exit_error $UNKNOWN_ERROR "$h"
+            valid_username "$h" || send_exit_error $INVALID_PARAM "hashtag $h"
         done
         unset IFS
         xtras+="&hashtags=$hashtags"
