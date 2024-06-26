@@ -122,10 +122,14 @@ LIGHT_BLUE_FG="\033[1;34m"
 YELLOW_FG="\033[1;33m"
 CLEAR_FG="\033[0m"
 
+# Return 0 if '$1' is a valid fetch type, else 1
+# '$1' possible fetch type
 valid_fetch_type () {
     [[ "$1" == "steps" || "$1" == "crazy" ]]
 }
 
+# Return 0 if '$1' is a valid configuration line, else 1
+# '$1' possible configuration line
 valid_config_line () {
     [[ "$1" =~ ^(FETCH_TYPE=\".+\")$ ]] ||
         [[ "$1" =~ ^(FETCH_STEPS=\".+\")$ ]] ||
@@ -135,6 +139,7 @@ valid_config_line () {
         [[ -z "$1" ]]
 }
 
+# Check configuration file line by line, and then 'source' it
 check_and_source_config () {
     declare -i nline=1
     while IFS='' read -r rline; do
@@ -149,6 +154,7 @@ check_and_source_config () {
     rm "$MYCONFIG_FILE.checked"
 }
 
+# Confifure user variables
 configure () {
     ! [[ -e "$MYCONFIG_FILE" ]] && return
     local def_ft="$FETCH_TYPE"
@@ -858,6 +864,8 @@ remove_room () {
     fi
 }
 
+# Return 0 if '$1' is empty, else 1
+# '$1' directory
 empty_dir () {
     [[ "$(file_count "$1")" -eq 0 ]]
 }
@@ -947,6 +955,7 @@ ffr_helper () {
     fi
 }
 
+# Show information when use '-f' option in 'fetch_favorite_rooms'
 show_force_info () {
     echo -e "\
 ${GREEN_FG}INFO:${CLEAR_FG} When using the '-f' option you will probably get previews of rooms that are offline.\n\
@@ -1205,6 +1214,7 @@ fetch_roomlist_file () {
     curl -sL --compressed -H "$XRW_HEADER" "$ROOMLIST_PURL/?offset=$1&limit=$2&enable_recommendations=false$3" -o "$4"
 }
 
+# Show fetch type and tip.
 show_fetch_message () {
     echo -n "  "; echo "Using '${FETCH_TYPE}' fetch type."
     echo -e "${YELLOW_FG}TIP:${CLEAR_FG} Go back in the image viewer to see the most recent ones."
@@ -1289,6 +1299,8 @@ fetch_rooms_using () {
     done
 }
 
+# Return 0 if '$1' is a valid region, else 1
+# '$1' possible region
 valid_region () {
     [[ "$1" == "AS" ]] ||
         [[ "$1" == "ER" ]] ||
@@ -1307,6 +1319,8 @@ unify_repeated () {
     echo "${1//+(,)/,}"
 }
 
+# Return 0 if '$1' has 1 or 2 digits, else 1
+# '$1' to probe
 valid_fetch_digits () {
     [[ "$1" =~ ^($FETCH_DIGITS_REGEX)$ ]]
 }
@@ -1655,6 +1669,7 @@ multi_remove () {
     echo "Done, ${#br_choices[@]} favorite(s) removed!"
 }
 
+# Check connection to CB main page
 connection_check () {
     [[ $CHECK_CONNECTION -eq 0 ]] && return
     echo "Checking connection ..."
