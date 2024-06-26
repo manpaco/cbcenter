@@ -1195,7 +1195,7 @@ keyword_search () {
     valid_keyword "$1" || send_exit_error $VALUE_ERROR "invalid keyword $1"
     curl_search "$1" > "$SEARCH_FILE" || send_exit_error $GET_ERROR "search"
     echo "Online rooms:"
-    jq -e ".${JQ_ONLINE}" "$SEARCH_FILE" 2>/dev/null || send_exit_error $GENERIC_ERROR
+    jq -e ".${JQ_ONLINE}" "$SEARCH_FILE" 2>/dev/null || send_exit_error $PROCESSING_ERROR "json search"
     echo "Recently online rooms:"
     jq -M ".${JQ_OFFLINE}" "$SEARCH_FILE"
     echo "Hashtags:"
