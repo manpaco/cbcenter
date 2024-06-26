@@ -111,7 +111,6 @@ CHUNK_NOT_FOUND=5
 STORED_ROOM=6
 UNSTORED_ROOM=7
 EMPTY_DATA=8
-INVALID_KEYWORD=11
 INVALID_COMMAND=12
 HTTP_NOT_FOUND_ERROR=13
 HTTP_TOO_MANY_REQUESTS_ERROR=14
@@ -436,10 +435,6 @@ send_exit_error () {
         "$EMPTY_DATA")
             echo "while getting room data ! (EMPTY_DATA)" 1>&2
             exit $EMPTY_DATA
-            ;;
-        "$INVALID_KEYWORD")
-            echo "invalid keyword to search !" 1>&2
-            exit $INVALID_KEYWORD
             ;;
         "$INVALID_COMMAND")
             echo "invalid command. Use '$mybasename help' for more info." 1>&2
@@ -1198,7 +1193,7 @@ room_programs () {
 # Search given keyword
 # '$1' keyword
 keyword_search () {
-    valid_username "$1" || send_exit_error $INVALID_KEYWORD
+    valid_username "$1" || send_exit_error $INVALID_PARAM "keyword $1"
     curl_search "$1" > "$SEARCH_FILE" || send_exit_error $CURL_ERROR
     echo "Online rooms:"
     jq -e ".${JQ_ONLINE}" "$SEARCH_FILE" 2>/dev/null || send_exit_error $UNKNOWN_ERROR
