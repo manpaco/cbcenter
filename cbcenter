@@ -83,7 +83,6 @@ ROOM_REGEX="^${USER_REGEX}$"
 GENDER_REGEX="${FEMALE_ROOM}|${MALE_ROOM}|${COUPLE_ROOM}|${TRANS_ROOM}"
 ROOM_RANGE_REGEX="^(($GENDER_REGEX):[0-9]{0,2}:[0-9]{1,2})$"
 FETCH_DIGITS_REGEX="[0-9]{1,2}"
-AGE_REGEX="[0-9]{2}"
 MIN_AGE=18
 MAX_AGE=99
 
@@ -1385,6 +1384,10 @@ unify_repeated () {
     echo "${1//+(,)/,}"
 }
 
+valid_fetch_digits () {
+    [[ "$1" =~ ^($FETCH_DIGITS_REGEX)$ ]]
+}
+
 # Get and show rooms from given range
 # '$1' offset
 # '$2' limit
@@ -1396,14 +1399,14 @@ unify_repeated () {
 fetch_other_rooms () {
     local offset="$1"
     if [[ -n "$offset" ]]; then
-        [[ "$offset" =~ ^($FETCH_DIGITS_REGEX)$ ]] || send_exit_error $UNKNOWN_ERROR $1
+        valid_fetch_digits "$offset" || send_exit_error $UNKNOWN_ERROR $1
         offset="$(remove_leading_zeros "$offset")"
     else
         offset=0
     fi
     local limit="$2"
     if [[ -n "$limit" ]]; then
-        [[ "$limit" =~ ^($FETCH_DIGITS_REGEX)$ ]] || send_exit_error $UNKNOWN_ERROR $2
+        valid_fetch_digits "$limit" || send_exit_error $UNKNOWN_ERROR $2
         limit="$(remove_leading_zeros "$limit")"
     else
         limit="$FETCH_STEPS"
@@ -1424,13 +1427,13 @@ fetch_other_rooms () {
     fi
     local from_age="$4"
     if [[ -n "$from_age" ]]; then
-        [[ "$from_age" =~ ^($AGE_REGEX)$ ]] || send_exit_error $UNKNOWN_ERROR $4
+        valid_fetch_digits "$from_age" || send_exit_error $UNKNOWN_ERROR $4
         from_age="$(remove_leading_zeros "$from_age")"
         [[ $from_age -ge $MIN_AGE && $from_age -le $MAX_AGE ]] || send_exit_error $UNKNOWN_ERROR "from < 18"
     fi
     local to_age="$5"
     if [[ -n "$to_age" ]]; then
-        [[ "$to_age" =~ ^($AGE_REGEX)$ ]] || send_exit_error $UNKNOWN_ERROR $5
+        valid_fetch_digits "$to_age" || send_exit_error $UNKNOWN_ERROR $5
         to_age="$(remove_leading_zeros "$to_age")"
         [[ $to_age -ge $MIN_AGE && $to_age -le $MAX_AGE ]] || send_exit_error $UNKNOWN_ERROR "to < 18"
     fi
@@ -1481,6 +1484,7 @@ fetch_other_rooms () {
     echo "region:  $regions"
     echo "hashtag: $hashtags"
     echo "$xtras"
+    return
 
     echo "Fetching ${genders:-mixed} rooms ${offset:+from $offset to $((offset+limit-1))} ..."
     fetch_roomlist_file "$offset" "$limit" "$xtras" "$OTHERS_FILE" || send_exit_error $ROOM_LIST_ERROR
