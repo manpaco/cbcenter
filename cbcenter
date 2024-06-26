@@ -250,13 +250,13 @@ show_help () {
   r, remove          [username]  - Remove one room from favorites.\n\
   R, multi-remove                - Remove multiple rooms from favorites.\n\
   ff, fetch-favorites      [-f]  - Fetch previews of favorite rooms. If '-f' is\n\
-                                   provided do not check global status(*).
+                                   provided do not check global(*) status.
   vf, view-favorites             - Open fetched previews (favorites).\n\
   lf, list-favorites  [-l] [-s]  - List of favorite rooms. If '-s' is provided\n\
-                                   show global status(*). If '-l' is provided\n\
+                                   show global(*) status. If '-l' is provided\n\
                                    show position (line) on favorites file.\n\
   rs, room-status    [-e] [username]\n\
-                                 - Show internal status(*). If '-e' is provided\n\
+                                 - Show internal(*) status. If '-e' is provided\n\
                                    return error if the room is not active(**).\n\
   rp, room-programs  [username]  - Show available programs of given room.\n\
   ri, room-info      [username]  - Show basic info.\n\
@@ -282,7 +282,7 @@ show_help () {
   __clear_more                   - Clear the 'more' directory.\n\
   __clear_all\n\
   __check_deps                   - Check program dependencies.\n\
-  __is_online          username  - Check global status(*) and return 0 if\n\
+  __is_online          username  - Check global(*) status and return 0 if\n\
                                    online, else 1. Does not check if the room\n\
                                    is active(**).\n\
   __favorites_file               - Show favorites file (path and name).\n\
