@@ -1413,8 +1413,11 @@ fetch_other_rooms () {
         [[ $from_age -gt $to_age ]] &&
             send_exit_error $VALUE_ERROR "'from age' ($from_age) is greater than 'to age' ($to_age)"
         xtras+="&ages=$from_age-$to_age"
+        # They also specify 'from_age' and 'to_age'
+        # If I not specify this two, wrong roomlist is fetched.
         xtras+="&from_age=$from_age"
-        # xtras+="&to_age=$to_age"
+        # xtras+="&to_age=$to_age" # intuitive way but not correct, so...
+        # ... they do this in the page script:
         xtras+="&to_age=$((to_age+1))"
     fi
     local regions="$6"
