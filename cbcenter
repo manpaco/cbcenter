@@ -104,7 +104,7 @@ CHECK_CONNECTION=0
 
 # ----------- EXIT CODES -----------
 OK_CODE=0
-UNKNOWN_ERROR=1
+GENERIC_ERROR=1
 GET_ERROR=2
 PROCESSING_ERROR=3
 FILESYS_ERROR=4
@@ -207,7 +207,7 @@ which_check () {
         return $OK_CODE
     else
         echo -e "${RED_FG}NOT FOUND${CLEAR_FG}"
-        return $UNKNOWN_ERROR
+        return $GENERIC_ERROR
     fi
 }
 
@@ -495,8 +495,8 @@ send_exit_error () {
             ;;
         *)
             shift
-            echo -e "UNKNOWN_ERROR due to $*" 1>&2
-            exit $UNKNOWN_ERROR
+            echo -e "GENERIC_ERROR $*" 1>&2
+            exit $GENERIC_ERROR
             ;;
     esac
 }
@@ -571,7 +571,7 @@ assert_active_room () {
     if [[ -n "$2" ]]; then
         declare -n rs_out="$2"
         rs_out="$(fetch_room_status "$1")" || send_exit_error $?
-        [[ -z "$rs_out" ]] && send_exit_error $UNKNOWN_ERROR
+        [[ -z "$rs_out" ]] && send_exit_error $GENERIC_ERROR
         return $OK_CODE
     fi
     fetch_room_status "$1" hide || send_exit_error $?
@@ -617,7 +617,7 @@ extract_playlist () {
     ep_page="$(echo -e "$ep_page")"
     [[ "$ep_page" =~ $COMPLETE_CAM_REGEX ]] || send_exit_error $PROCESSING_ERROR "web page"
     ep_out="${BASH_REMATCH[0]}"
-    [[ -z $ep_out ]] && send_exit_error $UNKNOWN_ERROR
+    [[ -z $ep_out ]] && send_exit_error $GENERIC_ERROR
     return $OK_CODE
 }
 
@@ -662,7 +662,7 @@ extract_direct_link () {
         dl_root_locat="${dl_link%/*}"
     fi
     dl_out="${dl_root_locat}/${dl_chunk}"
-    [[ -z $dl_out ]] && send_exit_error $UNKNOWN_ERROR
+    [[ -z $dl_out ]] && send_exit_error $GENERIC_ERROR
     return $OK_CODE
 }
 
@@ -743,7 +743,7 @@ favorite_room_choice () {
     local frc_choice
     favorite_choice frc_choice "$2" "$3"
     frc_out="$(get_favorite_line "$frc_choice")"
-    [[ -z $frc_out ]] && send_exit_error $UNKNOWN_ERROR
+    [[ -z $frc_out ]] && send_exit_error $GENERIC_ERROR
 }
 
 # Get the username from OTHERS_FILE using an index
@@ -799,7 +799,7 @@ list_more () {
 # Remove leading zeros from '$1' and print result
 # '$1' to check
 remove_leading_zeros () {
-    [[ -z "$1" ]] && return $UNKNOWN_ERROR
+    [[ -z "$1" ]] && return $GENERIC_ERROR
     [[ "$1" =~ ^0+$ ]] && echo 0 && return $OK_CODE
     echo "${1#"${1%%[!0]*}"}"
 }
@@ -821,7 +821,7 @@ other_room_choice () {
     [[ "$((orc_choice+1))" -gt "$(other_rooms_count)" ]] &&
         send_exit_error $VALUE_ERROR "choice $orc_choice is out of range"
     orc_out="$(get_other_by_index "$orc_choice")"
-    [[ -z $orc_out ]] && send_exit_error $UNKNOWN_ERROR
+    [[ -z $orc_out ]] && send_exit_error $GENERIC_ERROR
 }
 
 # Uses MORE_FILE
@@ -841,7 +841,7 @@ more_room_choice () {
     [[ "$((mrc_choice+1))" -gt "$(more_rooms_count)" ]] &&
         send_exit_error $VALUE_ERROR "choice $mrc_choice is out of range"
     mrc_out="$(get_more_by_index "$mrc_choice")"
-    [[ -z $mrc_out ]] && send_exit_error $UNKNOWN_ERROR
+    [[ -z $mrc_out ]] && send_exit_error $GENERIC_ERROR
 }
 
 # Add new rooms to favorites
@@ -986,14 +986,14 @@ file_count () {
 # '$2' line prefix
 # '$3' force_fetch
 ffr_helper () {
-    [[ "$3" == "true" || "$3" == "false" ]] || return $UNKNOWN_ERROR
+    [[ "$3" == "true" || "$3" == "false" ]] || return $GENERIC_ERROR
     local ffr_aux
     if $3 || is_online "$1" ffr_aux; then
         local prefix
         [[ $2 -lt 10 ]] && prefix="0$2" || prefix="$2"
         save_preview "$1" "$FAVORITES_PDIR" "$prefix" && echo -e "$2:$1 ${GREEN_FG}fetched${CLEAR_FG}" && return $OK_CODE
         echo -e "$2:$1 ${RED_FG}error${CLEAR_FG}"
-        return $UNKNOWN_ERROR
+        return $GENERIC_ERROR
     fi
     if [[ "$ffr_aux" == "offline" ]]; then
         echo "$2:$1 $ffr_aux"
@@ -1195,7 +1195,7 @@ keyword_search () {
     valid_keyword "$1" || send_exit_error $VALUE_ERROR "invalid keyword $1"
     curl_search "$1" > "$SEARCH_FILE" || send_exit_error $GET_ERROR "search"
     echo "Online rooms:"
-    jq -e ".${JQ_ONLINE}" "$SEARCH_FILE" 2>/dev/null || send_exit_error $UNKNOWN_ERROR
+    jq -e ".${JQ_ONLINE}" "$SEARCH_FILE" 2>/dev/null || send_exit_error $GENERIC_ERROR
     echo "Recently online rooms:"
     jq -M ".${JQ_OFFLINE}" "$SEARCH_FILE"
     echo "Hashtags:"
@@ -1283,7 +1283,7 @@ fru_helper () {
     [[ $2 -lt 10 ]] && prefix="0$2" || prefix="$2"
     save_preview "$1" "$3" "$prefix" && echo "$2:$1 fetched" && return $OK_CODE
     echo -e "$2:$1 ${RED_FG}error${CLEAR_FG}"
-    return $UNKNOWN_ERROR
+    return $GENERIC_ERROR
 }
 
 # This abstract function avoids duplicate code.
@@ -1679,7 +1679,7 @@ more_like_message () {
     assert_more_who
     local whois
     whois="$(cat "$MOREWHO_FILE")"
-    [[ -z "$whois" ]] && return $UNKNOWN_ERROR
+    [[ -z "$whois" ]] && return $GENERIC_ERROR
     echo "More rooms like '$whois'"
 }
 
@@ -1920,42 +1920,42 @@ case "$command" in
         while [[ "$#" -gt 0 ]]; do
             case "$1" in
                 -o)
-                    [[ -z "$2" ]] && send_exit_error $UNKNOWN_ERROR
+                    [[ -z "$2" ]] && send_exit_error $GENERIC_ERROR
                     oparam="$(trim_string "$2")"
                     shift 2
                     ;;
                 -l)
-                    [[ -z "$2" ]] && send_exit_error $UNKNOWN_ERROR
+                    [[ -z "$2" ]] && send_exit_error $GENERIC_ERROR
                     lparam="$(trim_string "$2")"
                     shift 2
                     ;;
                 -g)
-                    [[ -z "$2" ]] && send_exit_error $UNKNOWN_ERROR
+                    [[ -z "$2" ]] && send_exit_error $GENERIC_ERROR
                     gparam="$(trim_string "$2")"
                     shift 2
                     ;;
                 -f)
-                    [[ -z "$2" ]] && send_exit_error $UNKNOWN_ERROR
+                    [[ -z "$2" ]] && send_exit_error $GENERIC_ERROR
                     fparam="$(trim_string "$2")"
                     shift 2
                     ;;
                 -t)
-                    [[ -z "$2" ]] && send_exit_error $UNKNOWN_ERROR
+                    [[ -z "$2" ]] && send_exit_error $GENERIC_ERROR
                     tparam="$(trim_string "$2")"
                     shift 2
                     ;;
                 -r)
-                    [[ -z "$2" ]] && send_exit_error $UNKNOWN_ERROR
+                    [[ -z "$2" ]] && send_exit_error $GENERIC_ERROR
                     rparam="$(trim_string "$2")"
                     shift 2
                     ;;
                 -h)
-                    [[ -z "$2" ]] && send_exit_error $UNKNOWN_ERROR
+                    [[ -z "$2" ]] && send_exit_error $GENERIC_ERROR
                     hparam="$(trim_string "$2")"
                     shift 2
                     ;;
                 *)
-                    send_exit_error $UNKNOWN_ERROR
+                    send_exit_error $GENERIC_ERROR
                     ;;
             esac
         done
