@@ -340,14 +340,22 @@ TIP: If [username] is not provided, you will be asked to choose an option\n\
       Two digits (max) integer from 1 (or 01) to 99.\n\
       If none is provided, the value of FETCH_STEPS is taken.\n\
   -f from --> from age\n\
+      Two digits (max) integer from $MIN_AGE to $MAX_AGE.\n\
+      Must be less (or equal) than 'to age'.\n\
       examples: -f 20\n\
   -t to --> to age\n\
+      Two digits (max) integer from $MIN_AGE to $MAX_AGE.\n\
+      Must be greater (or equal) than 'from age'.\n\
       example: -t 30\n\
   -r region[,region2[...[,regionN]]] --> region(s)\n\
       AS (Asia), ER (Europe/Russia), NA (North America), SA (South America), O (Other).\n\
       example: -r NA,SA,O\n\
   -h hashtag[,hashtag2[...[,hashtagN]]] --> hashtag(s)\n\
-      example: -h hotkeys,bigbus,threadpool\n\nDirectories and files:\n\n\
+      example: -h hotkeys,bigbus,threadpool\n\n\
+TIP: You can set just one of the age filters and the other one will be setted to\n\
+     upper limit or lower limit to fullfill the filter 'from-to'.\n\
+     example: if yout set '-t 40' and do not set '-f' then it will be auto-setted\n\
+     to '-f $MIN_AGE'.\n\nDirectories and files:\n\n\
   PROJECT DIR:   $MYPATH/\n\
   CONFIG DIR:    $MYCONFIG_PDIR/\n\
   CONFIG:        $MYCONFIG_FILE\n\
