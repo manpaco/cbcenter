@@ -1,8 +1,9 @@
 - Add more fetch options:
   hashtags, ages, and regions. See 'http-links' file for more info.
-  Command example: cbcenter fetch-others -g c -a 20:25 -r NA,SA -o 12 -l 40 -h bigheart
+  Command example: cbcenter fetch-others -g c -f 20 -t 25 -r NA,SA -o 12 -l 40 -h bigheart
   -g --> gender
-  -a --> ages range
+  -f --> from age
+  -t --> to age
   -r --> regions
   -o --> offset
   -l --> limit
