@@ -124,7 +124,7 @@ BANNED_ROOM=23
 CONNECTION_ERROR=24
 MOREWHO_ERROR=26
 EMPTY_DIR=27
-INVALID_PARAM=28
+INVALID_VALUE=28
 
 # ------------ COLORS -------------
 RED_FG="\033[0;31m"
@@ -487,10 +487,10 @@ Re-run '$mybasename fetch-more username'." 1>&2
             echo "the connection failed !" 1>&2
             exit $CONNECTION_ERROR
             ;;
-        "$INVALID_PARAM")
+        "$INVALID_VALUE")
             shift
             echo "invalid parameter: $*"
-            exit $INVALID_PARAM
+            exit $INVALID_VALUE
             ;;
         *)
             shift
@@ -642,7 +642,7 @@ extract_direct_link () {
         show_programs dl_data
         echo -en "${YELLOW_FG}==>${CLEAR_FG} Select a program ID: "
         read -r dl_prog
-        valid_id "$dl_prog" || send_exit_error $INVALID_PARAM "program ID $dl_prog"
+        valid_id "$dl_prog" || send_exit_error $INVALID_VALUE "program ID $dl_prog"
         dl_prog="$(remove_leading_zeros "$dl_prog")"
     fi
     local dl_chunk
@@ -873,7 +873,7 @@ add_multi_room () {
 # '$1' room
 add_room () {
     echo "Adding $1 to favorites ..."
-    valid_username "$1" || send_exit_error $INVALID_PARAM "username $1"
+    valid_username "$1" || send_exit_error $INVALID_VALUE "username $1"
     stored_room "$1" && send_exit_error $STORED_ROOM
     local ar_status
     assert_active_room "$1" ar_status
@@ -889,7 +889,7 @@ remove_room () {
         rem_favorite_line "$rr_choice"
         return $OK_CODE
     fi
-    valid_username "$1" || send_exit_error $INVALID_PARAM "username $1"
+    valid_username "$1" || send_exit_error $INVALID_VALUE "username $1"
     echo "Removing $1 room from favorites ..."
     local match
     if match="$(grep -xn "$1" "$FAVORITES_FILE")"; then # Exact match
@@ -1090,7 +1090,7 @@ ask_to_play () {
 # Get and show preview of given room
 # '$1' username
 quick_thumb () {
-    valid_username "$1" || send_exit_error $INVALID_PARAM "username $1"
+    valid_username "$1" || send_exit_error $INVALID_VALUE "username $1"
     echo "Fetching thumbnail from $1 room ..."
     show_preview "$1"
     echo "  $1's room was fetched. Enjoy!"
@@ -1127,7 +1127,7 @@ assert_public_room () {
 # Play room stream
 # '$1' room
 play_room () {
-    valid_username "$1" || send_exit_error $INVALID_PARAM "username $1"
+    valid_username "$1" || send_exit_error $INVALID_VALUE "username $1"
     assert_public_room "$1"
     echo "Wait while resources are obtained ..."
     local pr_link
@@ -1138,7 +1138,7 @@ play_room () {
 # Save room stream
 # '$1' room
 save_room () {
-    valid_username "$1" || send_exit_error $INVALID_PARAM "username $1"
+    valid_username "$1" || send_exit_error $INVALID_VALUE "username $1"
     assert_public_room "$1"
     echo "Wait while resources are obtained ..."
     local sr_link
@@ -1156,7 +1156,7 @@ save_room () {
 # Save room screenshot
 # '$1' room
 save_capture () {
-    valid_username "$1" || send_exit_error $INVALID_PARAM "username $1"
+    valid_username "$1" || send_exit_error $INVALID_VALUE "username $1"
     assert_public_room "$1"
     echo "Wait while resources are obtained ..."
     local sc_link
@@ -1169,7 +1169,7 @@ save_capture () {
 # Show room programs
 # '$1' room
 room_programs () {
-    valid_username "$1" || send_exit_error $INVALID_PARAM "username $1"
+    valid_username "$1" || send_exit_error $INVALID_VALUE "username $1"
     assert_public_room "$1"
     echo "Looking for programs ..."
     local rp_link
@@ -1183,7 +1183,7 @@ room_programs () {
 # Search given keyword
 # '$1' keyword
 keyword_search () {
-    valid_username "$1" || send_exit_error $INVALID_PARAM "keyword $1"
+    valid_username "$1" || send_exit_error $INVALID_VALUE "keyword $1"
     curl_search "$1" > "$SEARCH_FILE" || send_exit_error $CURL_ERROR
     echo "Online rooms:"
     jq -e ".${JQ_ONLINE}" "$SEARCH_FILE" 2>/dev/null || send_exit_error $UNKNOWN_ERROR
@@ -1375,14 +1375,14 @@ valid_fetch_digits () {
 fetch_other_rooms () {
     local offset="$1"
     if [[ -n "$offset" ]]; then
-        valid_fetch_digits "$offset" || send_exit_error $INVALID_PARAM "offset $offset"
+        valid_fetch_digits "$offset" || send_exit_error $INVALID_VALUE "offset $offset"
         offset="$(remove_leading_zeros "$offset")"
     else
         offset=0
     fi
     local limit="$2"
     if [[ -n "$limit" ]]; then
-        valid_fetch_digits "$limit" || send_exit_error $INVALID_PARAM "limit $limit"
+        valid_fetch_digits "$limit" || send_exit_error $INVALID_VALUE "limit $limit"
         limit="$(remove_leading_zeros "$limit")"
     else
         limit="$FETCH_STEPS"
@@ -1396,24 +1396,24 @@ fetch_other_rooms () {
         IFS=","
         # check genders
         for g in $genders; do
-            valid_gender "$g" || send_exit_error $INVALID_PARAM "gender $g"
+            valid_gender "$g" || send_exit_error $INVALID_VALUE "gender $g"
         done
         unset IFS
         xtras+="&genders=$genders"
     fi
     local from_age="$4"
     if [[ -n "$from_age" ]]; then
-        valid_fetch_digits "$from_age" || send_exit_error $INVALID_PARAM "from age $from_age"
+        valid_fetch_digits "$from_age" || send_exit_error $INVALID_VALUE "from age $from_age"
         from_age="$(remove_leading_zeros "$from_age")"
         [[ $from_age -ge $MIN_AGE && $from_age -le $MAX_AGE ]] ||
-            send_exit_error $INVALID_PARAM "from age ($from_age) out of range"
+            send_exit_error $INVALID_VALUE "from age ($from_age) out of range"
     fi
     local to_age="$5"
     if [[ -n "$to_age" ]]; then
-        valid_fetch_digits "$to_age" || send_exit_error $INVALID_PARAM "to age $to_age"
+        valid_fetch_digits "$to_age" || send_exit_error $INVALID_VALUE "to age $to_age"
         to_age="$(remove_leading_zeros "$to_age")"
         [[ $to_age -ge $MIN_AGE && $to_age -le $MAX_AGE ]] ||
-            send_exit_error $INVALID_PARAM "to age ($to_age) out of range"
+            send_exit_error $INVALID_VALUE "to age ($to_age) out of range"
     fi
     if [[ -z "$from_age" && -n "$to_age" ]]; then
         from_age="$MIN_AGE"
@@ -1422,7 +1422,7 @@ fetch_other_rooms () {
     fi
     if [[ -n "$from_age" && -n "$to_age" ]]; then
         [[ $from_age -gt $to_age ]] &&
-            send_exit_error $INVALID_PARAM "'from age' ($from_age) is greater than 'to age' ($to_age)"
+            send_exit_error $INVALID_VALUE "'from age' ($from_age) is greater than 'to age' ($to_age)"
         xtras+="&ages=$from_age-$to_age"
         xtras+="&from_age=$from_age"
         # xtras+="&to_age=$to_age"
@@ -1436,7 +1436,7 @@ fetch_other_rooms () {
         IFS=","
         # check regions
         for r in $regions; do
-            valid_region "$r" || send_exit_error $INVALID_PARAM "region $r"
+            valid_region "$r" || send_exit_error $INVALID_VALUE "region $r"
         done
         unset IFS
         xtras+="&regions=$regions"
@@ -1449,7 +1449,7 @@ fetch_other_rooms () {
         IFS=","
         # check hashtags
         for h in $hashtags; do
-            valid_username "$h" || send_exit_error $INVALID_PARAM "hashtag $h"
+            valid_username "$h" || send_exit_error $INVALID_VALUE "hashtag $h"
         done
         unset IFS
         xtras+="&hashtags=$hashtags"
@@ -1481,7 +1481,7 @@ fetch_bio () {
 # Show basic info using biocontext
 # '$1' room
 room_info () {
-    valid_username "$1" || send_exit_error $INVALID_PARAM "username $1"
+    valid_username "$1" || send_exit_error $INVALID_VALUE "username $1"
     assert_active_room "$1" # it calls fetch_bio
     echo -n "Real name: "
     jq -M '.real_name' "$BIOCONTEXT_FILE"
@@ -1502,7 +1502,7 @@ room_info () {
 # Show biocontext
 # '$1' room
 room_bio () {
-    valid_username "$1" || send_exit_error $INVALID_PARAM "username $1"
+    valid_username "$1" || send_exit_error $INVALID_VALUE "username $1"
     assert_active_room "$1" # it calls fetch_bio
     jq . "$BIOCONTEXT_FILE"
 }
@@ -1517,7 +1517,7 @@ valid_gender () {
 quick_rand () {
     local gender
     gender="$1"
-    [[ -n "$gender" ]] && ! valid_gender "$gender" && send_exit_error $INVALID_PARAM "gender $gender"
+    [[ -n "$gender" ]] && ! valid_gender "$gender" && send_exit_error $INVALID_VALUE "gender $gender"
     [[ -z "$gender" ]] && case $((RANDOM%4)) in
         0) gender=f
             ;;
@@ -1562,7 +1562,7 @@ valid_command_string () {
 
 # Show room status: public, private, hidden, away, or offline
 internal_status () {
-    valid_username "$1" || send_exit_error $INVALID_PARAM "username $1"
+    valid_username "$1" || send_exit_error $INVALID_VALUE "username $1"
     local is_status
     if [[ "$2" == "-e" ]]; then
         assert_active_room "$1" is_status
@@ -1618,7 +1618,7 @@ fetch_morelist_file () {
 # Fetch and show rooms similar to '$1'
 # '$1' username
 fetch_more_rooms () {
-    valid_username "$1" || send_exit_error $INVALID_PARAM "username $1"
+    valid_username "$1" || send_exit_error $INVALID_VALUE "username $1"
     assert_active_room "$1"
     echo "Fetching more rooms like $1 ..."
     fetch_morelist_file "$1" || send_exit_error $ROOM_LIST_ERROR
@@ -1775,7 +1775,7 @@ param="$2"
 [[ -n "$param" ]] && param="$(trim_string "$param")"
 
 if [[ "$command" == "__is_online" ]]; then
-    valid_username "$param" || send_exit_error $INVALID_PARAM "username $param"
+    valid_username "$param" || send_exit_error $INVALID_VALUE "username $param"
     alt_is_online "$param"
     # When exit without error code, the value shall be the exit value of the
     # last command executed.
@@ -1784,7 +1784,7 @@ fi
 
 if [[ "$command" == "__extract_playlist" ]]; then # debug proposes
     [[ -z $param ]] && favorite_room_choice param
-    valid_username "$param" || send_exit_error $INVALID_PARAM "username $param"
+    valid_username "$param" || send_exit_error $INVALID_VALUE "username $param"
     __ep=""
     extract_playlist "$param" __ep
     echo "$__ep"
@@ -1994,6 +1994,6 @@ case "$command" in
         check_dependencies
         ;;
     *)
-        send_exit_error $INVALID_PARAM "command $command. Use '$mybasename help' for more info."
+        send_exit_error $INVALID_VALUE "command $command. Use '$mybasename help' for more info."
         ;;
 esac
