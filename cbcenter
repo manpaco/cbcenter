@@ -113,7 +113,6 @@ EMPTY_ROOM_LIST=17
 JQ_ERROR=19
 NOT_PUBLIC_ROOM=20
 ROOM_NOT_FOUND=21
-CURL_ERROR=22
 BANNED_ROOM=23
 CONNECTION_ERROR=24
 MOREWHO_ERROR=26
@@ -444,10 +443,6 @@ send_exit_error () {
         "$ROOM_NOT_FOUND")
             echo "room not found !" 1>&2
             exit $ROOM_NOT_FOUND
-            ;;
-        "$CURL_ERROR")
-            echo "while fetching resource !" 1>&2
-            exit $CURL_ERROR
             ;;
         "$BANNED_ROOM")
             echo "the room is banned from the site !" 1>&2
@@ -1158,7 +1153,7 @@ room_programs () {
 # '$1' keyword
 keyword_search () {
     valid_username "$1" || send_exit_error $INVALID_VALUE "keyword $1"
-    curl_search "$1" > "$SEARCH_FILE" || send_exit_error $CURL_ERROR
+    curl_search "$1" > "$SEARCH_FILE" || send_exit_error $GET_ERROR "search"
     echo "Online rooms:"
     jq -e ".${JQ_ONLINE}" "$SEARCH_FILE" 2>/dev/null || send_exit_error $UNKNOWN_ERROR
     echo "Recently online rooms:"
