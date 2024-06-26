@@ -1833,7 +1833,7 @@ case "$command" in
         ;;
     rs|room-status)
         connection_check
-        # discard "param" parameter
+        # discard "param" variable
         unset param
         # discard "command" parameter
         shift
