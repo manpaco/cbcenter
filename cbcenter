@@ -110,8 +110,7 @@ CHUNK_NOT_FOUND=5
 STORED_ROOM=6
 UNSTORED_ROOM=7
 EMPTY_DATA=8
-HTTP_NOT_FOUND_ERROR=13
-HTTP_TOO_MANY_REQUESTS_ERROR=14
+HTTP_ERROR=13
 ROOM_LIST_ERROR=16
 EMPTY_ROOM_LIST=17
 BIOCONTEXT_ERROR=18
@@ -429,13 +428,10 @@ send_exit_error () {
             echo "while getting room data ! (EMPTY_DATA)" 1>&2
             exit $EMPTY_DATA
             ;;
-        "$HTTP_NOT_FOUND_ERROR")
-            echo "server response $HTTP_NOT_FOUND_TEXT" 1>&2
-            exit $HTTP_NOT_FOUND_ERROR
-            ;;
-        "$HTTP_TOO_MANY_REQUESTS_ERROR")
-            echo "server response $HTTP_TOO_MANY_REQUESTS_TEXT" 1>&2
-            exit $HTTP_TOO_MANY_REQUESTS_ERROR
+        "$HTTP_ERROR")
+            shift
+            echo "server response $*" 1>&2
+            exit $HTTP_ERROR
             ;;
         "$ROOM_LIST_ERROR")
             echo "while gettig room list !" 1>&2
@@ -611,8 +607,8 @@ extract_playlist () {
     ep_cburl="$(wrap_username "$1")"
     local ep_page
     if ! ep_page="$(wget -4 -qS -O - "$ep_cburl" 2>&1)"; then
-        [[ "$ep_page" =~ $HTTP_NOT_FOUND_TEXT ]] && send_exit_error $HTTP_NOT_FOUND_ERROR
-        [[ "$ep_page" =~ $HTTP_TOO_MANY_REQUESTS_TEXT ]] && send_exit_error $HTTP_TOO_MANY_REQUESTS_ERROR
+        [[ "$ep_page" =~ $HTTP_NOT_FOUND_TEXT ]] && send_exit_error $HTTP_ERROR "$HTTP_NOT_FOUND_TEXT"
+        [[ "$ep_page" =~ $HTTP_TOO_MANY_REQUESTS_TEXT ]] && send_exit_error $HTTP_ERROR "$HTTP_TOO_MANY_REQUESTS_TEXT"
     fi
     ep_page="$(echo -e "$ep_page")"
     [[ "$ep_page" =~ $COMPLETE_CAM_REGEX ]] || send_exit_error $PLAYLIST_NOT_FOUND
