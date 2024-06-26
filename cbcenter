@@ -85,6 +85,7 @@ FETCH_DIGITS_REGEX="[0-9]{1,2}"
 MIN_AGE=18
 MAX_AGE=99
 TAG_REGEX="[a-z0-9]{2,30}"
+KEYWORD_REGEX="[A-Za-z0-9_]{2,30}"
 
 # ----------- TOOLS ------------
 JQ_ONLINE="online"
@@ -1144,10 +1145,16 @@ room_programs () {
     show_programs rp_data
 }
 
+# Return 0 if '$1' is a valid keyword, else 1
+# '$1' string
+valid_keyword () {
+    [[ "$1" =~ ^($KEYWORD_REGEX)$ ]]
+}
+
 # Search given keyword
 # '$1' keyword
 keyword_search () {
-    valid_username "$1" || send_exit_error $VALUE_ERROR "invalid keyword $1"
+    valid_keyword "$1" || send_exit_error $VALUE_ERROR "invalid keyword $1"
     curl_search "$1" > "$SEARCH_FILE" || send_exit_error $GET_ERROR "search"
     echo "Online rooms:"
     jq -e ".${JQ_ONLINE}" "$SEARCH_FILE" 2>/dev/null || send_exit_error $UNKNOWN_ERROR
