@@ -787,7 +787,8 @@ list_more () {
 # Remove leading zeros from '$1' and print result
 # '$1' to check
 remove_leading_zeros () {
-    [[ "$1" =~ ^0*$ ]] && echo 0 && return
+    [[ -z "$1" ]] && return $UNKNOWN_ERROR
+    [[ "$1" =~ ^0+$ ]] && echo 0 && return $OK_CODE
     echo "${1#"${1%%[!0]*}"}"
 }
 
