@@ -1445,14 +1445,6 @@ fetch_other_rooms () {
         unset IFS
         xtras+="&hashtags=$hashtags"
     fi
-    echo "offset:  $offset"
-    echo "limit:   $limit"
-    echo "genders: $genders"
-    echo "from:    $from_age"
-    echo "to:      $to_age"
-    echo "region:  $regions"
-    echo "hashtag: $hashtags"
-    echo "$xtras"
 
     echo "Fetching ${genders:-mixed} rooms ${offset:+from $offset to $((offset+limit-1))} ..."
     fetch_roomlist_file "$offset" "$limit" "$xtras" "$OTHERS_FILE" || send_exit_error $ROOM_LIST_ERROR
@@ -1673,14 +1665,12 @@ favorite_multi_choice () {
     [[ "${fc_out[0]}" == [qQ] || -z "${fc_out[0]}" ]] && exit $OK_CODE
     local lcount
     lcount="$(line_count "$FAVORITES_FILE")"
-    #echo "input:     ${fc_out[*]}"
     for i in "${!fc_out[@]}"; do
         valid_id "${fc_out[$i]}"  || send_exit_error $INVALID_VALUE "choice ${fc_out[$i]} (non-numeric)"
         fc_out[i]="$(remove_leading_zeros "${fc_out[$i]}")"
         [[ "${fc_out[$i]}" -lt 1 ]] && send_exit_error $INVALID_VALUE "choice ${fc_out[$i]} (out of range)"
         [[ "${fc_out[$i]}" -gt "$lcount" ]] && send_exit_error $INVALID_VALUE "choice ${fc_out[$i]} (out of range)"
     done
-    #echo "sanitized: ${fc_out[*]}"
 }
 
 # Ask user for favorites to remove
@@ -1693,7 +1683,6 @@ multi_remove () {
     # Using here-string ( <<< ), process substitution ( <(command) ), and
     # output redirection ( < ). Finally store in array with readarray
     readarray -t br_choices < <(IFS=$'\n'; sort -run <<<"${br_choices[*]}")
-    #echo "sorted:    ${br_choices[*]}"
 
     echo "You are about to delete:"
     for c in "${br_choices[@]}"; do
