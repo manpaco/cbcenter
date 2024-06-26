@@ -1483,8 +1483,8 @@ fetch_other_rooms () {
     [[ -n "$hashtags" ]] && echo "    with $hashtags hashtag(s)"
     fetch_roomlist_file "$offset" "$limit" "$xtras" "$OTHERS_FILE" || send_exit_error $GET_ERROR "room list"
     show_fetch_message
-    echo -e "${GREEN_FG}INFO:${CLEAR_FG} Sometimes promoted rooms appear. For this reason, it is possible\n\
-that more than $limit rooms will be obtained."
+    echo -e "${GREEN_FG}INFO:${CLEAR_FG} Sometimes promoted rooms appear or the request cannot be filled due to filters.\n\
+For this reason, it is possible that more (or less) than $limit rooms will be obtained."
 
     fetch_rooms_using "$OTHERS_FILE" "$JQ_RLIST_MAIN" "$JQ_RLIST_USER" clear_others_dir open_others_dir
 }
