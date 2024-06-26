@@ -111,7 +111,6 @@ CHUNK_NOT_FOUND=5
 STORED_ROOM=6
 UNSTORED_ROOM=7
 EMPTY_DATA=8
-INVALID_ROOM_RANGE=9
 INVALID_PROG_ID=10
 INVALID_KEYWORD=11
 INVALID_COMMAND=12
@@ -458,10 +457,6 @@ send_exit_error () {
         "$HTTP_TOO_MANY_REQUESTS_ERROR")
             echo "server response $HTTP_TOO_MANY_REQUESTS_TEXT" 1>&2
             exit $HTTP_TOO_MANY_REQUESTS_ERROR
-            ;;
-        "$INVALID_ROOM_RANGE")
-            echo "invalid room range !" 1>&2
-            exit $INVALID_ROOM_RANGE
             ;;
         "$BAD_CHOICE")
             echo "'${2:--}' bad choice! (${3:--})" 1>&2
