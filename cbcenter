@@ -111,7 +111,6 @@ CHUNK_NOT_FOUND=5
 STORED_ROOM=6
 UNSTORED_ROOM=7
 EMPTY_DATA=8
-INVALID_PROG_ID=10
 INVALID_KEYWORD=11
 INVALID_COMMAND=12
 HTTP_NOT_FOUND_ERROR=13
@@ -438,10 +437,6 @@ send_exit_error () {
             echo "while getting room data ! (EMPTY_DATA)" 1>&2
             exit $EMPTY_DATA
             ;;
-        "$INVALID_PROG_ID")
-            echo "invalid program ID !" 1>&2
-            exit $INVALID_PROG_ID
-            ;;
         "$INVALID_KEYWORD")
             echo "invalid keyword to search !" 1>&2
             exit $INVALID_KEYWORD
@@ -662,7 +657,7 @@ extract_direct_link () {
         show_programs dl_data
         echo -en "${YELLOW_FG}==>${CLEAR_FG} Select a program ID: "
         read -r dl_prog
-        valid_id "$dl_prog" || send_exit_error $INVALID_PROG_ID
+        valid_id "$dl_prog" || send_exit_error $INVALID_PARAM "program ID $dl_prog"
         dl_prog="$(remove_leading_zeros "$dl_prog")"
     fi
     local dl_chunk
