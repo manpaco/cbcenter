@@ -394,7 +394,11 @@ TIP: You can set just one of the age filters and the other one will be setted to
       file, see 'Configuration' section.\n\
   - How can I change video quality when playing stream?\n\
       Pres 'c' key to cycle stream 'programs'.\n\
-      See ffplay documentation for more info.\n\nExamples:\n\n\
+      See ffplay documentation for more info.\n\
+  - Where are saved the previews/captures/streams?\n\
+      Previews are saved in separated directories (others, more, and favorites).\n\
+      Captures and streams are saved in DOWNLOADS.\n\
+      See 'Directories and files' section.\n\nExamples:\n\n\
   - Add new rooms to favorites:\n\
       $mybasename add bigkeys69 hot_port22 back_xz_door560\n\
   - Fetch the first 10 female rooms:\n\
