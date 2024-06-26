@@ -1372,6 +1372,7 @@ fetch_other_rooms () {
     if [[ -n "$limit" ]]; then
         valid_fetch_digits "$limit" || send_exit_error $VALUE_ERROR "invalid limit $limit"
         limit="$(remove_leading_zeros "$limit")"
+        [[ $limit -eq 0 ]] && send_exit_error $VALUE_ERROR "limit equal to 0"
     else
         limit="$FETCH_STEPS"
     fi
