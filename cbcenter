@@ -110,7 +110,6 @@ CHUNK_NOT_FOUND=5
 STORED_ROOM=6
 UNSTORED_ROOM=7
 EMPTY_DATA=8
-INVALID_COMMAND=12
 HTTP_NOT_FOUND_ERROR=13
 HTTP_TOO_MANY_REQUESTS_ERROR=14
 BAD_CHOICE=15
@@ -430,10 +429,6 @@ send_exit_error () {
         "$EMPTY_DATA")
             echo "while getting room data ! (EMPTY_DATA)" 1>&2
             exit $EMPTY_DATA
-            ;;
-        "$INVALID_COMMAND")
-            echo "invalid command. Use '$mybasename help' for more info." 1>&2
-            exit $INVALID_COMMAND
             ;;
         "$HTTP_NOT_FOUND_ERROR")
             echo "server response $HTTP_NOT_FOUND_TEXT" 1>&2
@@ -1999,6 +1994,6 @@ case "$command" in
         check_dependencies
         ;;
     *)
-        send_exit_error $INVALID_COMMAND
+        send_exit_error $INVALID_PARAM "command $command. Use '$mybasename help' for more info."
         ;;
 esac
