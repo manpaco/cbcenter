@@ -1484,7 +1484,6 @@ fetch_other_rooms () {
     echo "region:  $regions"
     echo "hashtag: $hashtags"
     echo "$xtras"
-    return
 
     echo "Fetching ${genders:-mixed} rooms ${offset:+from $offset to $((offset+limit-1))} ..."
     fetch_roomlist_file "$offset" "$limit" "$xtras" "$OTHERS_FILE" || send_exit_error $ROOM_LIST_ERROR
