@@ -571,7 +571,7 @@ assert_active_room () {
     if [[ -n "$2" ]]; then
         declare -n rs_out="$2"
         rs_out="$(fetch_room_status "$1")" || send_exit_error $?
-        [[ -z "$rs_out" ]] && send_exit_error $GENERIC_ERROR
+        [[ -z "$rs_out" ]] && send_exit_error $GENERIC_ERROR "assert '-n \$rs_out'"
         return $OK_CODE
     fi
     fetch_room_status "$1" hide || send_exit_error $?
@@ -617,7 +617,7 @@ extract_playlist () {
     ep_page="$(echo -e "$ep_page")"
     [[ "$ep_page" =~ $COMPLETE_CAM_REGEX ]] || send_exit_error $PROCESSING_ERROR "web page"
     ep_out="${BASH_REMATCH[0]}"
-    [[ -z $ep_out ]] && send_exit_error $GENERIC_ERROR
+    [[ -z $ep_out ]] && send_exit_error $GENERIC_ERROR "assert '-n \$ep_out'"
     return $OK_CODE
 }
 
@@ -662,7 +662,7 @@ extract_direct_link () {
         dl_root_locat="${dl_link%/*}"
     fi
     dl_out="${dl_root_locat}/${dl_chunk}"
-    [[ -z $dl_out ]] && send_exit_error $GENERIC_ERROR
+    [[ -z $dl_out ]] && send_exit_error $GENERIC_ERROR "assert '-n \$dl_out'"
     return $OK_CODE
 }
 
@@ -743,7 +743,7 @@ favorite_room_choice () {
     local frc_choice
     favorite_choice frc_choice "$2" "$3"
     frc_out="$(get_favorite_line "$frc_choice")"
-    [[ -z $frc_out ]] && send_exit_error $GENERIC_ERROR
+    [[ -z $frc_out ]] && send_exit_error $GENERIC_ERROR "assert '-n \$frc_out'"
 }
 
 # Get the username from OTHERS_FILE using an index
@@ -821,7 +821,7 @@ other_room_choice () {
     [[ "$((orc_choice+1))" -gt "$(other_rooms_count)" ]] &&
         send_exit_error $VALUE_ERROR "choice $orc_choice is out of range"
     orc_out="$(get_other_by_index "$orc_choice")"
-    [[ -z $orc_out ]] && send_exit_error $GENERIC_ERROR
+    [[ -z $orc_out ]] && send_exit_error $GENERIC_ERROR "assert '-n \$orc_out'"
 }
 
 # Uses MORE_FILE
@@ -841,7 +841,7 @@ more_room_choice () {
     [[ "$((mrc_choice+1))" -gt "$(more_rooms_count)" ]] &&
         send_exit_error $VALUE_ERROR "choice $mrc_choice is out of range"
     mrc_out="$(get_more_by_index "$mrc_choice")"
-    [[ -z $mrc_out ]] && send_exit_error $GENERIC_ERROR
+    [[ -z $mrc_out ]] && send_exit_error $GENERIC_ERROR "assert '-n \$mrc_out'"
 }
 
 # Add new rooms to favorites
@@ -1679,7 +1679,7 @@ more_like_message () {
     assert_more_who
     local whois
     whois="$(cat "$MOREWHO_FILE")"
-    [[ -z "$whois" ]] && return $GENERIC_ERROR
+    valid_username "$whois" || send_exit_error $STORAGE_ERROR "altered username in '$MOREWHO_FILE' file"
     echo "More rooms like '$whois'"
 }
 
