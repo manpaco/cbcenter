@@ -127,7 +127,6 @@ ROOM_NOT_FOUND=21
 CURL_ERROR=22
 BANNED_ROOM=23
 CONNECTION_ERROR=24
-INVALID_GENDER=25
 MOREWHO_ERROR=26
 EMPTY_DIR=27
 INVALID_PARAM=28
@@ -499,10 +498,6 @@ send_exit_error () {
         "$BANNED_ROOM")
             echo "the room is banned from the site !" 1>&2
             exit $BANNED_ROOM
-            ;;
-        "$INVALID_GENDER")
-            echo "${2:+$2 }invalid gender !" 1>&2
-            exit $INVALID_GENDER
             ;;
         "$MOREWHO_ERROR")
             echo -e "file '$MOREWHO_FILE' was not found !\n\
@@ -1547,7 +1542,7 @@ valid_gender () {
 quick_rand () {
     local gender
     gender="$1"
-    [[ -n "$gender" ]] && ! valid_gender "$gender" && send_exit_error $INVALID_GENDER
+    [[ -n "$gender" ]] && ! valid_gender "$gender" && send_exit_error $INVALID_PARAM "gender $gender"
     [[ -z "$gender" ]] && case $((RANDOM%4)) in
         0) gender=f
             ;;
