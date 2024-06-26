@@ -245,7 +245,7 @@ show_dist_warning () {
 show_help () {
     echo -e "Manage your favorite rooms from $CB_ROOT_PURL.\n\nUsage:\n\n\
   $mybasename COMMAND OPTION\n\nCommands and options:\n\n\
-  a, add             username [username2 [username3 [...]]]\n\
+  a, add             username [username2 [... [usernameN]]]\n\
                                  - Add new room(s) to favorites.\n\
   r, remove          [username]  - Remove one room from favorites.\n\
   R, multi-remove                - Remove multiple rooms from favorites.\n\
