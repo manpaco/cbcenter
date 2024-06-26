@@ -427,7 +427,7 @@ send_exit_error () {
             exit $HTTP_ERROR
             ;;
         "$CONNECTION_ERROR")
-            echo "the connection failed !" 1>&2
+            echo "the connection failed" 1>&2
             exit $CONNECTION_ERROR
             ;;
         "$VALUE_ERROR")
@@ -436,19 +436,19 @@ send_exit_error () {
             exit $VALUE_ERROR
             ;;
         "$NOT_PUBLIC_ROOM")
-            echo "the room is ${2:-not public} !" 1>&2
+            echo "the room is ${2:-not public}" 1>&2
             exit $NOT_PUBLIC_ROOM
             ;;
         "$ROOM_NOT_FOUND")
-            echo "room not found !" 1>&2
+            echo "room not found" 1>&2
             exit $ROOM_NOT_FOUND
             ;;
         "$BANNED_ROOM")
-            echo "the room is banned from the site !" 1>&2
+            echo "the room is banned from the site" 1>&2
             exit $BANNED_ROOM
             ;;
         "$OFFLINE_ROOM")
-            echo "the room is offline !" 1>&2
+            echo "the room is offline" 1>&2
             exit $OFFLINE_ROOM
             ;;
         *)
