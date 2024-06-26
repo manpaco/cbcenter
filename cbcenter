@@ -79,7 +79,6 @@ MINIMAL_CAM_REGEX="${CAM_ROOT_REGEX}\/${LIVE_USER_REGEX}"
 COMPLETE_CAM_REGEX="${MINIMAL_CAM_REGEX}${EXTRA_STUFF_REGEX}\/${PLAYLIST}"
 CHUNK_REGEX="chunklist_w[0-9]+_b[0-9]+_t[0-9a-zA-Z=]+\.m3u8"
 PROG_REGEX="BANDWIDTH=[0-9]+,NAME=\"FPS:[0-9]+\.[0-9]+\",CODECS=\"[a-z0-9.,]*\",RESOLUTION=[0-9]+x[0-9]+"
-ROOM_REGEX="^${USER_REGEX}$"
 GENDER_REGEX="${FEMALE_ROOM}|${MALE_ROOM}|${COUPLE_ROOM}|${TRANS_ROOM}"
 FETCH_DIGITS_REGEX="[0-9]{1,2}"
 MIN_AGE=18
@@ -658,7 +657,7 @@ extract_direct_link () {
 # return 0 if valid, else 1
 # '$1' username
 valid_username () {
-    [[ "$1" =~ $ROOM_REGEX ]]
+    [[ "$1" =~ ^($USER_REGEX)$ ]]
 }
 
 # Show formated date on stdout
