@@ -22,7 +22,7 @@ You need the following dependencies:
 
 - `ffmpeg` (with `ffplay`) to save/play streams.
 
-- `imv` (or another image viewer) to open previews or captures.
+- `imv` (or another image viewer) to open previews.
 
 You can use `cbcenter __check_deps` to check the list:
 
