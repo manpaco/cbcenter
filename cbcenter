@@ -306,7 +306,7 @@ TIP: If [username] is not provided, you will be asked to choose an option\n\
   Create a file called 'config' in directory '${MYCONFIG_PDIR}/' and use:\n\n\
   VIEWER=\"<command>\"\n\
     Replace <command> with whatever you want. e.g. VIEWER=\"gpicview\"\n\
-    Command used to open images (previews and captures).
+    Command used to open previews.\n\
     DEFAULT: '$VIEWER'\n\
   FETCH_TYPE=\"<type>\"\n\
     Replace <type> with 'steps' or 'crazy'.\n\
