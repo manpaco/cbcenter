@@ -401,10 +401,6 @@ send_exit_error () {
     unset IFS
     echo -n "$mybasename: error: " 1>&2
     case "$1" in
-        "$OFFLINE_ROOM")
-            echo "the room is offline !" 1>&2
-            exit $OFFLINE_ROOM
-            ;;
         "$GET_ERROR")
             shift
             echo "while getting ${*:-data}"
@@ -430,6 +426,15 @@ send_exit_error () {
             echo "server response $*" 1>&2
             exit $HTTP_ERROR
             ;;
+        "$CONNECTION_ERROR")
+            echo "the connection failed !" 1>&2
+            exit $CONNECTION_ERROR
+            ;;
+        "$VALUE_ERROR")
+            shift
+            echo -e "$*"
+            exit $VALUE_ERROR
+            ;;
         "$NOT_PUBLIC_ROOM")
             echo "the room is ${2:-not public} !" 1>&2
             exit $NOT_PUBLIC_ROOM
@@ -442,14 +447,9 @@ send_exit_error () {
             echo "the room is banned from the site !" 1>&2
             exit $BANNED_ROOM
             ;;
-        "$CONNECTION_ERROR")
-            echo "the connection failed !" 1>&2
-            exit $CONNECTION_ERROR
-            ;;
-        "$VALUE_ERROR")
-            shift
-            echo -e "$*"
-            exit $VALUE_ERROR
+        "$OFFLINE_ROOM")
+            echo "the room is offline !" 1>&2
+            exit $OFFLINE_ROOM
             ;;
         *)
             shift
