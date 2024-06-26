@@ -1309,12 +1309,12 @@ valid_region () {
         [[ "$1" == "O" ]]
 }
 
-# Only keep one copy of the consecutive pattern in '$1'
+# Only keep one copy of the pattern when consecutive repetitions are found
 # example: $1='a,,bb,ccc,,,,dddd,,' and $2=','
 #          output --> 'a,bb,ccc,dddd,'
 # '$1' string
 # '$2' pattern
-unify_repeated () {
+unify_consecutive_reps () {
     shopt -s extglob
     echo "${1//+(,)/,}"
 }
@@ -1351,7 +1351,7 @@ fetch_other_rooms () {
     local xtras
     local genders="$3"
     if [[ -n "$genders" ]]; then
-        genders="$(unify_repeated "$genders" ,)"
+        genders="$(unify_consecutive_reps "$genders" ,)"
         genders="${genders#,}"
         genders="${genders%,}"
         IFS=","
@@ -1391,7 +1391,7 @@ fetch_other_rooms () {
     fi
     local regions="$6"
     if [[ -n "$regions" ]]; then
-        regions="$(unify_repeated "$regions" ,)"
+        regions="$(unify_consecutive_reps "$regions" ,)"
         regions="${regions#,}"
         regions="${regions%,}"
         IFS=","
@@ -1404,7 +1404,7 @@ fetch_other_rooms () {
     fi
     local hashtags="$7"
     if [[ -n "$hashtags" ]]; then
-        hashtags="$(unify_repeated "$hashtags" ,)"
+        hashtags="$(unify_consecutive_reps "$hashtags" ,)"
         hashtags="${hashtags#,}"
         hashtags="${hashtags%,}"
         IFS=","
