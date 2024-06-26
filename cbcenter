@@ -244,8 +244,9 @@ show_dist_warning () {
 show_help () {
     echo -e "Manage your favorite rooms from $CB_ROOT_PURL.\n\nUsage:\n\n\
   $mybasename COMMAND OPTION\n\nCommands and options:\n\n\
-  a, add             username [username2 [... [usernameN]]]\n\
-                                 - Add new room(s) to favorites.\n\
+  a, add             [-f] username [username2 [... [usernameN]]]\n\
+                                 - Add new room(s) to favorites. If '-f' is\n\
+                                   provided do not check active(**) status.\n\
   r, remove          [username]  - Remove one room from favorites.\n\
   R, multi-remove                - Remove multiple rooms from favorites.\n\
   ff, fetch-favorites      [-f]  - Fetch previews of favorite rooms. If '-f' is\n\
@@ -803,7 +804,11 @@ more_room_choice () {
 
 # Add new rooms to favorites
 # '$1' room
-add_multi_room () {
+add_rooms () {
+    local ignore_check=false
+    [[ "$1" == "-f" ]] && ignore_check=true
+    shift
+    [[ -z "$*" ]] && send_exit_error $VALUE_ERROR "none username provided"
     for a in "$@"; do
         if ! valid_username "$a"; then
             echo -e "'$a' ${RED_FG}-->${CLEAR_FG} invalid username."
@@ -814,11 +819,11 @@ add_multi_room () {
             continue
         fi
         local ar_status
-        if ! ar_status="$(fetch_room_status "$a")"; then
+        if ! $ignore_check && ! ar_status="$(fetch_room_status "$a")"; then
             echo -e "'$a' ${RED_FG}-->${CLEAR_FG} $ar_status"
             continue
         fi
-        echo "$a" >> "$FAVORITES_FILE" && echo -e "'$a' ${LIGHT_BLUE_FG}added${CLEAR_FG}! The room is $ar_status"
+        echo "$a" >> "$FAVORITES_FILE" && echo -e "'$a' ${LIGHT_BLUE_FG}added${CLEAR_FG}!${ar_status:+ The room is $ar_status}"
     done
 }
 
@@ -1763,17 +1768,17 @@ case "$command" in
         show_add_suggestion
         # discard "command" parameter
         shift
-        if [[ "$#" -gt 1 ]]; then
-            declare -a parr
-            # Trim all params
-            for r in "$@"; do
-                parr+=("$(trim_string "$r")")
-            done
-            # pass all params
-            add_multi_room "${parr[@]}"
-        else
-            add_room "$param"
-        fi
+        declare -a parr
+        # Trim all params
+        for p in "$@"; do
+            if [[ "$p" == "-f" ]]; then
+                fparam="-f"
+            else
+                parr+=("$(trim_string "$p")")
+            fi
+        done
+        # pass all params
+        add_rooms "$fparam" "${parr[@]}"
         ;;
     r|remove)
         remove_room "$param"
