@@ -441,7 +441,7 @@ send_exit_error () {
             ;;
         "$VALUE_ERROR")
             shift
-            echo -e "invalid $*"
+            echo -e "$*"
             exit $VALUE_ERROR
             ;;
         *)
@@ -588,7 +588,7 @@ extract_direct_link () {
         show_programs dl_data
         echo -en "${YELLOW_FG}==>${CLEAR_FG} Select a program ID: "
         read -r dl_prog
-        valid_id "$dl_prog" || send_exit_error $VALUE_ERROR "program ID $dl_prog"
+        valid_id "$dl_prog" || send_exit_error $VALUE_ERROR "invalid program ID $dl_prog"
         dl_prog="$(remove_leading_zeros "$dl_prog")"
     fi
     local dl_chunk
@@ -677,11 +677,11 @@ favorite_choice () {
     choice_message single "$3"
     read -r fc_out
     [[ $fc_out == [qQ] || -z "$fc_out" ]] && exit $OK_CODE
-    valid_id "$fc_out" || send_exit_error $VALUE_ERROR "choice $fc_out (non-numeric)"
+    valid_id "$fc_out" || send_exit_error $VALUE_ERROR "non-numeric choice $fc_out"
     fc_out="$(remove_leading_zeros "$fc_out")"
-    [[ "$fc_out" -lt 1 ]] && send_exit_error $VALUE_ERROR "choice $fc_out (out of range)"
+    [[ "$fc_out" -lt 1 ]] && send_exit_error $VALUE_ERROR "choice $fc_out is out of range"
     [[ "$fc_out" -gt "$(line_count "$FAVORITES_FILE")" ]] &&
-        send_exit_error $VALUE_ERROR "choice $fc_out (out of range)"
+        send_exit_error $VALUE_ERROR "choice $fc_out is out of range"
 }
 
 # Uses FAVORITES_FILE
@@ -767,10 +767,10 @@ other_room_choice () {
     choice_message single "$3"
     read -r orc_choice
     [[ $orc_choice == [qQ] || -z "$orc_choice" ]] && exit $OK_CODE
-    valid_id "$orc_choice" || send_exit_error $VALUE_ERROR "choice $mrc_choice (non-numeric)"
+    valid_id "$orc_choice" || send_exit_error $VALUE_ERROR "non-numeric choice $mrc_choice"
     orc_choice="$(remove_leading_zeros "$orc_choice")"
     [[ "$((orc_choice+1))" -gt "$(other_rooms_count)" ]] &&
-        send_exit_error $VALUE_ERROR "choice $orc_choice (out of range)"
+        send_exit_error $VALUE_ERROR "choice $orc_choice is out of range"
     orc_out="$(get_other_by_index "$orc_choice")"
     [[ -z $orc_out ]] && send_exit_error $UNKNOWN_ERROR
 }
@@ -787,10 +787,10 @@ more_room_choice () {
     choice_message single "$3"
     read -r mrc_choice
     [[ $mrc_choice == [qQ] || -z "$mrc_choice" ]] && exit $OK_CODE
-    valid_id "$mrc_choice" || send_exit_error $VALUE_ERROR "choice $mrc_choice (non-numeric)"
+    valid_id "$mrc_choice" || send_exit_error $VALUE_ERROR "non-numeric choice $mrc_choice non-numeric"
     mrc_choice="$(remove_leading_zeros "$mrc_choice")"
     [[ "$((mrc_choice+1))" -gt "$(more_rooms_count)" ]] &&
-        send_exit_error $VALUE_ERROR "choice $mrc_choice (out of range)"
+        send_exit_error $VALUE_ERROR "choice $mrc_choice is out of range"
     mrc_out="$(get_more_by_index "$mrc_choice")"
     [[ -z $mrc_out ]] && send_exit_error $UNKNOWN_ERROR
 }
@@ -820,7 +820,7 @@ add_multi_room () {
 # '$1' room
 add_room () {
     echo "Adding $1 to favorites ..."
-    valid_username "$1" || send_exit_error $VALUE_ERROR "username $1"
+    valid_username "$1" || send_exit_error $VALUE_ERROR "invalid username $1"
     stored_room "$1" && send_exit_error $STORAGE_ERROR "the room already exists in the favorites list"
     local ar_status
     assert_active_room "$1" ar_status
@@ -836,7 +836,7 @@ remove_room () {
         rem_favorite_line "$rr_choice"
         return $OK_CODE
     fi
-    valid_username "$1" || send_exit_error $VALUE_ERROR "username $1"
+    valid_username "$1" || send_exit_error $VALUE_ERROR "invalid username $1"
     echo "Removing $1 room from favorites ..."
     local match
     if match="$(grep -xn "$1" "$FAVORITES_FILE")"; then # Exact match
@@ -853,7 +853,7 @@ remove_room () {
         if echo "$match" | grep -q -E "^($rr_choice:)" -; then
             rem_favorite_line "$rr_choice"
         else
-            send_exit_error $VALUE_ERROR "choice $rr_choice (no match)"
+            send_exit_error $VALUE_ERROR "choice $rr_choice not match"
         fi
     fi
 }
@@ -1037,7 +1037,7 @@ ask_to_play () {
 # Get and show preview of given room
 # '$1' username
 quick_thumb () {
-    valid_username "$1" || send_exit_error $VALUE_ERROR "username $1"
+    valid_username "$1" || send_exit_error $VALUE_ERROR "invalid username $1"
     echo "Fetching thumbnail from $1 room ..."
     show_preview "$1"
     echo "  $1's room was fetched. Enjoy!"
@@ -1074,7 +1074,7 @@ assert_public_room () {
 # Play room stream
 # '$1' room
 play_room () {
-    valid_username "$1" || send_exit_error $VALUE_ERROR "username $1"
+    valid_username "$1" || send_exit_error $VALUE_ERROR "invalid username $1"
     assert_public_room "$1"
     echo "Wait while resources are obtained ..."
     local pr_link
@@ -1085,7 +1085,7 @@ play_room () {
 # Save room stream
 # '$1' room
 save_room () {
-    valid_username "$1" || send_exit_error $VALUE_ERROR "username $1"
+    valid_username "$1" || send_exit_error $VALUE_ERROR "invalid username $1"
     assert_public_room "$1"
     echo "Wait while resources are obtained ..."
     local sr_link
@@ -1103,7 +1103,7 @@ save_room () {
 # Save room screenshot
 # '$1' room
 save_capture () {
-    valid_username "$1" || send_exit_error $VALUE_ERROR "username $1"
+    valid_username "$1" || send_exit_error $VALUE_ERROR "invalid username $1"
     assert_public_room "$1"
     echo "Wait while resources are obtained ..."
     local sc_link
@@ -1116,7 +1116,7 @@ save_capture () {
 # Show room programs
 # '$1' room
 room_programs () {
-    valid_username "$1" || send_exit_error $VALUE_ERROR "username $1"
+    valid_username "$1" || send_exit_error $VALUE_ERROR "invalid username $1"
     assert_public_room "$1"
     echo "Looking for programs ..."
     local rp_link
@@ -1130,7 +1130,7 @@ room_programs () {
 # Search given keyword
 # '$1' keyword
 keyword_search () {
-    valid_username "$1" || send_exit_error $VALUE_ERROR "keyword $1"
+    valid_username "$1" || send_exit_error $VALUE_ERROR "invalid keyword $1"
     curl_search "$1" > "$SEARCH_FILE" || send_exit_error $GET_ERROR "search"
     echo "Online rooms:"
     jq -e ".${JQ_ONLINE}" "$SEARCH_FILE" 2>/dev/null || send_exit_error $UNKNOWN_ERROR
@@ -1322,14 +1322,14 @@ valid_fetch_digits () {
 fetch_other_rooms () {
     local offset="$1"
     if [[ -n "$offset" ]]; then
-        valid_fetch_digits "$offset" || send_exit_error $VALUE_ERROR "offset $offset"
+        valid_fetch_digits "$offset" || send_exit_error $VALUE_ERROR "invalid offset $offset"
         offset="$(remove_leading_zeros "$offset")"
     else
         offset=0
     fi
     local limit="$2"
     if [[ -n "$limit" ]]; then
-        valid_fetch_digits "$limit" || send_exit_error $VALUE_ERROR "limit $limit"
+        valid_fetch_digits "$limit" || send_exit_error $VALUE_ERROR "invalid limit $limit"
         limit="$(remove_leading_zeros "$limit")"
     else
         limit="$FETCH_STEPS"
@@ -1343,24 +1343,24 @@ fetch_other_rooms () {
         IFS=","
         # check genders
         for g in $genders; do
-            valid_gender "$g" || send_exit_error $VALUE_ERROR "gender $g"
+            valid_gender "$g" || send_exit_error $VALUE_ERROR "invalid gender $g"
         done
         unset IFS
         xtras+="&genders=$genders"
     fi
     local from_age="$4"
     if [[ -n "$from_age" ]]; then
-        valid_fetch_digits "$from_age" || send_exit_error $VALUE_ERROR "from age $from_age"
+        valid_fetch_digits "$from_age" || send_exit_error $VALUE_ERROR "invalid 'from age' value $from_age"
         from_age="$(remove_leading_zeros "$from_age")"
         [[ $from_age -ge $MIN_AGE && $from_age -le $MAX_AGE ]] ||
-            send_exit_error $VALUE_ERROR "from age ($from_age) out of range"
+            send_exit_error $VALUE_ERROR "'from age' ($from_age) is out of range"
     fi
     local to_age="$5"
     if [[ -n "$to_age" ]]; then
-        valid_fetch_digits "$to_age" || send_exit_error $VALUE_ERROR "to age $to_age"
+        valid_fetch_digits "$to_age" || send_exit_error $VALUE_ERROR "invalid 'to age' value $to_age"
         to_age="$(remove_leading_zeros "$to_age")"
         [[ $to_age -ge $MIN_AGE && $to_age -le $MAX_AGE ]] ||
-            send_exit_error $VALUE_ERROR "to age ($to_age) out of range"
+            send_exit_error $VALUE_ERROR "'to age' ($to_age) is out of range"
     fi
     if [[ -z "$from_age" && -n "$to_age" ]]; then
         from_age="$MIN_AGE"
@@ -1383,7 +1383,7 @@ fetch_other_rooms () {
         IFS=","
         # check regions
         for r in $regions; do
-            valid_region "$r" || send_exit_error $VALUE_ERROR "region $r"
+            valid_region "$r" || send_exit_error $VALUE_ERROR "invalid region $r"
         done
         unset IFS
         xtras+="&regions=$regions"
@@ -1396,7 +1396,7 @@ fetch_other_rooms () {
         IFS=","
         # check hashtags
         for h in $hashtags; do
-            valid_username "$h" || send_exit_error $VALUE_ERROR "hashtag $h"
+            valid_username "$h" || send_exit_error $VALUE_ERROR "invalid hashtag $h"
         done
         unset IFS
         xtras+="&hashtags=$hashtags"
@@ -1420,7 +1420,7 @@ fetch_bio () {
 # Show basic info using biocontext
 # '$1' room
 room_info () {
-    valid_username "$1" || send_exit_error $VALUE_ERROR "username $1"
+    valid_username "$1" || send_exit_error $VALUE_ERROR "invalid username $1"
     assert_active_room "$1" # it calls fetch_bio
     echo -n "Real name: "
     jq -M '.real_name' "$BIOCONTEXT_FILE"
@@ -1441,7 +1441,7 @@ room_info () {
 # Show biocontext
 # '$1' room
 room_bio () {
-    valid_username "$1" || send_exit_error $VALUE_ERROR "username $1"
+    valid_username "$1" || send_exit_error $VALUE_ERROR "invalid username $1"
     assert_active_room "$1" # it calls fetch_bio
     jq . "$BIOCONTEXT_FILE"
 }
@@ -1456,7 +1456,7 @@ valid_gender () {
 quick_rand () {
     local gender
     gender="$1"
-    [[ -n "$gender" ]] && ! valid_gender "$gender" && send_exit_error $VALUE_ERROR "gender $gender"
+    [[ -n "$gender" ]] && ! valid_gender "$gender" && send_exit_error $VALUE_ERROR "invalid gender $gender"
     [[ -z "$gender" ]] && case $((RANDOM%4)) in
         0) gender=f
             ;;
@@ -1501,7 +1501,7 @@ valid_command_string () {
 
 # Show room status: public, private, hidden, away, or offline
 internal_status () {
-    valid_username "$1" || send_exit_error $VALUE_ERROR "username $1"
+    valid_username "$1" || send_exit_error $VALUE_ERROR "invalid username $1"
     local is_status
     if [[ "$2" == "-e" ]]; then
         assert_active_room "$1" is_status
@@ -1557,7 +1557,7 @@ fetch_morelist_file () {
 # Fetch and show rooms similar to '$1'
 # '$1' username
 fetch_more_rooms () {
-    valid_username "$1" || send_exit_error $VALUE_ERROR "username $1"
+    valid_username "$1" || send_exit_error $VALUE_ERROR "invalid username $1"
     assert_active_room "$1"
     echo "Fetching more rooms like $1 ..."
     fetch_morelist_file "$1" || send_exit_error $GET_ERROR "room list"
@@ -1623,10 +1623,10 @@ favorite_multi_choice () {
     local lcount
     lcount="$(line_count "$FAVORITES_FILE")"
     for i in "${!fc_out[@]}"; do
-        valid_id "${fc_out[$i]}" || send_exit_error $VALUE_ERROR "choice ${fc_out[$i]} (non-numeric)"
+        valid_id "${fc_out[$i]}" || send_exit_error $VALUE_ERROR "non-numeric choice ${fc_out[$i]}"
         fc_out[i]="$(remove_leading_zeros "${fc_out[$i]}")"
-        [[ "${fc_out[$i]}" -lt 1 ]] && send_exit_error $VALUE_ERROR "choice ${fc_out[$i]} (out of range)"
-        [[ "${fc_out[$i]}" -gt "$lcount" ]] && send_exit_error $VALUE_ERROR "choice ${fc_out[$i]} (out of range)"
+        [[ "${fc_out[$i]}" -lt 1 ]] && send_exit_error $VALUE_ERROR "choice ${fc_out[$i]} is out of range"
+        [[ "${fc_out[$i]}" -gt "$lcount" ]] && send_exit_error $VALUE_ERROR "choice ${fc_out[$i]} is out of range"
     done
 }
 
@@ -1712,7 +1712,7 @@ param="$2"
 [[ -n "$param" ]] && param="$(trim_string "$param")"
 
 if [[ "$command" == "__is_online" ]]; then
-    valid_username "$param" || send_exit_error $VALUE_ERROR "username $param"
+    valid_username "$param" || send_exit_error $VALUE_ERROR "invalid username $param"
     alt_is_online "$param"
     # When exit without error code, the value shall be the exit value of the
     # last command executed.
@@ -1721,7 +1721,7 @@ fi
 
 if [[ "$command" == "__extract_playlist" ]]; then # debug proposes
     [[ -z $param ]] && favorite_room_choice param
-    valid_username "$param" || send_exit_error $VALUE_ERROR "username $param"
+    valid_username "$param" || send_exit_error $VALUE_ERROR "invalid username $param"
     __ep=""
     extract_playlist "$param" __ep
     echo "$__ep"
@@ -1931,6 +1931,6 @@ case "$command" in
         check_dependencies
         ;;
     *)
-        send_exit_error $VALUE_ERROR "command $command\nUse '$mybasename help' for more info."
+        send_exit_error $VALUE_ERROR "command $command not found\nUse '$mybasename help' for more info."
         ;;
 esac
