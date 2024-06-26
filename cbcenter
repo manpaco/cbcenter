@@ -501,7 +501,7 @@ send_exit_error () {
             exit $BANNED_ROOM
             ;;
         "$INVALID_GENDER")
-            echo "invalid gender !" 1>&2
+            echo "${2:+$2 }invalid gender !" 1>&2
             exit $INVALID_GENDER
             ;;
         "$MOREWHO_ERROR")
@@ -1417,8 +1417,7 @@ fetch_other_rooms () {
         IFS=","
         # check genders
         for g in $genders; do
-            [[ "$g" =~ ^($GENDER_REGEX)$ ]] ||
-                send_exit_error $UNKNOWN_ERROR $g
+            valid_gender "$g" || send_exit_error $INVALID_GENDER "$g"
         done
         unset IFS
         xtras+="&genders=$genders"
