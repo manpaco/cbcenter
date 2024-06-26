@@ -273,6 +273,7 @@ show_help () {
   ss, save-stream    [username]  - Save stream of given room.\n\
   ps, play-stream    [username]  - Play stream of given room.\n\
   ks, keyword-search    keyword  - Search a keyword on the website.\n\
+  th, top-hashtags        count  - Get 'n' top hashtag(s).\n\
   ra, random           [gender]  - Show preview of random room. If 'gender' is\n\
                                    provided, only fetch 'gender' rooms.\n\
   tn, thumbnail      [username]  - Show preview of given room.\n\
@@ -1682,6 +1683,22 @@ connection_check () {
     ping -c 1 "${CB_ROOT_PURL##*/}" &>/dev/null || send_exit_error $CONNECTION_ERROR
 }
 
+# Get 'n' top tags
+# '$1' n
+curl_top_tags () {
+    curl -sL --compressed -H "$XRW_HEADER" "${TOP_TAGS_PURL}/?count=$1"
+}
+
+# Get and show 'n' top tags
+# '$1' n
+top_hashtags () {
+    valid_fetch_digits "$1" || send_exit_error $VALUE_ERROR "invalid value $1"
+    local count
+    count="$(remove_leading_zeros "$1")"
+    [[ $count -gt 0 ]] || send_exit_error $VALUE_ERROR "the value must be greater than 0"
+    curl_top_tags "$count" | jq -M .all_tags
+}
+
 command="$1"
 [[ -n "$command" ]] && command="$(trim_string "$command")"
 
@@ -1933,6 +1950,10 @@ case "$command" in
     ks|keyword-search)
         connection_check
         keyword_search "$param"
+        ;;
+    th|top-hashtags)
+        connection_check
+        top_hashtags "$param"
         ;;
     ra|random)
         connection_check
