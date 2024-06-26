@@ -109,7 +109,6 @@ CHUNK_NOT_FOUND=5
 STORED_ROOM=6
 UNSTORED_ROOM=7
 HTTP_ERROR=13
-ROOM_LIST_ERROR=16
 EMPTY_ROOM_LIST=17
 BIOCONTEXT_ERROR=18
 JQ_ERROR=19
@@ -430,10 +429,6 @@ send_exit_error () {
             shift
             echo "server response $*" 1>&2
             exit $HTTP_ERROR
-            ;;
-        "$ROOM_LIST_ERROR")
-            echo "while gettig room list !" 1>&2
-            exit $ROOM_LIST_ERROR
             ;;
         "$EMPTY_ROOM_LIST")
             echo "empty room list !" 1>&2
@@ -1440,7 +1435,7 @@ fetch_other_rooms () {
     fi
 
     echo "Fetching ${genders:-mixed} rooms ${offset:+from $offset to $((offset+limit-1))} ..."
-    fetch_roomlist_file "$offset" "$limit" "$xtras" "$OTHERS_FILE" || send_exit_error $ROOM_LIST_ERROR
+    fetch_roomlist_file "$offset" "$limit" "$xtras" "$OTHERS_FILE" || send_exit_error $GET_ERROR "room list"
     show_fetch_message
     echo -e "${GREEN_FG}INFO:${CLEAR_FG} Sometimes promoted rooms appear. For this reason, it is possible\n\
 that more than $limit rooms will be obtained."
@@ -1505,7 +1500,7 @@ quick_rand () {
             ;;
     esac
     echo "Fetching random room ..."
-    fetch_roomlist_file $((RANDOM%100)) 1 "&genders=$gender" "$RANDOM_FILE" || send_exit_error $ROOM_LIST_ERROR
+    fetch_roomlist_file $((RANDOM%100)) 1 "&genders=$gender" "$RANDOM_FILE" || send_exit_error $GET_ERROR "room list"
     local room
     room="$(jq -Mre ".${JQ_RLIST_MAIN}[0].${JQ_RLIST_USER}" "$RANDOM_FILE" 2>/dev/null)" ||
         send_exit_error $JQ_ERROR
@@ -1597,7 +1592,7 @@ fetch_more_rooms () {
     valid_username "$1" || send_exit_error $INVALID_VALUE "username $1"
     assert_active_room "$1"
     echo "Fetching more rooms like $1 ..."
-    fetch_morelist_file "$1" || send_exit_error $ROOM_LIST_ERROR
+    fetch_morelist_file "$1" || send_exit_error $GET_ERROR "room list"
     echo "$1" > "$MOREWHO_FILE"
     show_fetch_message
     fetch_rooms_using "$MORE_FILE" "$JQ_MLIST_MAIN" "$JQ_MLIST_USER" clear_more_dir open_more_dir
