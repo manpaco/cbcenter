@@ -1994,6 +1994,6 @@ case "$command" in
         check_dependencies
         ;;
     *)
-        send_exit_error $INVALID_VALUE "command $command. Use '$mybasename help' for more info."
+        send_exit_error $INVALID_VALUE "command $command\nUse '$mybasename help' for more info."
         ;;
 esac
