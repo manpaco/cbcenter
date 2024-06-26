@@ -1920,42 +1920,42 @@ case "$command" in
         while [[ "$#" -gt 0 ]]; do
             case "$1" in
                 -o)
-                    [[ -z "$2" ]] && send_exit_error $GENERIC_ERROR
+                    [[ -z "$2" ]] && send_exit_error $VALUE_ERROR "missing $1 value"
                     oparam="$(trim_string "$2")"
                     shift 2
                     ;;
                 -l)
-                    [[ -z "$2" ]] && send_exit_error $GENERIC_ERROR
+                    [[ -z "$2" ]] && send_exit_error $VALUE_ERROR "missing $1 value"
                     lparam="$(trim_string "$2")"
                     shift 2
                     ;;
                 -g)
-                    [[ -z "$2" ]] && send_exit_error $GENERIC_ERROR
+                    [[ -z "$2" ]] && send_exit_error $VALUE_ERROR "missing $1 value"
                     gparam="$(trim_string "$2")"
                     shift 2
                     ;;
                 -f)
-                    [[ -z "$2" ]] && send_exit_error $GENERIC_ERROR
+                    [[ -z "$2" ]] && send_exit_error $VALUE_ERROR "missing $1 value"
                     fparam="$(trim_string "$2")"
                     shift 2
                     ;;
                 -t)
-                    [[ -z "$2" ]] && send_exit_error $GENERIC_ERROR
+                    [[ -z "$2" ]] && send_exit_error $VALUE_ERROR "missing $1 value"
                     tparam="$(trim_string "$2")"
                     shift 2
                     ;;
                 -r)
-                    [[ -z "$2" ]] && send_exit_error $GENERIC_ERROR
+                    [[ -z "$2" ]] && send_exit_error $VALUE_ERROR "missing $1 value"
                     rparam="$(trim_string "$2")"
                     shift 2
                     ;;
                 -h)
-                    [[ -z "$2" ]] && send_exit_error $GENERIC_ERROR
+                    [[ -z "$2" ]] && send_exit_error $VALUE_ERROR "missing $1 value"
                     hparam="$(trim_string "$2")"
                     shift 2
                     ;;
                 *)
-                    send_exit_error $GENERIC_ERROR
+                    send_exit_error $VALUE_ERROR "invalid parameter $1"
                     ;;
             esac
         done
