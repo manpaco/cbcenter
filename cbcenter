@@ -61,7 +61,7 @@ FEMALE_ROOM="f"
 MALE_ROOM="m"
 COUPLE_ROOM="c"
 TRANS_ROOM="t"
-ID_REGEX="^[0-9]+$"
+ID_REGEX="[0-9]+"
 CB_ROOT_PURL="https://www.chaturbate.com"
 CAM_ROOT_REGEX="https:\/\/edge[0-9]+-[a-z]+\.live\.mmcdn\.com"
 LIVE_PREFIX="live-"
@@ -568,7 +568,7 @@ assert_active_room () {
 # return 0 if valid, else 1
 # '$1' id
 valid_id () {
-    [[ "$1" =~ $ID_REGEX ]]
+    [[ "$1" =~ ^($ID_REGEX)$ ]]
 }
 
 # Extract programs from playlist data and show on stdout
