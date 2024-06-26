@@ -245,170 +245,196 @@ show_dist_warning () {
 # Show help block
 # always call before 'configure' to show correct default values
 show_help () {
-    echo -e "Manage your favorite rooms from $CB_ROOT_PURL.\n\nUsage:\n\n\
-  $mybasename COMMAND OPTION\n\nCommands and options:\n\n\
-  a, add             [-f] username [username2 [... [usernameN]]]\n\
-                                 - Add new room(s) to favorites. If '-f' is\n\
-                                   provided do not check active(**) status.\n\
-  r, remove          [username]  - Remove one room from favorites.\n\
-  R, multi-remove                - Remove multiple rooms from favorites.\n\
-  ff, fetch-favorites      [-f]  - Fetch previews of favorite rooms. If '-f' is\n\
+    echo -e "\
+Manage your favorite rooms from $CB_ROOT_PURL.
+
+Usage:
+
+  $mybasename COMMAND OPTION
+
+Commands and options:
+
+  a, add             [-f] username [username2 [... [usernameN]]]
+                                 - Add new room(s) to favorites. If '-f' is
+                                   provided do not check active(**) status.
+  r, remove          [username]  - Remove one room from favorites.
+  R, multi-remove                - Remove multiple rooms from favorites.
+  ff, fetch-favorites      [-f]  - Fetch previews of favorite rooms. If '-f' is
                                    provided do not check global(*) status.
-  vf, view-favorites             - Open fetched previews (favorites).\n\
-  lf, list-favorites  [-l] [-s]  - List of favorite rooms. If '-s' is provided\n\
-                                   show global(*) status. If '-l' is provided\n\
-                                   show position (line) on favorites file.\n\
-  rs, room-status    [-e] [username]\n\
-                                 - Show internal(*) status. If '-e' is provided\n\
-                                   return error if the room is not active(**).\n\
-  rp, room-programs  [username]  - Show available programs of given room.\n\
-  ri, room-info      [username]  - Show basic info.\n\
-  rb, room-bio       [username]  - Show biocontext.\n\
-  fo, fetch-others   [filters]   - Fetch previews of other rooms. See 'Filters'\n\
-                                   section.\n\
-  vo, view-others                - Open fetched previews (others).\n\
-  lo, list-others                - List of fetched rooms (others).\n\
-  fm, fetch-more     [username]  - Fetch previews of rooms like 'username'.\n\
-  vm, view-more                  - Open fetched previews (more).\n\
-  lm, list-more                  - List of fetched rooms (more).\n\
-  sc, save-capture   [username]  - Save a screenshot (high resolution).\n\
-  ss, save-stream    [username]  - Save stream of given room.\n\
-  ps, play-stream    [username]  - Play stream of given room.\n\
-  ks, keyword-search    keyword  - Search a keyword on the website.\n\
-  th, top-hashtags        count  - Get 'n' top hashtag(s).\n\
-  ra, random           [gender]  - Show preview of random room. If 'gender' is\n\
-                                   provided, only fetch 'gender' rooms.\n\
-  tn, thumbnail      [username]  - Show preview of given room.\n\
-  __clear_favorites              - Clear the 'favorites' directory.\n\
-  __clear_captures               - Clear the 'captures' directory.\n\
-  __clear_streams                - Clear the 'streams' directory.\n\
-  __clear_others                 - Clear the 'others' directory.\n\
-  __clear_more                   - Clear the 'more' directory.\n\
-  __clear_all\n\
-  __check_deps                   - Check program dependencies.\n\
-  __is_online          username  - Check global(*) status and return 0 if\n\
-                                   online, else 1. Does not check if the room\n\
-                                   is active(**).\n\
-  __favorites_file               - Show favorites file (path and name).\n\
-  h, help                        - This text.\n\n\
-(*) There are two types of room status:\n\
-    Global: non-detailed room status (less network usage).\n\
-            Possible values: online or offline.\n\
-    Internal: detailed room status.\n\
-              Possible values: public, private, hidden, away, or offline. If\n\
-              '-e' option is not provided, also: not found or banned.\n\
-    Therefore, \"online\" means that the room can be public, private, hidden,\n\
-    or away. On the other hand, \"offline\" could mean the room: is offline,\n\
-    not found (does not exist), or banned.\n\
-(**) An active room is one that EXISTS and is NOT BANNED.\n\n\
+  vf, view-favorites             - Open fetched previews (favorites).
+  lf, list-favorites  [-l] [-s]  - List of favorite rooms. If '-s' is provided
+                                   show global(*) status. If '-l' is provided
+                                   show position (line) on favorites file.
+  rs, room-status    [-e] [username]
+                                 - Show internal(*) status. If '-e' is provided
+                                   return error if the room is not active(**).
+  rp, room-programs  [username]  - Show available programs of given room.
+  ri, room-info      [username]  - Show basic info.
+  rb, room-bio       [username]  - Show biocontext.
+  fo, fetch-others   [filters]   - Fetch previews of other rooms. See 'Filters'
+                                   section.
+  vo, view-others                - Open fetched previews (others).
+  lo, list-others                - List of fetched rooms (others).
+  fm, fetch-more     [username]  - Fetch previews of rooms like 'username'.
+  vm, view-more                  - Open fetched previews (more).
+  lm, list-more                  - List of fetched rooms (more).
+  sc, save-capture   [username]  - Save a screenshot (high resolution).
+  ss, save-stream    [username]  - Save stream of given room.
+  ps, play-stream    [username]  - Play stream of given room.
+  ks, keyword-search    keyword  - Search a keyword on the website.
+  th, top-hashtags        count  - Get 'n' top hashtag(s).
+  ra, random           [gender]  - Show preview of random room. If 'gender' is
+                                   provided, only fetch 'gender' rooms.
+  tn, thumbnail      [username]  - Show preview of given room.
+  __clear_favorites              - Clear the 'favorites' directory.
+  __clear_captures               - Clear the 'captures' directory.
+  __clear_streams                - Clear the 'streams' directory.
+  __clear_others                 - Clear the 'others' directory.
+  __clear_more                   - Clear the 'more' directory.
+  __clear_all
+  __check_deps                   - Check program dependencies.
+  __is_online          username  - Check global(*) status and return 0 if
+                                   online, else 1. Does not check if the room
+                                   is active(**).
+  __favorites_file               - Show favorites file (path and name).
+  h, help                        - This text.
+
+(*) There are two types of room status:
+    Global: non-detailed room status (less network usage).
+            Possible values: online or offline.
+    Internal: detailed room status.
+              Possible values: public, private, hidden, away, or offline. If
+              '-e' option is not provided, also: not found or banned.
+    Therefore, \"online\" means that the room can be public, private, hidden,
+    or away. On the other hand, \"offline\" could mean the room: is offline,
+    not found (does not exist), or banned.
+(**) An active room is one that EXISTS and is NOT BANNED.
+
 TIP: If [username] is not provided, you will be asked to choose an option\n\
-     from your favorites.\n\nConfiguration:\n\n\
-  Create a file called 'config' in directory '${MYCONFIG_PDIR}/' and use:\n\n\
-  VIEWER=\"<command>\"\n\
-    Replace <command> with whatever you want. e.g. VIEWER=\"gpicview\"\n\
-    Command used to open previews.\n\
-    DEFAULT: '$VIEWER'\n\
-  FETCH_TYPE=\"<type>\"\n\
-    Replace <type> with 'steps' or 'crazy'.\n\
-    steps: Fetch x rooms in each iteration until you obtain all of them.\n\
-    crazy: Fetch all the rooms at once.\n\
-    DEFAULT: '$FETCH_TYPE'\n\
-  FETCH_STEPS=\"<int>\"\n\
-    Replace <int> with an integer greater than 0.\n\
+     from your favorites.
+
+Configuration:
+
+  Create a file called 'config' in directory '${MYCONFIG_PDIR}/' and use:
+
+  VIEWER=\"<command>\"
+    Replace <command> with whatever you want. e.g. VIEWER=\"gpicview\"
+    Command used to open previews.
+    DEFAULT: '$VIEWER'
+  FETCH_TYPE=\"<type>\"
+    Replace <type> with 'steps' or 'crazy'.
+    steps: Fetch x rooms in each iteration until you obtain all of them.
+    crazy: Fetch all the rooms at once.
+    DEFAULT: '$FETCH_TYPE'
+  FETCH_STEPS=\"<int>\"
+    Replace <int> with an integer greater than 0.
     Number of rooms fetched in each iteration when user set FETCH_TYPE to 'steps'.
-    DEFAULT: '$FETCH_STEPS'\n\
-  CHECK_CONNECTION=\"<bool>\"\n\
-    Replace <bool> with a boolean integer, i.e. 1 or 0.\n\
+    DEFAULT: '$FETCH_STEPS'
+  CHECK_CONNECTION=\"<bool>\"
+    Replace <bool> with a boolean integer, i.e. 1 or 0.
     Check connection to main page. If set to 0 ignore check.
-    DEFAULT: '$CHECK_CONNECTION'\n\
-  OPEN_ENTIRE_DIR=\"<bool>\"\n\
-    Repalce <bool> with a boolean integer.\n\
+    DEFAULT: '$CHECK_CONNECTION'
+  OPEN_ENTIRE_DIR=\"<bool>\"
+    Repalce <bool> with a boolean integer.
     Open entire directories with VIEWER. If set to 0 open the first file.
-    DEFAULT: '$OPEN_ENTIRE_DIR'\n\n\
-  Comments and unnecessary spaces are not allowed. e.g. the following lines\n\
-  are not valid: '# Setting to 0 because...' or ' VIEWER=\"imv -fd\" '\n\
-                  ^ comment                      ^                ^\n\
-                                                 ^ unnecessary spaces\nFilters:\n\n\
-  -g gender[,gender2[...[,genderN]]] --> gender(s): Gender of room users.\n\
-      'f' (female), 'm' (male), 'c' (couple), 't' (trans)\n\
-      example: -g c,t\n\
-      If none is provided, fetch mixed rooms.\n\
-  -o offset --> offset: Beginning room.\n\
-      Two digits (max) integer from 0 (or 00) to 99.\n\
-      If none is provided, the value 0 is taken.\n\
-  -l limit --> limit: Number of rooms.\n\
-      Two digits (max) integer from 1 (or 01) to 99.\n\
-      If none is provided, the value of FETCH_STEPS is taken.\n\
-  -f from --> from age\n\
-      Two digits (max) integer from $MIN_AGE to $MAX_AGE.\n\
-      Must be less (or equal) than 'to age'.\n\
-      examples: -f 20\n\
-  -t to --> to age\n\
-      Two digits (max) integer from $MIN_AGE to $MAX_AGE.\n\
-      Must be greater (or equal) than 'from age'.\n\
-      example: -t 30\n\
-  -r region[,region2[...[,regionN]]] --> region(s)\n\
-      AS (Asia), ER (Europe/Russia), NA (North America), SA (South America), O (Other).\n\
-      example: -r NA,SA,O\n\
-  -h hashtag[,hashtag2[...[,hashtagN]]] --> hashtag(s)\n\
-      example: -h hotkeys,bigbus,threadpool\n\n\
-TIP: You can set just one of the age filters and the other one will be setted to\n\
-     upper limit or lower limit to fullfill the filter 'from-to'.\n\
-     example: if yout set '-t 40' and do not set '-f' then it will be auto-setted\n\
-     to '-f $MIN_AGE'.\n\nDirectories and files:\n\n\
-  PROJECT DIR:   $MYPATH/\n\
-  CONFIG DIR:    $MYCONFIG_PDIR/\n\
-  CONFIG:        $MYCONFIG_FILE\n\
-  DOWNLOADS DIR: $DOWNLOADS_PDIR/\n\
-  FAVORITES DIR: $FAVORITES_PDIR/\n\
-  FAVORITES:     $FAVORITES_FILE\n\
-  TEMPORAL DIR:  $TMP_PDIR/\n\
-  MORE DIR:      $MORE_PDIR/\n\
-  OTHERS DIR:    $OTHERS_PDIR/\n\
-  BIOCONTEXT:    $BIOCONTEXT_FILE\n\
-  MORE:          $MORE_FILE\n\
-  MORE (who):    $MOREWHO_FILE\n\
-  OTHERS:        $OTHERS_FILE\n\
-  RANDOM:        $RANDOM_FILE\n\
-  SEARCH:        $SEARCH_FILE\n\nFAQs:\n\n\
-  - What is a stream 'program'?\n\
-      A 'program' represent the video 'channel' or 'quality'. This channels\n\
-      are identified by ID, from '0' (lowest quality) to 'n' (highest quality).\n\
-      To get programs use 'room-programs' command. You can go to\n\
-      FFMPEG Documentation for more info.\n\
-  - What do the strange errors mean when I want to play/save/capture/fetch?\n\
-      You are probably being blocked by rate limiting.\n\
-      A rate limiting solution measures the amount of time between each\n\
-      request from each IP address, and also measures the number of\n\
-      requests within a specified timeframe. If there are too many\n\
-      requests from a single IP within the given timeframe, the rate\n\
-      limiting solution will not fulfill the IP address's requests for a\n\
-      certain amount of time.\n\
-  - How can I change the default image viewer for previews?\n\
-      Use VIEWER configuration variable. Remember to set OPEN_ENTIRE_DIR to 0\n\
-      if your viewer do not support open entire directories. See 'Configuration'\n\
-      section for more info.\n\
-  - Why are the rooms fetched in x at a time?\n\
-      To avoid reaching the rate limit too soon.\n\
-      Also you can change that value (or even disable the option) in 'config'\n\
-      file, see 'Configuration' section.\n\
-  - How can I change video quality when playing stream?\n\
-      Pres 'c' key to cycle stream 'programs'.\n\
-      See ffplay documentation for more info.\n\
-  - Where are saved the previews/captures/streams?\n\
-      Previews are saved in separated directories (others, more, and favorites).\n\
-      Captures and streams are saved in DOWNLOADS.\n\
-      See 'Directories and files' section.\n\nExamples:\n\n\
-  - Add new rooms to favorites:\n\
-      $mybasename add bigkeys69 hot_port22 back_xz_door560\n\
-  - Fetch the first 10 female rooms:\n\
-      $mybasename fetch-others -g f -l 10\n\
-  - Fetch 30 (couples) rooms starting from 13th:\n\
-      $mybasename fetch-others -g c -l 30 -o 13\n\
-  - Fetch a (random) trans room:\n\
-      $mybasename random t\n\
-  - Fetch more rooms with a similar appearance and content:\n\
-      $mybasename fetch-more userhere\n"
+    DEFAULT: '$OPEN_ENTIRE_DIR'
+
+  Comments and unnecessary spaces are not allowed. e.g. the following lines
+  are not valid: '# Setting to 0 because...' or ' VIEWER=\"imv -fd\" '
+                  ^ comment                      ^                ^
+                                                 ^ unnecessary spaces
+Filters:
+
+  -g gender[,gender2[...[,genderN]]] --> gender(s): Gender of room users.
+      'f' (female), 'm' (male), 'c' (couple), 't' (trans)
+      example: -g c,t
+      If none is provided, fetch mixed rooms.
+  -o offset --> offset: Beginning room.
+      Two digits (max) integer from 0 (or 00) to 99.
+      If none is provided, the value 0 is taken.
+  -l limit --> limit: Number of rooms.
+      Two digits (max) integer from 1 (or 01) to 99.
+      If none is provided, the value of FETCH_STEPS is taken.
+  -f from --> from age
+      Two digits (max) integer from $MIN_AGE to $MAX_AGE.
+      Must be less (or equal) than 'to age'.
+      examples: -f 20
+  -t to --> to age
+      Two digits (max) integer from $MIN_AGE to $MAX_AGE.
+      Must be greater (or equal) than 'from age'.
+      example: -t 30
+  -r region[,region2[...[,regionN]]] --> region(s)
+      AS (Asia), ER (Europe/Russia), NA (North America), SA (South America), O (Other).
+      example: -r NA,SA,O
+  -h hashtag[,hashtag2[...[,hashtagN]]] --> hashtag(s)
+      example: -h hotkeys,bigbus,threadpool
+
+TIP: You can set just one of the age filters and the other one will be setted to
+     upper limit or lower limit to fullfill the filter 'from-to'.
+     example: if yout set '-t 40' and do not set '-f' then it will be auto-setted
+     to '-f $MIN_AGE'.
+
+Directories and files:
+
+  PROJECT DIR:   $MYPATH/
+  CONFIG DIR:    $MYCONFIG_PDIR/
+  CONFIG:        $MYCONFIG_FILE
+  DOWNLOADS DIR: $DOWNLOADS_PDIR/
+  FAVORITES DIR: $FAVORITES_PDIR/
+  FAVORITES:     $FAVORITES_FILE
+  TEMPORAL DIR:  $TMP_PDIR/
+  MORE DIR:      $MORE_PDIR/
+  OTHERS DIR:    $OTHERS_PDIR/
+  BIOCONTEXT:    $BIOCONTEXT_FILE
+  MORE:          $MORE_FILE
+  MORE (who):    $MOREWHO_FILE
+  OTHERS:        $OTHERS_FILE
+  RANDOM:        $RANDOM_FILE
+  SEARCH:        $SEARCH_FILE
+
+FAQs:
+
+  - What is a stream 'program'?
+      A 'program' represent the video 'channel' or 'quality'. This channels
+      are identified by ID, from '0' (lowest quality) to 'n' (highest quality).
+      To get programs use 'room-programs' command. You can go to
+      FFMPEG Documentation for more info.
+  - What do the strange errors mean when I want to play/save/capture/fetch?
+      You are probably being blocked by rate limiting.
+      A rate limiting solution measures the amount of time between each
+      request from each IP address, and also measures the number of
+      requests within a specified timeframe. If there are too many
+      requests from a single IP within the given timeframe, the rate
+      limiting solution will not fulfill the IP address's requests for a
+      certain amount of time.
+  - How can I change the default image viewer for previews?
+      Use VIEWER configuration variable. Remember to set OPEN_ENTIRE_DIR to 0
+      if your viewer do not support open entire directories. See 'Configuration'
+      section for more info.
+  - Why are the rooms fetched in x at a time?
+      To avoid reaching the rate limit too soon.
+      Also you can change that value (or even disable the option) in 'config'
+      file, see 'Configuration' section.
+  - How can I change video quality when playing stream?
+      Pres 'c' key to cycle stream 'programs'.
+      See ffplay documentation for more info.
+  - Where are saved the previews/captures/streams?
+      Previews are saved in separated directories (others, more, and favorites).
+      Captures and streams are saved in DOWNLOADS.
+      See 'Directories and files' section.
+
+Examples:
+
+  - Add new rooms to favorites:
+      $mybasename add bigkeys69 hot_port22 back_xz_door560
+  - Fetch the first 10 female rooms:
+      $mybasename fetch-others -g f -l 10
+  - Fetch 30 (couples) rooms starting from 13th:
+      $mybasename fetch-others -g c -l 30 -o 13
+  - Fetch a (random) trans room:
+      $mybasename random t
+  - Fetch more rooms with a similar appearance and content:
+      $mybasename fetch-more userhere"
 }
 
 # Send error message and exit program
