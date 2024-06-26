@@ -68,7 +68,7 @@ CAM_ROOT_REGEX="https:\/\/edge[0-9]+-[a-z]+\.live\.mmcdn\.com"
 LIVE_PREFIX="live-"
 LIVE_REGEX="${LIVE_PREFIX}(hls|edge)"
 USER_PREFIX="amlst:"
-USER_REGEX="[A-Za-z0-9_]{3,30}"
+USER_REGEX="[a-z0-9_]{3,30}"
 USER_SUFFIX="-sd-"
 CODE64="[0-9a-z]{64}"
 CODE64_SUFFIX="_trns_"
@@ -85,7 +85,7 @@ FETCH_DIGITS_REGEX="[0-9]{1,2}"
 MIN_AGE=18
 MAX_AGE=99
 TAG_REGEX="[a-z0-9]{2,30}"
-KEYWORD_REGEX="[A-Za-z0-9_]{2,30}"
+KEYWORD_REGEX="[a-z0-9_]{2,30}" # TAG_REGEX union USER_REGEX
 
 # ----------- TOOLS ------------
 JQ_ONLINE="online"
