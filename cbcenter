@@ -1477,7 +1477,10 @@ fetch_other_rooms () {
         xtras+="&hashtags=$hashtags"
     fi
 
-    echo "Fetching ${genders:-mixed} rooms ${offset:+from $offset to $((offset+limit-1))} ..."
+    echo -e "Fetching $limit ${genders:-mixed} room(s) at $offset offset ...
+    ${from_age:+from $from_age to $to_age years}
+    ${regions:+in $regions region(s)}
+    ${hashtags:+with $hashtags hashtag(s)}"
     fetch_roomlist_file "$offset" "$limit" "$xtras" "$OTHERS_FILE" || send_exit_error $GET_ERROR "room list"
     show_fetch_message
     echo -e "${GREEN_FG}INFO:${CLEAR_FG} Sometimes promoted rooms appear. For this reason, it is possible\n\
