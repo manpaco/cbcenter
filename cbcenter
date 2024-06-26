@@ -105,6 +105,7 @@ UNKNOWN_ERROR=1
 OFFLINE_ROOM=2
 GET_ERROR=3
 PROCESSING_ERROR=4
+FILESYS_ERROR=5
 STORED_ROOM=6
 UNSTORED_ROOM=7
 HTTP_ERROR=13
@@ -113,8 +114,6 @@ NOT_PUBLIC_ROOM=20
 ROOM_NOT_FOUND=21
 BANNED_ROOM=23
 CONNECTION_ERROR=24
-MOREWHO_ERROR=26
-EMPTY_DIR=27
 INVALID_VALUE=28
 
 # ------------ COLORS -------------
@@ -411,6 +410,11 @@ send_exit_error () {
             echo "while processing $*"
             exit $PROCESSING_ERROR
             ;;
+        "$FILESYS_ERROR")
+            shift
+            echo "$*"
+            exit $FILESYS_ERROR
+            ;;
         "$STORED_ROOM")
             echo "the room already exists in the favorites list !" 1>&2
             exit $STORED_ROOM
@@ -439,15 +443,6 @@ send_exit_error () {
         "$BANNED_ROOM")
             echo "the room is banned from the site !" 1>&2
             exit $BANNED_ROOM
-            ;;
-        "$MOREWHO_ERROR")
-            echo -e "file '$MOREWHO_FILE' was not found !\n\
-Re-run '$mybasename fetch-more username'." 1>&2
-            exit $MOREWHO_ERROR
-            ;;
-        "$EMPTY_DIR")
-            echo "the directory is empty !" 1>&2
-            exit $EMPTY_DIR
             ;;
         "$CONNECTION_ERROR")
             echo "the connection failed !" 1>&2
@@ -1060,7 +1055,7 @@ quick_thumb () {
 
 # Open favorites directory
 open_favorites_dir () {
-    empty_dir "${FAVORITES_PDIR}/" && send_exit_error $EMPTY_DIR
+    empty_dir "${FAVORITES_PDIR}/" && send_exit_error $FILESYS_ERROR "${FAVORITES_PDIR}/ directory is empty"
     if [[ $OPEN_ENTIRE_DIR -eq 1 ]]; then
         $VIEWER "$FAVORITES_PDIR"
     else
@@ -1196,7 +1191,7 @@ list_favorites () {
 
 # Open others directory
 open_others_dir () {
-    empty_dir "${OTHERS_PDIR}/" && send_exit_error $EMPTY_DIR
+    empty_dir "${OTHERS_PDIR}/" && send_exit_error $FILESYS_ERROR "${OTHERS_PDIR}/ directory is empty"
     if [[ $OPEN_ENTIRE_DIR -eq 1 ]]; then
         $VIEWER "$OTHERS_PDIR"
     else
@@ -1539,7 +1534,7 @@ check_favorites () {
 
 # Open previews on MORE_PDIR
 open_more_dir () {
-    empty_dir "${MORE_PDIR}/" && send_exit_error $EMPTY_DIR
+    empty_dir "${MORE_PDIR}/" && send_exit_error $FILESYS_ERROR "${MORE_PDIR}/ directory is empty"
     if [[ $OPEN_ENTIRE_DIR -eq 1 ]]; then
         $VIEWER "$MORE_PDIR"
     else
@@ -1582,7 +1577,8 @@ fetch_more_rooms () {
 
 # Send exit error when MOREWHO_FILE does not found
 assert_more_who () {
-    [[ -e "$MOREWHO_FILE" ]] || send_exit_error $MOREWHO_ERROR
+    [[ -e "$MOREWHO_FILE" ]] || send_exit_error $FILESYS_ERROR "file '$MOREWHO_FILE' was not found\n\
+Re-run '$mybasename fetch-more username'."
 }
 
 # Use favorites
