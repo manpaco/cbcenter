@@ -106,10 +106,8 @@ OFFLINE_ROOM=2
 GET_ERROR=3
 PROCESSING_ERROR=4
 FILESYS_ERROR=5
-STORED_ROOM=6
-UNSTORED_ROOM=7
+STORAGE_ERROR=8
 HTTP_ERROR=13
-EMPTY_ROOM_LIST=17
 NOT_PUBLIC_ROOM=20
 ROOM_NOT_FOUND=21
 BANNED_ROOM=23
@@ -415,22 +413,15 @@ send_exit_error () {
             echo "$*"
             exit $FILESYS_ERROR
             ;;
-        "$STORED_ROOM")
-            echo "the room already exists in the favorites list !" 1>&2
-            exit $STORED_ROOM
-            ;;
-        "$UNSTORED_ROOM")
-            echo "the room does not exists in the favorites list !" 1>&2
-            exit $UNSTORED_ROOM
+        "$STORAGE_ERROR")
+            shift
+            echo "$*"
+            exit $STORAGE_ERROR
             ;;
         "$HTTP_ERROR")
             shift
             echo "server response $*" 1>&2
             exit $HTTP_ERROR
-            ;;
-        "$EMPTY_ROOM_LIST")
-            echo "empty room list !" 1>&2
-            exit $EMPTY_ROOM_LIST
             ;;
         "$NOT_PUBLIC_ROOM")
             echo "the room is ${2:-not public} !" 1>&2
@@ -738,7 +729,7 @@ more_rooms_count () {
 list_others () {
     declare -i num_rooms
     num_rooms="$(other_rooms_count)"
-    [[ $num_rooms -eq 0 ]] && send_exit_error $EMPTY_ROOM_LIST
+    [[ $num_rooms -eq 0 ]] && send_exit_error $STORAGE_ERROR "empty room list"
     echo "List of 'other' rooms:"
     for ((i = 0 ; i < num_rooms ; i++)); do
         echo "$i:$(get_other_by_index "$i")"
@@ -749,7 +740,7 @@ list_others () {
 list_more () {
     declare -i num_rooms
     num_rooms="$(more_rooms_count)"
-    [[ $num_rooms -eq 0 ]] && send_exit_error $EMPTY_ROOM_LIST
+    [[ $num_rooms -eq 0 ]] && send_exit_error $STORAGE_ERROR "empty room list"
     echo "List of 'more-like' rooms:"
     for ((i = 0 ; i < num_rooms ; i++)); do
         echo "$i:$(get_more_by_index "$i")"
@@ -830,7 +821,7 @@ add_multi_room () {
 add_room () {
     echo "Adding $1 to favorites ..."
     valid_username "$1" || send_exit_error $INVALID_VALUE "username $1"
-    stored_room "$1" && send_exit_error $STORED_ROOM
+    stored_room "$1" && send_exit_error $STORAGE_ERROR "the room already exists in the favorites list"
     local ar_status
     assert_active_room "$1" ar_status
     echo "$1" >> "$FAVORITES_FILE" && echo "Favorite added! The room is $ar_status"
@@ -853,7 +844,7 @@ remove_room () {
     else # Search partial matches
         # Use '-n' option on grep to use line numbers as choices if partial matches found
         match="$(grep -n "$1" "$FAVORITES_FILE")"
-        [[ -z $match ]] && send_exit_error $UNSTORED_ROOM
+        [[ -z $match ]] && send_exit_error $STORAGE_ERROR "the room does not exists in the favorites list"
         echo "No exact match found!"
         echo "$match"
         local rr_choice
@@ -1258,7 +1249,7 @@ fetch_rooms_using () {
     declare -i num_rooms
     num_rooms="$(jq -e ".$fru_main | length" "$fru_file" 2>/dev/null)" ||
         send_exit_error $PROCESSING_ERROR "json data"
-    [[ $num_rooms -eq 0 ]] && send_exit_error $EMPTY_ROOM_LIST
+    [[ $num_rooms -eq 0 ]] && send_exit_error $STORAGE_ERROR "empty room list"
     $fru_clear
 
     local room
