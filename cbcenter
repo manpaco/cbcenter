@@ -402,10 +402,12 @@ send_exit_error () {
             exit $OFFLINE_ROOM
             ;;
         "$GET_ERROR")
+            shift
             echo "while getting ${*:-data}"
             exit $GET_ERROR
             ;;
         "$PROCESSING_ERROR")
+            shift
             echo "while processing $*"
             exit $PROCESSING_ERROR
             ;;
