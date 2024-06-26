@@ -103,11 +103,11 @@ CHECK_CONNECTION=0
 OK_CODE=0
 UNKNOWN_ERROR=1
 OFFLINE_ROOM=2
+GET_ERROR=3
 PLAYLIST_NOT_FOUND=4
 CHUNK_NOT_FOUND=5
 STORED_ROOM=6
 UNSTORED_ROOM=7
-EMPTY_DATA=8
 HTTP_ERROR=13
 ROOM_LIST_ERROR=16
 EMPTY_ROOM_LIST=17
@@ -406,6 +406,10 @@ send_exit_error () {
             echo "the room is offline !" 1>&2
             exit $OFFLINE_ROOM
             ;;
+        "$GET_ERROR")
+            echo "while getting ${*:-data}"
+            exit $GET_ERROR
+            ;;
         "$PLAYLIST_NOT_FOUND")
             echo "while processing the page ! (PLAYLIST_NOT_FOUND)" 1>&2
             exit $PLAYLIST_NOT_FOUND
@@ -421,10 +425,6 @@ send_exit_error () {
         "$UNSTORED_ROOM")
             echo "the room does not exists in the favorites list !" 1>&2
             exit $UNSTORED_ROOM
-            ;;
-        "$EMPTY_DATA")
-            echo "while getting room data ! (EMPTY_DATA)" 1>&2
-            exit $EMPTY_DATA
             ;;
         "$HTTP_ERROR")
             shift
@@ -620,7 +620,7 @@ extract_direct_link () {
     dl_prog="$3"
     local dl_data
     dl_data="$(fetch_data "$dl_link")"
-    [[ -z $dl_data ]] && send_exit_error $EMPTY_DATA
+    [[ -z $dl_data ]] && send_exit_error $GET_ERROR "playlist data"
     if [[ -z $dl_prog ]]; then
         show_programs dl_data
         echo -en "${YELLOW_FG}==>${CLEAR_FG} Select a program ID: "
@@ -1160,7 +1160,7 @@ room_programs () {
     extract_playlist "$1" rp_link
     local rp_data
     rp_data="$(fetch_data "$rp_link")"
-    [[ -z $rp_data ]] && send_exit_error $EMPTY_DATA
+    [[ -z $rp_data ]] && send_exit_error $GET_ERROR "playlist data"
     show_programs rp_data
 }
 
