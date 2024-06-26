@@ -818,7 +818,7 @@ other_room_choice () {
     valid_id "$orc_choice" || send_exit_error $INVALID_VALUE "choice $mrc_choice (non-numeric)"
     orc_choice="$(remove_leading_zeros "$orc_choice")"
     [[ "$((orc_choice+1))" -gt "$(other_rooms_count)" ]] &&
-        send_exit_error $BAD_CHOICE "$orc_choice" "out of range"
+        send_exit_error $INVALID_VALUE "choice $orc_choice (out of range)"
     orc_out="$(get_other_by_index "$orc_choice")"
     [[ -z $orc_out ]] && send_exit_error $UNKNOWN_ERROR
 }
