@@ -714,7 +714,7 @@ favorite_choice () {
     choice_message single "$3"
     read -r fc_out
     [[ $fc_out == [qQ] || -z "$fc_out" ]] && exit $OK_CODE
-    valid_id "$fc_out"  || send_exit_error $INVALID_VALUE "choice $fc_out (non-numeric)"
+    valid_id "$fc_out" || send_exit_error $INVALID_VALUE "choice $fc_out (non-numeric)"
     fc_out="$(remove_leading_zeros "$fc_out")"
     [[ "$fc_out" -lt 1 ]] && send_exit_error $INVALID_VALUE "choice $fc_out (out of range)"
     [[ "$fc_out" -gt "$(line_count "$FAVORITES_FILE")" ]] &&
@@ -1659,7 +1659,7 @@ favorite_multi_choice () {
     local lcount
     lcount="$(line_count "$FAVORITES_FILE")"
     for i in "${!fc_out[@]}"; do
-        valid_id "${fc_out[$i]}"  || send_exit_error $INVALID_VALUE "choice ${fc_out[$i]} (non-numeric)"
+        valid_id "${fc_out[$i]}" || send_exit_error $INVALID_VALUE "choice ${fc_out[$i]} (non-numeric)"
         fc_out[i]="$(remove_leading_zeros "${fc_out[$i]}")"
         [[ "${fc_out[$i]}" -lt 1 ]] && send_exit_error $INVALID_VALUE "choice ${fc_out[$i]} (out of range)"
         [[ "${fc_out[$i]}" -gt "$lcount" ]] && send_exit_error $INVALID_VALUE "choice ${fc_out[$i]} (out of range)"
