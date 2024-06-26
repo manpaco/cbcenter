@@ -328,7 +328,7 @@ TIP: If [username] is not provided, you will be asked to choose an option\n\
                                                  ^ unnecessary spaces\nFilters:\n\n\
   -g gender[,gender2[...[,genderN]]] --> gender(s): Gender of room users.\n\
       'f' (female), 'm' (male), 'c' (couple), 't' (trans)\n\
-      example: -g c\n\
+      example: -g c,t\n\
       If none is provided, fetch mixed rooms.\n\
   -o offset --> offset: Beginning room.\n\
       Two digits (max) integer from 0 (or 00) to 99.\n\
