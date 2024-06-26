@@ -2,7 +2,7 @@
 
 Manage your favorite rooms.
 
-## WARNING !!!
+## WARNING!
 
 Do not distribute content (from anywhere) without consent. Personal use only.
 
