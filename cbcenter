@@ -130,6 +130,7 @@ CONNECTION_ERROR=24
 INVALID_GENDER=25
 MOREWHO_ERROR=26
 EMPTY_DIR=27
+INVALID_PARAM=28
 
 # ------------ COLORS -------------
 RED_FG="\033[0;31m"
@@ -515,6 +516,11 @@ Re-run '$mybasename fetch-more username'." 1>&2
         "$CONNECTION_ERROR")
             echo "the connection failed !" 1>&2
             exit $CONNECTION_ERROR
+            ;;
+        "$INVALID_PARAM")
+            shift
+            echo "invalid parameter: $*"
+            exit $INVALID_PARAM
             ;;
         *)
             shift
