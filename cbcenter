@@ -1548,8 +1548,9 @@ quick_rand () {
         3) gender=t
             ;;
     esac
+    local xtra="&genders=$gender"
     echo "Fetching random room ..."
-    fetch_roomlist_file "$gender" $((RANDOM%100)) 1 "$RANDOM_FILE" || send_exit_error $ROOM_LIST_ERROR
+    fetch_roomlist_file $((RANDOM%100)) 1 "$xtra" "$RANDOM_FILE" || send_exit_error $ROOM_LIST_ERROR
     local room
     room="$(jq -Mre ".${JQ_RLIST_MAIN}[0].${JQ_RLIST_USER}" "$RANDOM_FILE" 2>/dev/null)" ||
         send_exit_error $JQ_ERROR
