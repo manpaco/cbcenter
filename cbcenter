@@ -55,6 +55,7 @@ SEARCH_PURL="https://chaturbate.com/ax/search/?keywords=" # not necessary traili
 ROOMLIST_PURL="https://chaturbate.com/api/ts/roomlist/room-list"
 BIOCONTEXT_PURL="https://chaturbate.com/api/biocontext"
 MORELIST_PURL="https://chaturbate.com/api/more_like"
+TOP_TAGS_PURL="https://chaturbate.com/api/ts/hashtags/top_tags"
 
 # ------------ REGULAR EXPRESSIONS -------------
 FEMALE_ROOM="f"
