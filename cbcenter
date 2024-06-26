@@ -110,7 +110,6 @@ STORED_ROOM=6
 UNSTORED_ROOM=7
 HTTP_ERROR=13
 EMPTY_ROOM_LIST=17
-BIOCONTEXT_ERROR=18
 JQ_ERROR=19
 NOT_PUBLIC_ROOM=20
 ROOM_NOT_FOUND=21
@@ -434,10 +433,6 @@ send_exit_error () {
             echo "empty room list !" 1>&2
             exit $EMPTY_ROOM_LIST
             ;;
-        "$BIOCONTEXT_ERROR")
-            echo "while getting biocontext" 1>&2
-            exit $BIOCONTEXT_ERROR
-            ;;
         "$JQ_ERROR")
             echo "while processing json data !" 1>&2
             exit $JQ_ERROR
@@ -530,7 +525,7 @@ is_online () {
 fetch_room_status () {
     if ! fetch_bio "$1"; then
         [[ "$2" == "hide" ]] || echo "error"
-        return $BIOCONTEXT_ERROR
+        return $GET_ERROR
     fi
     local frs_out
     if ! frs_out="$(jq -Mr ".${JQ_BIO_RSTATUS}" "$BIOCONTEXT_FILE" 2>/dev/null)";
@@ -1539,7 +1534,7 @@ internal_status () {
         assert_active_room "$1" is_status
     else
         is_status="$(fetch_room_status "$1")"
-        [[ $? -eq $BIOCONTEXT_ERROR ]] && send_exit_error $BIOCONTEXT_ERROR
+        [[ $? -eq $GET_ERROR ]] && send_exit_error $GET_ERROR
     fi
     echo -n "Internal status: "
     echo "$is_status"
