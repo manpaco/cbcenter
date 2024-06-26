@@ -104,13 +104,11 @@ OK_CODE=0
 UNKNOWN_ERROR=1
 OFFLINE_ROOM=2
 GET_ERROR=3
-PLAYLIST_NOT_FOUND=4
-CHUNK_NOT_FOUND=5
+PROCESSING_ERROR=4
 STORED_ROOM=6
 UNSTORED_ROOM=7
 HTTP_ERROR=13
 EMPTY_ROOM_LIST=17
-JQ_ERROR=19
 NOT_PUBLIC_ROOM=20
 ROOM_NOT_FOUND=21
 BANNED_ROOM=23
@@ -407,13 +405,9 @@ send_exit_error () {
             echo "while getting ${*:-data}"
             exit $GET_ERROR
             ;;
-        "$PLAYLIST_NOT_FOUND")
-            echo "while processing the page ! (PLAYLIST_NOT_FOUND)" 1>&2
-            exit $PLAYLIST_NOT_FOUND
-            ;;
-        "$CHUNK_NOT_FOUND")
-            echo "while processing room data ! (CHUNK_NOT_FOUND)" 1>&2
-            exit $CHUNK_NOT_FOUND
+        "$PROCESSING_ERROR")
+            echo "while processing $*"
+            exit $PROCESSING_ERROR
             ;;
         "$STORED_ROOM")
             echo "the room already exists in the favorites list !" 1>&2
@@ -431,10 +425,6 @@ send_exit_error () {
         "$EMPTY_ROOM_LIST")
             echo "empty room list !" 1>&2
             exit $EMPTY_ROOM_LIST
-            ;;
-        "$JQ_ERROR")
-            echo "while processing json data !" 1>&2
-            exit $JQ_ERROR
             ;;
         "$NOT_PUBLIC_ROOM")
             echo "the room is ${2:-not public} !" 1>&2
@@ -588,7 +578,7 @@ extract_playlist () {
         [[ "$ep_page" =~ $HTTP_TOO_MANY_REQUESTS_TEXT ]] && send_exit_error $HTTP_ERROR "$HTTP_TOO_MANY_REQUESTS_TEXT"
     fi
     ep_page="$(echo -e "$ep_page")"
-    [[ "$ep_page" =~ $COMPLETE_CAM_REGEX ]] || send_exit_error $PLAYLIST_NOT_FOUND
+    [[ "$ep_page" =~ $COMPLETE_CAM_REGEX ]] || send_exit_error $PROCESSING_ERROR "web page"
     ep_out="${BASH_REMATCH[0]}"
     [[ -z $ep_out ]] && send_exit_error $UNKNOWN_ERROR
     return $OK_CODE
@@ -624,7 +614,7 @@ extract_direct_link () {
         dl_data="${dl_data/${BASH_REMATCH[0]}/}"
         dl_current+=1
     done
-    [[ -z $dl_chunk ]] && send_exit_error $CHUNK_NOT_FOUND
+    [[ -z $dl_chunk ]] && send_exit_error $PROCESSING_ERROR "playlist data"
     local dl_root_locat
     # In some cases stream is located in another place than main playlist (_link)
     if [[ $dl_data =~ $LOCATION_REGEX ]]; then
@@ -1270,7 +1260,7 @@ fetch_rooms_using () {
     fru_open="$5"
     declare -i num_rooms
     num_rooms="$(jq -e ".$fru_main | length" "$fru_file" 2>/dev/null)" ||
-        send_exit_error $JQ_ERROR
+        send_exit_error $PROCESSING_ERROR "json data"
     [[ $num_rooms -eq 0 ]] && send_exit_error $EMPTY_ROOM_LIST
     $fru_clear
 
@@ -1493,7 +1483,7 @@ quick_rand () {
     fetch_roomlist_file $((RANDOM%100)) 1 "&genders=$gender" "$RANDOM_FILE" || send_exit_error $GET_ERROR "room list"
     local room
     room="$(jq -Mre ".${JQ_RLIST_MAIN}[0].${JQ_RLIST_USER}" "$RANDOM_FILE" 2>/dev/null)" ||
-        send_exit_error $JQ_ERROR
+        send_exit_error $PROCESSING_ERROR "json data"
     show_preview "$room"
     echo "  $room's room was fetched ($gender). Enjoy!"
     ask_to_play "$room"
