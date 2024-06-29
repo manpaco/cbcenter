@@ -1566,26 +1566,51 @@ valid_gender () {
 # Show random preview using a custom range ('$1':RANDOM:1 or RANDOM:RANDOM:1 if '$1' is empty)
 # '$1' gender
 quick_rand () {
-    local gender
-    gender="$1"
-    [[ -n "$gender" ]] && ! valid_gender "$gender" && send_exit_error $VALUE_ERROR "invalid gender $gender"
-    [[ -z "$gender" ]] && case $((RANDOM%4)) in
-        0) gender=f
-            ;;
-        1) gender=m
-            ;;
-        2) gender=c
-            ;;
-        3) gender=t
-            ;;
-    esac
+    local genders
+    genders="$1"
+    declare -a garr
+    if [[ -n "$genders" ]]; then
+        genders="${genders// /}"
+        genders="$(unify_consecutive_reps "$genders" ,)"
+        genders="${genders#,}"
+        genders="${genders%,}"
+        IFS=","
+        # check genders
+        for g in $genders; do
+            valid_gender "$g" || send_exit_error $VALUE_ERROR "invalid gender $g"
+            garr+=("$g")
+        done
+        sort_array garr false true false
+        unset IFS
+    fi
+    local finalg
+    if [[ "${#garr[@]}" -eq 0 ]]; then
+        case $((RANDOM%4)) in
+            0) finalg=f
+                ;;
+            1) finalg=m
+                ;;
+            2) finalg=c
+                ;;
+            3) finalg=t
+                ;;
+        esac
+    elif [[ "${#garr[@]}" -gt 1 ]]; then
+        numg="${#garr[@]}"
+        finalg="${garr[$((RANDOM%numg))]}"
+    else
+        finalg="${garr[0]}"
+    fi
+    echo "garr:   ${garr[*]}"
+    echo "finalg: $finalg"
+    return
     echo "Fetching random room ..."
-    fetch_roomlist_file $((RANDOM%100)) 1 "&genders=$gender" "$RANDOM_FILE" || send_exit_error $GET_ERROR "room list"
+    fetch_roomlist_file $((RANDOM%100)) 1 "&genders=$finalg" "$RANDOM_FILE" || send_exit_error $GET_ERROR "room list"
     local room
     room="$(jq -Mre ".${JQ_RLIST_MAIN}[0].${JQ_RLIST_USER}" "$RANDOM_FILE" 2>/dev/null)" ||
         send_exit_error $PROCESSING_ERROR "json data"
     show_preview "$room"
-    echo "  $room's room was fetched ($gender). Enjoy!"
+    echo "  $room's room was fetched ($finalg). Enjoy!"
     ask_to_play "$room"
 }
 
