@@ -1601,9 +1601,6 @@ quick_rand () {
     else
         finalg="${garr[0]}"
     fi
-    echo "garr:   ${garr[*]}"
-    echo "finalg: $finalg"
-    return
     echo "Fetching random room ..."
     fetch_roomlist_file $((RANDOM%100)) 1 "&genders=$finalg" "$RANDOM_FILE" || send_exit_error $GET_ERROR "room list"
     local room
