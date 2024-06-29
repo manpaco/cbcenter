@@ -1389,7 +1389,7 @@ valid_fetch_digits () {
 # '$3' uniques
 # '$4' numbers
 sort_array () {
-    declare -n sa_array="${1?:$mybasename: sort_array error: empty parameter}"
+    declare -n sa_out="${1?:$mybasename: sort_array error: empty parameter}"
 
     local revparam
     [[ "$2" == "true" ]] && revparam=r
@@ -1401,7 +1401,7 @@ sort_array () {
     # Sort (reverse -r) and keep unique (-u) numbers (-n).
     # Using here-string ( <<< ), process substitution ( <(command) ), and
     # output redirection ( < ). Finally store in array with readarray
-    readarray -t sa_array < <(IFS=$'\n'; sort -${revparam}${uniparam}${numparam} <<<"${sa_array[*]}")
+    readarray -t sa_out < <(IFS=$'\n'; sort -${revparam}${uniparam}${numparam} <<<"${sa_out[*]}")
 }
 
 # Get and show rooms from given range
