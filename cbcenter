@@ -1563,13 +1563,17 @@ valid_gender () {
     [[ "$1" =~ ^($GENDER_REGEX)$ ]]
 }
 
-# Show random preview using a custom range ('$1':RANDOM:1 or RANDOM:RANDOM:1 if '$1' is empty)
-# '$1' gender
+# Show random preview
+# If multiple genders are provided take a random gender among them.
+# If none gender is provided take a random gender (FEMALE_ROOM or MALE_ROOM or
+# COUPLE_ROOM or TRANS_ROOM)
+# '$1' gender(s) (optional)
 quick_rand () {
     local genders
     genders="$1"
     declare -a garr
     if [[ -n "$genders" ]]; then
+        # Remove spaces
         genders="${genders// /}"
         genders="$(unify_consecutive_reps "$genders" ,)"
         genders="${genders#,}"
