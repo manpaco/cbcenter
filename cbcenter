@@ -723,7 +723,7 @@ choice_message () {
 # '$3' custom action (string after "Which room do you want to...")
 favorite_choice () {
     declare -n fc_out="$1"
-    [[ $2 == "hide_list" ]] || list_favorites -l
+    [[ $2 == "hide_list" ]] || list_favorites false true
     choice_message single "$3"
     read -r fc_out
     [[ $fc_out == [qQ] || -z "$fc_out" ]] && exit $OK_CODE
@@ -1229,12 +1229,12 @@ list_favorites () {
     local room
     while IFS="" read -r room || [ -n "$room" ]
     do
-        if [[ $1 == "-l" || $2 == "-l" ]]; then
+        if [[ $2 == "true" ]]; then
             laux="$line"
         else
             laux=""
         fi
-        if [[ $1 == "-s" || $2 == "-s" ]]; then
+        if [[ $1 == "true" ]]; then
             global_status "$room" "$laux" &
         else
             echo "${laux:+$laux:}$room"
@@ -1765,7 +1765,7 @@ more_like_message () {
 # '$3' custom target (string after "Which room do you want to...")
 favorite_multi_choice () {
     declare -n fc_out="$1"
-    [[ $2 == "hide_list" ]] || list_favorites -l
+    [[ $2 == "hide_list" ]] || list_favorites false true
     choice_message multi "$3"
     read -r -a fc_out
     [[ "${fc_out[0]}" == [qQ] || -z "${fc_out[0]}" ]] && exit $OK_CODE
@@ -1948,11 +1948,11 @@ case "$command" in
         shift
         # search '-s', '-l' params, or combinations
         for p in "$@"; do
-            [[ "$p" == "-s" ]] && sparam="$p"
-            [[ "$p" == "-l" ]] && lparam="$p"
-            [[ "$p" == "-sl" || "$p" == "-ls" ]] && lparam="-l" && sparam="-s"
+            [[ "$p" == "-s" ]] && sparam=true
+            [[ "$p" == "-l" ]] && lparam=true
+            [[ "$p" == "-sl" || "$p" == "-ls" ]] && lparam=true && sparam=true
         done
-        [[ -n "$sparam" ]] && connection_check
+        [[ "$sparam" == "true" ]] && connection_check
         list_favorites "$sparam" "$lparam"
         ;;
     rs|room-status)
