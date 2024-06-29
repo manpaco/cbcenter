@@ -995,11 +995,12 @@ ffr_helper () {
         save_preview "$1" "$FAVORITES_PDIR" "$prefix" && echo -e "$2:$1 ${GREEN_FG}fetched${CLEAR_FG}" && return $OK_CODE
         echo -e "$2:$1 ${RED_FG}error${CLEAR_FG}"
         return $GENERIC_ERROR
-    fi
-    if [[ "$ffr_aux" == "offline" ]]; then
-        echo "$2:$1 $ffr_aux"
     else
-        echo -e "$2:$1 ${YELLOW_FG}${ffr_aux}${CLEAR_FG}"
+        if [[ "$ffr_aux" == "offline" ]]; then
+            echo "$2:$1 $ffr_aux"
+        else
+            echo -e "$2:$1 ${YELLOW_FG}${ffr_aux}${CLEAR_FG}"
+        fi
     fi
 }
 
