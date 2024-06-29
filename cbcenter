@@ -329,6 +329,7 @@ Configuration:
   FETCH_STEPS=\"<int>\"
     Replace <int> with an integer greater than 0.
     Number of rooms fetched in each iteration when user set FETCH_TYPE to 'steps'.
+    Also used in 'limit' filter as fallback value.
     DEFAULT: '$FETCH_STEPS'
   CHECK_CONNECTION=\"<bool>\"
     Replace <bool> with a boolean integer, i.e. 1 or 0.
