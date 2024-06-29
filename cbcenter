@@ -1383,6 +1383,27 @@ valid_fetch_digits () {
     [[ "$1" =~ ^($FETCH_DIGITS_REGEX)$ ]]
 }
 
+# Sort an array
+# '$1' array
+# '$2' reverse
+# '$3' uniques
+# '$4' numbers
+sort_array () {
+    declare -n sa_array="${1?:$mybasename: sort_array error: empty parameter}"
+
+    local revparam
+    [[ "$2" == "true" ]] && revparam=r
+    local uniparam
+    [[ "$3" == "true" ]] && uniparam=u
+    local numparam
+    [[ "$4" == "true" ]] && numparam=n
+
+    # Sort (reverse -r) and keep unique (-u) numbers (-n).
+    # Using here-string ( <<< ), process substitution ( <(command) ), and
+    # output redirection ( < ). Finally store in array with readarray
+    readarray -t sa_array < <(IFS=$'\n'; sort -${revparam}${uniparam}${numparam} <<<"${sa_array[*]}")
+}
+
 # Get and show rooms from given range
 # '$1' offset
 # '$2' limit
@@ -1469,14 +1490,19 @@ fetch_other_rooms () {
         hashtags="$(unify_consecutive_reps "$hashtags" ,)"
         hashtags="${hashtags#,}"
         hashtags="${hashtags%,}"
+        declare -a harr
         IFS=","
         # check hashtags
         for h in $hashtags; do
             valid_tag "$h" || send_exit_error $VALUE_ERROR "invalid hashtag $h"
+            harr+=("$h")
         done
+        sort_array harr false true false
+        xtras+="&hashtags=${harr[*]}"
         unset IFS
-        xtras+="&hashtags=$hashtags"
+        echo "$xtras"
     fi
+    return
 
     echo -e "Fetching $limit ${genders:-mixed} room(s) at $offset offset ..."
     [[ -n "$from_age" ]] && echo "    from $from_age to $to_age years"
