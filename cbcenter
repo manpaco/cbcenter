@@ -1586,13 +1586,13 @@ quick_rand () {
     local finalg
     if [[ "${#garr[@]}" -eq 0 ]]; then
         case $((RANDOM%4)) in
-            0) finalg=f
+            0) finalg=$FEMALE_ROOM
                 ;;
-            1) finalg=m
+            1) finalg=$MALE_ROOM
                 ;;
-            2) finalg=c
+            2) finalg=$COUPLE_ROOM
                 ;;
-            3) finalg=t
+            3) finalg=$TRANS_ROOM
                 ;;
         esac
     elif [[ "${#garr[@]}" -gt 1 ]]; then
