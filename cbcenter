@@ -1443,7 +1443,7 @@ fetch_other_rooms () {
             valid_gender "$g" || send_exit_error $VALUE_ERROR "invalid gender $g"
             garr+=("$g")
         done
-        sort_array garr false true false
+        [[ "${#garr[@]}" -gt 1 ]] && sort_array garr false true false
         xtras+="&genders=${garr[*]}"
         genders="${garr[*]}"
         unset IFS
@@ -1492,7 +1492,7 @@ fetch_other_rooms () {
             valid_region "$r" || send_exit_error $VALUE_ERROR "invalid region $r"
             rarr+=("$r")
         done
-        sort_array rarr false true false
+        [[ "${#rarr[@]}" -gt 1 ]] && sort_array rarr false true false
         xtras+="&regions=${rarr[*]}"
         regions="${rarr[*]}"
         unset IFS
@@ -1511,7 +1511,7 @@ fetch_other_rooms () {
             valid_tag "$h" || send_exit_error $VALUE_ERROR "invalid hashtag $h"
             harr+=("$h")
         done
-        sort_array harr false true false
+        [[ "${#harr[@]}" -gt 1 ]] && sort_array harr false true false
         xtras+="&hashtags=${harr[*]}"
         hashtags="${harr[*]}"
         unset IFS
@@ -1590,7 +1590,7 @@ quick_rand () {
             valid_gender "$g" || send_exit_error $VALUE_ERROR "invalid gender $g"
             garr+=("$g")
         done
-        sort_array garr false true false
+        [[ "${#garr[@]}" -gt 1 ]] && sort_array garr false true false
         unset IFS
     fi
     local finalg
