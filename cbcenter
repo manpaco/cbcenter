@@ -855,11 +855,11 @@ add_rooms () {
     [[ -z "$*" ]] && send_exit_error $VALUE_ERROR "none username provided"
     for a in "$@"; do
         if ! valid_username "$a"; then
-            echo -e "'$a' ${RED_FG}-->${CLEAR_FG} invalid username."
+            echo -e "'$a' ${RED_FG}-->${CLEAR_FG} invalid username"
             continue
         fi
         if stored_room "$a"; then
-            echo -e "'$a' ${RED_FG}-->${CLEAR_FG} already in favorites."
+            echo -e "'$a' ${RED_FG}-->${CLEAR_FG} already in favorites"
             continue
         fi
         local ar_status
