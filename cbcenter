@@ -1443,6 +1443,7 @@ fetch_other_rooms () {
         done
         sort_array garr false true false
         xtras+="&genders=${garr[*]}"
+        genders="${garr[*]}"
         unset IFS
     fi
     local from_age="$4"
@@ -1489,6 +1490,7 @@ fetch_other_rooms () {
         done
         sort_array rarr false true false
         xtras+="&regions=${rarr[*]}"
+        regions="${rarr[*]}"
         unset IFS
     fi
     local hashtags="$7"
@@ -1505,6 +1507,7 @@ fetch_other_rooms () {
         done
         sort_array harr false true false
         xtras+="&hashtags=${harr[*]}"
+        hashtags="${harr[*]}"
         unset IFS
     fi
 
