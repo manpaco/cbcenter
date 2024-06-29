@@ -1434,13 +1434,16 @@ fetch_other_rooms () {
         genders="$(unify_consecutive_reps "$genders" ,)"
         genders="${genders#,}"
         genders="${genders%,}"
+        declare -a garr
         IFS=","
         # check genders
         for g in $genders; do
             valid_gender "$g" || send_exit_error $VALUE_ERROR "invalid gender $g"
+            garr+=("$g")
         done
+        sort_array garr false true false
+        xtras+="&genders=${garr[*]}"
         unset IFS
-        xtras+="&genders=$genders"
     fi
     local from_age="$4"
     if [[ -n "$from_age" ]]; then
@@ -1477,13 +1480,16 @@ fetch_other_rooms () {
         regions="$(unify_consecutive_reps "$regions" ,)"
         regions="${regions#,}"
         regions="${regions%,}"
+        declare -a rarr
         IFS=","
         # check regions
         for r in $regions; do
             valid_region "$r" || send_exit_error $VALUE_ERROR "invalid region $r"
+            rarr+=("$r")
         done
+        sort_array rarr false true false
+        xtras+="&regions=${rarr[*]}"
         unset IFS
-        xtras+="&regions=$regions"
     fi
     local hashtags="$7"
     if [[ -n "$hashtags" ]]; then
@@ -1500,8 +1506,8 @@ fetch_other_rooms () {
         sort_array harr false true false
         xtras+="&hashtags=${harr[*]}"
         unset IFS
-        echo "$xtras"
     fi
+    echo "$xtras"
     return
 
     echo -e "Fetching $limit ${genders:-mixed} room(s) at $offset offset ..."
