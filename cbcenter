@@ -849,7 +849,7 @@ more_room_choice () {
 # '$1' room
 add_rooms () {
     local ignore_check=false
-    [[ "$1" == "-f" ]] && ignore_check=true
+    [[ "$1" == "true" ]] && ignore_check=true
     shift
     [[ -z "$*" ]] && send_exit_error $VALUE_ERROR "none username provided"
     for a in "$@"; do
@@ -1921,7 +1921,7 @@ case "$command" in
         # Trim all params
         for p in "$@"; do
             if [[ "$p" == "-f" ]]; then
-                fparam="-f"
+                fparam="true"
             else
                 parr+=("$(trim_string "$p")")
             fi
