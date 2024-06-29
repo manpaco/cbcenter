@@ -846,7 +846,8 @@ more_room_choice () {
 }
 
 # Add new rooms to favorites
-# '$1' room
+# '$1' ignore check
+# '$2' ... '$n' room(s)
 add_rooms () {
     local ignore_check=false
     [[ "$1" == "true" ]] && ignore_check=true
