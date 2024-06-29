@@ -1431,6 +1431,8 @@ fetch_other_rooms () {
     local xtras
     local genders="$3"
     if [[ -n "$genders" ]]; then
+        # Remove spaces
+        genders="${genders// /}"
         genders="$(unify_consecutive_reps "$genders" ,)"
         genders="${genders#,}"
         genders="${genders%,}"
@@ -1478,6 +1480,8 @@ fetch_other_rooms () {
     fi
     local regions="$6"
     if [[ -n "$regions" ]]; then
+        # Remove spaces
+        regions="${regions// /}"
         regions="$(unify_consecutive_reps "$regions" ,)"
         regions="${regions#,}"
         regions="${regions%,}"
@@ -1495,6 +1499,8 @@ fetch_other_rooms () {
     fi
     local hashtags="$7"
     if [[ -n "$hashtags" ]]; then
+        # Remove spaces
+        hashtags="${hashtags// /}"
         hashtags="$(unify_consecutive_reps "$hashtags" ,)"
         hashtags="${hashtags#,}"
         hashtags="${hashtags%,}"
