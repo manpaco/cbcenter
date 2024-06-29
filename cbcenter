@@ -1748,7 +1748,8 @@ multi_remove () {
     # Sort (reverse -r) and keep unique (-u) numbers (-n).
     # Using here-string ( <<< ), process substitution ( <(command) ), and
     # output redirection ( < ). Finally store in array with readarray
-    readarray -t br_choices < <(IFS=$'\n'; sort -run <<<"${br_choices[*]}")
+    # readarray -t br_choices < <(IFS=$'\n'; sort -run <<<"${br_choices[*]}")
+    sort_array br_choices true true true
 
     echo "You are about to delete:"
     for c in "${br_choices[@]}"; do
