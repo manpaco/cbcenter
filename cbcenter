@@ -1507,8 +1507,6 @@ fetch_other_rooms () {
         xtras+="&hashtags=${harr[*]}"
         unset IFS
     fi
-    echo "$xtras"
-    return
 
     echo -e "Fetching $limit ${genders:-mixed} room(s) at $offset offset ..."
     [[ -n "$from_age" ]] && echo "    from $from_age to $to_age years"
