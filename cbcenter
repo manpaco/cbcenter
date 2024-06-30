@@ -1914,6 +1914,7 @@ configure
 # Main switch
 case "$command" in
     a|add)
+        [[ "$#" -lt 2 ]] && send_exit_error $VALUE_ERROR "there are not enough parameters"
         connection_check
         show_add_suggestion
         # discard "command" parameter
@@ -1931,17 +1932,21 @@ case "$command" in
         add_rooms "$fparam" "${parr[@]}"
         ;;
     r|remove)
+        [[ "$#" -gt 2 ]] && send_exit_error $VALUE_ERROR "too many parameters"
         remove_room "$param"
         ;;
     R|multi-remove)
+        [[ "$#" -gt 1 ]] && send_exit_error $VALUE_ERROR "no parameters needed"
         multi_remove
         ;;
     ff|fetch-favorites)
+        [[ "$#" -gt 2 ]] && send_exit_error $VALUE_ERROR "too many parameters"
         connection_check
         fetch_favorite_rooms "$param"
         play_favorite_choice hide_list
         ;;
     vf|view-favorites)
+        [[ "$#" -gt 1 ]] && send_exit_error $VALUE_ERROR "no parameters needed"
         open_favorites_dir
         connection_check
         play_favorite_choice
@@ -1977,16 +1982,19 @@ case "$command" in
         internal_status "$param" "$eparam"
         ;;
     rp|room-programs)
+        [[ "$#" -gt 2 ]] && send_exit_error $VALUE_ERROR "too many parameters"
         connection_check
         [[ -z $param ]] && favorite_room_choice param
         room_programs "$param"
         ;;
     ri|room-info)
+        [[ "$#" -gt 2 ]] && send_exit_error $VALUE_ERROR "too many parameters"
         connection_check
         [[ -z $param ]] && favorite_room_choice param
         room_info "$param"
         ;;
     rb|room-bio)
+        [[ "$#" -gt 2 ]] && send_exit_error $VALUE_ERROR "too many parameters"
         connection_check
         [[ -z $param ]] && favorite_room_choice param
         room_bio "$param"
@@ -2012,62 +2020,75 @@ case "$command" in
         play_other_choice hide_list
         ;;
     vo|view-others)
+        [[ "$#" -gt 1 ]] && send_exit_error $VALUE_ERROR "no parameters needed"
         open_others_dir
         connection_check
         play_other_choice
         ;;
     lo|list-others)
+        [[ "$#" -gt 1 ]] && send_exit_error $VALUE_ERROR "no parameters needed"
         list_others
         ;;
     fm|fetch-more)
+        [[ "$#" -gt 2 ]] && send_exit_error $VALUE_ERROR "too many parameters"
         connection_check
         [[ -z $param ]] && favorite_room_choice param
         fetch_more_rooms "$param"
         play_more_choice hide_list
         ;;
     vm|view-more)
+        [[ "$#" -gt 1 ]] && send_exit_error $VALUE_ERROR "no parameters needed"
         more_like_message
         open_more_dir
         connection_check
         play_more_choice
         ;;
     lm|list-more)
+        [[ "$#" -gt 1 ]] && send_exit_error $VALUE_ERROR "no parameters needed"
         more_like_message
         list_more
         ;;
     sc|save-capture)
+        [[ "$#" -gt 2 ]] && send_exit_error $VALUE_ERROR "too many parameters"
         connection_check
         [[ -z $param ]] && favorite_room_choice param
         save_capture "$param"
         ;;
     ss|save-stream)
+        [[ "$#" -gt 2 ]] && send_exit_error $VALUE_ERROR "too many parameters"
         connection_check
         [[ -z $param ]] && favorite_room_choice param
         save_room "$param"
         ;;
     ps|play-stream)
+        [[ "$#" -gt 2 ]] && send_exit_error $VALUE_ERROR "too many parameters"
         connection_check
         [[ -z $param ]] && favorite_room_choice param
         play_room "$param"
         ;;
     ks|keyword-search)
+        [[ "$#" -gt 2 ]] && send_exit_error $VALUE_ERROR "too many parameters"
         connection_check
         keyword_search "$param"
         ;;
     th|top-hashtags)
+        [[ "$#" -gt 2 ]] && send_exit_error $VALUE_ERROR "too many parameters"
         connection_check
         top_hashtags "$param"
         ;;
     ra|random)
+        [[ "$#" -gt 2 ]] && send_exit_error $VALUE_ERROR "too many parameters"
         connection_check
         quick_rand "$param"
         ;;
     tn|thumbnail)
+        [[ "$#" -gt 2 ]] && send_exit_error $VALUE_ERROR "too many parameters"
         connection_check
         [[ -z $param ]] && favorite_room_choice param
         quick_thumb "$param"
         ;;
     __check_deps)
+        [[ "$#" -gt 1 ]] && send_exit_error $VALUE_ERROR "no parameters needed"
         check_dependencies
         ;;
     *)
