@@ -2094,6 +2094,6 @@ case "$command" in
         check_dependencies
         ;;
     *)
-        send_exit_error $VALUE_ERROR "command $command not found\nUse '$mybasename help' for more info."
+        send_exit_error $VALUE_ERROR "command ${command:+$command }not found\nUse '$mybasename help' for more info."
         ;;
 esac
