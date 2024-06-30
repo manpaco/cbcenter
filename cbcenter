@@ -1997,45 +1997,16 @@ case "$command" in
         shift
         while [[ "$#" -gt 0 ]]; do
             case "$1" in
-                -o)
-                    [[ -z "$2" ]] && send_exit_error $VALUE_ERROR "missing $1 value"
-                    oparam="$(trim_string "$2")"
-                    shift 2
-                    ;;
-                -l)
-                    [[ -z "$2" ]] && send_exit_error $VALUE_ERROR "missing $1 value"
-                    lparam="$(trim_string "$2")"
-                    shift 2
-                    ;;
-                -g)
-                    [[ -z "$2" ]] && send_exit_error $VALUE_ERROR "missing $1 value"
-                    gparam="$(trim_string "$2")"
-                    shift 2
-                    ;;
-                -f)
-                    [[ -z "$2" ]] && send_exit_error $VALUE_ERROR "missing $1 value"
-                    fparam="$(trim_string "$2")"
-                    shift 2
-                    ;;
-                -t)
-                    [[ -z "$2" ]] && send_exit_error $VALUE_ERROR "missing $1 value"
-                    tparam="$(trim_string "$2")"
-                    shift 2
-                    ;;
-                -r)
-                    [[ -z "$2" ]] && send_exit_error $VALUE_ERROR "missing $1 value"
-                    rparam="$(trim_string "$2")"
-                    shift 2
-                    ;;
-                -h)
-                    [[ -z "$2" ]] && send_exit_error $VALUE_ERROR "missing $1 value"
-                    hparam="$(trim_string "$2")"
-                    shift 2
-                    ;;
-                *)
-                    send_exit_error $VALUE_ERROR "invalid parameter $1"
-                    ;;
+                -o) oparam="$(trim_string "$2")" ;;
+                -l) lparam="$(trim_string "$2")" ;;
+                -g) gparam="$(trim_string "$2")" ;;
+                -f) fparam="$(trim_string "$2")" ;;
+                -t) tparam="$(trim_string "$2")" ;;
+                -r) rparam="$(trim_string "$2")" ;;
+                -h) hparam="$(trim_string "$2")" ;;
+                *) send_exit_error $VALUE_ERROR "invalid parameter $1" ;;
             esac
+            shift 2 || send_exit_error $VALUE_ERROR "missing $1 value"
         done
         fetch_other_rooms "$oparam" "$lparam" "$gparam" "$fparam" "$tparam" "$rparam" "$hparam"
         play_other_choice hide_list
