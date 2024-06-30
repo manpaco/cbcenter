@@ -2008,11 +2008,11 @@ case "$command" in
             case "$1" in
                 -o) oparam="$(trim_string "$2")" ;;
                 -l) lparam="$(trim_string "$2")" ;;
-                -g) gparam="$(trim_string "$2")" ;;
+                -g) gparam+=",$(trim_string "$2")" ;;
                 -f) fparam="$(trim_string "$2")" ;;
                 -t) tparam="$(trim_string "$2")" ;;
-                -r) rparam="$(trim_string "$2")" ;;
-                -h) hparam="$(trim_string "$2")" ;;
+                -r) rparam+=",$(trim_string "$2")" ;;
+                -h) hparam+=",$(trim_string "$2")" ;;
                 *) send_exit_error $VALUE_ERROR "invalid parameter $1" ;;
             esac
             shift 2 || send_exit_error $VALUE_ERROR "missing $1 value"
