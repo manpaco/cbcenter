@@ -1957,9 +1957,9 @@ case "$command" in
         shift
         # search '-s', '-l' params, or combinations
         for p in "$@"; do
-            [[ "$p" == "-s" ]] && sparam=true
-            [[ "$p" == "-l" ]] && lparam=true
-            [[ "$p" == "-sl" || "$p" == "-ls" ]] && lparam=true && sparam=true
+            [[ "$p" == "-s" ]] && sparam=true && continue
+            [[ "$p" == "-l" ]] && lparam=true && continue
+            send_exit_error $VALUE_ERROR "invalid parameter $p"
         done
         [[ "$sparam" == "true" ]] && connection_check
         list_favorites "$sparam" "$lparam"
