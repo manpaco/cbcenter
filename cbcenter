@@ -924,7 +924,8 @@ clear_favorites_dir () {
     if rm -f "${FAVORITES_PDIR:?}"/*; then
         echo -n "  "; echo "Removed old content from FAVORITES directory!"
     else
-        echo -n "  "; echo -e "An ${RED_FG}error${CLEAR_FG} occurred while clearing FAVORITES!" 1>&2
+        # echo -n "  "; echo -e "An ${RED_FG}error${CLEAR_FG} occurred while clearing FAVORITES!" 1>&2
+        send_exit_error $FILESYS_ERROR "removing FAVORITES content"
     fi
 }
 
@@ -933,7 +934,8 @@ clear_captures_dir () {
     if rm -f "${CAPTURES_PDIR:?}"/*; then
         echo -n "  "; echo "Removed old content from CAPTURES directory!"
     else
-        echo -n "  "; echo -e "An ${RED_FG}error${CLEAR_FG} occurred while clearing CAPTURES!" 1>&2
+        # echo -n "  "; echo -e "An ${RED_FG}error${CLEAR_FG} occurred while clearing CAPTURES!" 1>&2
+        send_exit_error $FILESYS_ERROR "removing CAPTURES content"
     fi
 }
 
@@ -942,7 +944,8 @@ clear_streams_dir () {
     if rm -f "${STREAMS_PDIR:?}"/*; then
         echo -n "  "; echo "Removed old content from STREAMS directory!"
     else
-        echo -n "  "; echo -e "An ${RED_FG}error${CLEAR_FG} occurred while clearing STREAMS!" 1>&2
+        # echo -n "  "; echo -e "An ${RED_FG}error${CLEAR_FG} occurred while clearing STREAMS!" 1>&2
+        send_exit_error $FILESYS_ERROR "removing STREAMS content"
     fi
 }
 
@@ -951,7 +954,8 @@ clear_others_dir () {
     if rm -f "${OTHERS_PDIR:?}"/*; then
         echo -n "  "; echo "Removed old content from OTHERS directory!"
     else
-        echo -n "  "; echo -e "An ${RED_FG}error${CLEAR_FG} occurred while clearing OTHERS!" 1>&2
+        # echo -n "  "; echo -e "An ${RED_FG}error${CLEAR_FG} occurred while clearing OTHERS!" 1>&2
+        send_exit_error $FILESYS_ERROR "removing OTHERS content"
     fi
 }
 
@@ -1696,7 +1700,8 @@ clear_more_dir () {
     if rm -f "${MORE_PDIR:?}"/*; then
         echo -n "  "; echo "Removed old content from MORE directory!"
     else
-        echo -n "  "; echo "An ${RED_FG}error${CLEAR_FG} occurred while clearing MORE!" 1>&2
+        # echo -n "  "; echo "An ${RED_FG}error${CLEAR_FG} occurred while clearing MORE!" 1>&2
+        send_exit_error $FILESYS_ERROR "removing MORE content"
     fi
 }
 
