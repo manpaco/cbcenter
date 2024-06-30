@@ -1942,6 +1942,7 @@ case "$command" in
     ff|fetch-favorites)
         [[ "$#" -gt 2 ]] && send_exit_error $VALUE_ERROR "too many parameters"
         connection_check
+        [[ -n "$param" && "$param" != "-f" ]] && send_exit_error $VALUE_ERROR "invalid parameter $param"
         fetch_favorite_rooms "$param"
         play_favorite_choice hide_list
         ;;
