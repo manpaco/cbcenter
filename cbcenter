@@ -922,7 +922,7 @@ empty_dir () {
 # Clear favorites directory
 clear_favorites_dir () {
     if rm -f "${FAVORITES_PDIR:?}"/*; then
-        echo -n "  "; echo "Old content of directory FAVORITES deleted!"
+        echo -n "  "; echo "Removed old content from FAVORITES directory!"
     else
         echo -n "  "; echo -e "An ${RED_FG}error${CLEAR_FG} occurred while clearing FAVORITES!" 1>&2
     fi
@@ -931,7 +931,7 @@ clear_favorites_dir () {
 # Clear captures directory
 clear_captures_dir () {
     if rm -f "${CAPTURES_PDIR:?}"/*; then
-        echo -n "  "; echo "Old content of directory CAPTURES deleted!"
+        echo -n "  "; echo "Removed old content from CAPTURES directory!"
     else
         echo -n "  "; echo -e "An ${RED_FG}error${CLEAR_FG} occurred while clearing CAPTURES!" 1>&2
     fi
@@ -940,7 +940,7 @@ clear_captures_dir () {
 # Clear streams directory
 clear_streams_dir () {
     if rm -f "${STREAMS_PDIR:?}"/*; then
-        echo -n "  "; echo "Old content of directory STREAMS deleted!"
+        echo -n "  "; echo "Removed old content from STREAMS directory!"
     else
         echo -n "  "; echo -e "An ${RED_FG}error${CLEAR_FG} occurred while clearing STREAMS!" 1>&2
     fi
@@ -949,7 +949,7 @@ clear_streams_dir () {
 # Clear rooms directory
 clear_others_dir () {
     if rm -f "${OTHERS_PDIR:?}"/*; then
-        echo -n "  "; echo "Old content of directory OTHERS deleted!"
+        echo -n "  "; echo "Removed old content from OTHERS directory!"
     else
         echo -n "  "; echo -e "An ${RED_FG}error${CLEAR_FG} occurred while clearing OTHERS!" 1>&2
     fi
@@ -1694,7 +1694,7 @@ open_more_dir () {
 # Remove previews on MORE_PDIR
 clear_more_dir () {
     if rm -f "${MORE_PDIR:?}"/*; then
-        echo -n "  "; echo "Old content of directory MORE deleted!"
+        echo -n "  "; echo "Removed old content from MORE directory!"
     else
         echo -n "  "; echo "An ${RED_FG}error${CLEAR_FG} occurred while clearing MORE!" 1>&2
     fi
