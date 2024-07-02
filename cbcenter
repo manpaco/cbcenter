@@ -442,40 +442,40 @@ Examples:
 # '$1' error code
 send_exit_error () {
     unset IFS
-    echo -n "$mybasename: error: " 1>&2
+    echo -n "$mybasename: " 1>&2
     case "$1" in
         "$GET_ERROR")
             shift
-            echo "while getting ${*:-data}"
+            echo "get_error: while getting ${*:-data}"
             exit $GET_ERROR
             ;;
         "$PROCESSING_ERROR")
             shift
-            echo "while processing $*"
+            echo "processing_error: while processing $*"
             exit $PROCESSING_ERROR
             ;;
         "$FILESYS_ERROR")
             shift
-            echo "$*"
+            echo "filesys_error: $*"
             exit $FILESYS_ERROR
             ;;
         "$STORAGE_ERROR")
             shift
-            echo "$*"
+            echo "storage_error: $*"
             exit $STORAGE_ERROR
             ;;
         "$HTTP_ERROR")
             shift
-            echo "server response $*" 1>&2
+            echo "http_error: server response $*" 1>&2
             exit $HTTP_ERROR
             ;;
         "$CONNECTION_ERROR")
-            echo "the connection failed" 1>&2
+            echo "connection_error: the connection failed" 1>&2
             exit $CONNECTION_ERROR
             ;;
         "$VALUE_ERROR")
             shift
-            echo -e "$*"
+            echo -e "value_error: $*"
             exit $VALUE_ERROR
             ;;
         "$NOT_PUBLIC_ROOM")
@@ -483,7 +483,7 @@ send_exit_error () {
             exit $NOT_PUBLIC_ROOM
             ;;
         "$ROOM_NOT_FOUND")
-            echo "room not found" 1>&2
+            echo "the room was not found" 1>&2
             exit $ROOM_NOT_FOUND
             ;;
         "$BANNED_ROOM")
@@ -496,7 +496,7 @@ send_exit_error () {
             ;;
         *)
             shift
-            echo -e "GENERIC_ERROR $*" 1>&2
+            echo -e "generic_error: $*" 1>&2
             exit $GENERIC_ERROR
             ;;
     esac
